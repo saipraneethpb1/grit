@@ -51,6 +51,9 @@ releases/
 
 # editor / agent (not project source)
 .cursor/
+.claude/
+CLAUDE.md
+AGENTS.md
 
 # typescript
 *.tsbuildinfo
