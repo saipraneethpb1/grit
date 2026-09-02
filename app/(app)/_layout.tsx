@@ -41,6 +41,9 @@ export default function AppLayout() {
           title: '',
           presentation: 'fullScreenModal',
           headerShown: false,
+          // Leaving mid-workout must go through the confirmation in the screen,
+          // so a swipe or predictive-back gesture cannot discard logged sets.
+          gestureEnabled: false,
         }}
       />
     </Stack>

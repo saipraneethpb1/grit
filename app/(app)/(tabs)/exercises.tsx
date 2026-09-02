@@ -1,8 +1,10 @@
 import { useRouter } from 'expo-router';
+import { useCallback } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { ExerciseRow } from '@/src/components/ExerciseRow';
 import { MuscleChip } from '@/src/components/MuscleChip';
+import type { Exercise } from '@/src/domain/types';
 import { useExerciseLibrary } from '@/src/hooks/useExercises';
 
 export default function ExercisesScreen() {
@@ -15,6 +17,20 @@ export default function ExercisesScreen() {
     setMuscleFilter,
     muscleOptions,
   } = useExerciseLibrary();
+
+  const openExercise = useCallback(
+    (id: string) => {
+      router.push({ pathname: '/(app)/exercises/[id]', params: { id } });
+    },
+    [router]
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: Exercise }) => (
+      <ExerciseRow exercise={item} onPress={() => openExercise(item.id)} />
+    ),
+    [openExercise]
+  );
 
   return (
     <View style={styles.container}>
@@ -46,20 +62,18 @@ export default function ExercisesScreen() {
         data={exercises}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: theme.space.lg }}
+        renderItem={renderItem}
+        // Without this a tap while the keyboard is open is swallowed by the
+        // dismiss, so the first tap on a result never opens it.
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        initialNumToRender={12}
+        windowSize={9}
+        removeClippedSubviews
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <Text style={styles.count}>{exercises.length} movements</Text>
         }
-        renderItem={({ item }) => (
-          <ExerciseRow
-            exercise={item}
-            onPress={() =>
-              router.push({
-                pathname: '/(app)/exercises/[id]',
-                params: { id: item.id },
-              })
-            }
-          />
-        )}
         ListEmptyComponent={
           <Text style={styles.empty}>No exercises match your filters.</Text>
         }

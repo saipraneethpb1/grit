@@ -1,8 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
 import { DayWorkoutList } from '@/src/components/DayWorkoutList';
+import { LevelBadge } from '@/src/components/LevelBadge';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { TrainingAudit } from '@/src/components/TrainingAudit';
 import { EXERCISES, getSplitTemplate } from '@/src/domain/catalog';
@@ -17,7 +19,9 @@ export default function PreviewPlanScreen() {
   }>();
   const router = useRouter();
   const savePlan = useSavePlan();
+  const insets = useSafeAreaInsets();
   const [saving, setSaving] = useState(false);
+  const footerPad = Math.max(insets.bottom, theme.space.lg);
 
   const template = templateId ? getSplitTemplate(templateId) : undefined;
   const methodology = methodologyId ? getMethodology(methodologyId) : undefined;
@@ -59,8 +63,16 @@ export default function PreviewPlanScreen() {
 
   return (
     <View style={styles.root}>
-      <ScrollView contentContainerStyle={styles.content}>
-        {methodology ? <Text style={styles.method}>{methodology.name}</Text> : null}
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingBottom: 88 + footerPad }]}
+        showsVerticalScrollIndicator={false}
+      >
+        {methodology ? (
+          <View style={styles.methodRow}>
+            <Text style={styles.method}>{methodology.name}</Text>
+            <LevelBadge level={methodology.level} />
+          </View>
+        ) : null}
         <Text style={styles.title}>{template.name}</Text>
         <Text style={styles.desc}>{methodology?.description ?? template.description}</Text>
 
@@ -73,7 +85,7 @@ export default function PreviewPlanScreen() {
         ))}
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: footerPad }]}>
         <PrimaryButton
           title="Save program"
           onPress={onSave}
@@ -89,8 +101,14 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background },
   errorText: { ...theme.font.body, color: theme.colors.text },
-  content: { padding: theme.space.lg, paddingBottom: 100 },
-  method: { ...theme.font.caption, color: theme.colors.textMuted, marginBottom: theme.space.xs },
+  content: { padding: theme.space.lg },
+  methodRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.space.sm,
+    marginBottom: theme.space.xs,
+  },
+  method: { ...theme.font.caption, color: theme.colors.textMuted },
   title: { ...theme.font.title, color: theme.colors.text, marginBottom: theme.space.sm },
   desc: { ...theme.font.body, color: theme.colors.textSecondary, marginBottom: theme.space.md },
   dayBlock: {

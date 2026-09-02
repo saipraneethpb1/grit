@@ -6,12 +6,15 @@ type Props = {
   split: SplitTemplate;
   onPress: () => void;
   selected?: boolean;
+  /** Short label explaining why this one stands out, e.g. "Recommended". */
+  badge?: string;
 };
 
-export function SplitCard({ split, onPress, selected }: Props) {
+export function SplitCard({ split, onPress, selected, badge }: Props) {
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
       style={({ pressed }) => [
         styles.card,
         {
@@ -20,11 +23,12 @@ export function SplitCard({ split, onPress, selected }: Props) {
         },
       ]}
     >
+      {badge ? <Text style={styles.recommended}>{badge}</Text> : null}
       <View style={styles.header}>
         <Text style={styles.title}>{split.name}</Text>
-        <Text style={styles.badge}>{split.days_per_week}d</Text>
+        <Text style={styles.days}>{split.days_per_week} days / week</Text>
       </View>
-      <Text style={styles.desc} numberOfLines={2}>
+      <Text style={styles.desc} numberOfLines={3}>
         {split.description}
       </Text>
     </Pressable>
@@ -47,6 +51,12 @@ const styles = StyleSheet.create({
     gap: theme.space.sm,
   },
   title: { ...theme.font.bodyMedium, color: theme.colors.text, flex: 1 },
-  badge: { ...theme.font.caption, color: theme.colors.textMuted },
+  days: { ...theme.font.caption, color: theme.colors.textMuted },
+  recommended: {
+    ...theme.font.label,
+    fontSize: 11,
+    color: theme.colors.success,
+    marginBottom: theme.space.xs,
+  },
   desc: { ...theme.font.caption, color: theme.colors.textSecondary, lineHeight: 18 },
 });

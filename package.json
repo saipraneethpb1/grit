@@ -41,8 +41,12 @@
     "export:web": "expo export --platform web",
     "release:android": "bash scripts/release-android.sh",
     "test:generator": "npx tsx scripts/test-generator.ts",
+    "test:session": "npx tsx scripts/test-session-complete.ts",
+    "test": "npm run test:generator && npm run test:session && npm run test:live && npm run test:progression",
     "curate:exercises": "node scripts/curate-exercises.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:live": "npx tsx scripts/test-live-workout.ts",
+    "test:progression": "npx tsx scripts/test-progression.ts"
   },
   "private": true
 }

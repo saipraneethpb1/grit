@@ -1,4 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  pickPreviousBests,
+  type PreviousBest,
+  type PreviousBestRow,
+} from '@/src/domain/liveWorkout';
+import {
+  levelFromXp,
+  newlyEarned,
+  sessionVolume,
+  xpForSession,
+  type ProgressStats,
+  type WorkoutCompletionResult,
+} from '@/src/domain/progression';
+
+export type { WorkoutCompletionResult };
+import {
+  buildCompletedSetRows,
+  localDateString,
+  nextRotationIndex,
+  nextStreak,
+} from '@/src/domain/sessionComplete';
 import type {
   LiveExercise,
   PlanDayWithExercises,
@@ -9,35 +30,44 @@ import type {
 import { supabase } from '@/src/lib/supabase';
 import { useAuth } from './useAuth';
 
-export async function fetchLastSetsForExercise(
+const PREVIOUS_BEST_SESSION_WINDOW = 10;
+
+/**
+ * Last logged weight × reps for every exercise on the day, in two queries.
+ *
+ * Doing this per exercise meant up to 88 sequential round trips before the
+ * workout screen could render, which read as a multi-second freeze on mobile
+ * data. Batching keeps the player's cold start to a single pair of requests.
+ */
+export async function fetchPreviousBests(
   userId: string,
-  exerciseId: string
-): Promise<{ weight: number; reps: number } | null> {
-  const { data: sessions } = await supabase
+  exerciseIds: string[]
+): Promise<Record<string, PreviousBest>> {
+  const uniqueIds = [...new Set(exerciseIds)];
+  if (uniqueIds.length === 0) return {};
+
+  const { data: sessions, error: sessionsError } = await supabase
     .from('workout_sessions')
     .select('id')
     .eq('user_id', userId)
     .eq('status', 'completed')
     .order('completed_at', { ascending: false })
-    .limit(10);
+    .limit(PREVIOUS_BEST_SESSION_WINDOW);
 
-  if (!sessions?.length) return null;
+  if (sessionsError || !sessions?.length) return {};
 
-  for (const s of sessions) {
-    const { data: sets } = await supabase
-      .from('session_sets')
-      .select('weight, reps, completed')
-      .eq('session_id', s.id)
-      .eq('exercise_id', exerciseId)
-      .eq('completed', true)
-      .order('set_number', { ascending: false })
-      .limit(1);
+  const sessionOrder = sessions.map((s) => s.id as string);
 
-    if (sets?.[0]?.weight != null && sets[0].reps != null) {
-      return { weight: Number(sets[0].weight), reps: Number(sets[0].reps) };
-    }
-  }
-  return null;
+  const { data: sets, error: setsError } = await supabase
+    .from('session_sets')
+    .select('session_id, exercise_id, set_number, weight, reps')
+    .in('session_id', sessionOrder)
+    .in('exercise_id', uniqueIds)
+    .eq('completed', true);
+
+  if (setsError || !sets?.length) return {};
+
+  return pickPreviousBests(sessionOrder, sets as PreviousBestRow[]);
 }
 
 export function buildLiveExercises(day: PlanDayWithExercises): LiveExercise[] {
@@ -70,17 +100,24 @@ export async function enrichWithHistory(
   userId: string,
   exercises: LiveExercise[]
 ): Promise<LiveExercise[]> {
-  const result: LiveExercise[] = [];
-  for (const ex of exercises) {
-    const prev = await fetchLastSetsForExercise(userId, ex.exerciseId);
-    const sets = ex.sets.map((s) => ({
-      ...s,
-      weight: prev ? String(prev.weight) : s.weight,
-      reps: prev ? String(prev.reps) : s.reps,
-    }));
-    result.push({ ...ex, previousBest: prev, sets });
-  }
-  return result;
+  const bests = await fetchPreviousBests(
+    userId,
+    exercises.map((ex) => ex.exerciseId)
+  );
+
+  return exercises.map((ex) => {
+    const prev = bests[ex.exerciseId] ?? null;
+    if (!prev) return { ...ex, previousBest: null };
+    return {
+      ...ex,
+      previousBest: prev,
+      sets: ex.sets.map((s) => ({
+        ...s,
+        weight: String(prev.weight),
+        reps: String(prev.reps),
+      })),
+    };
+  });
 }
 
 export async function startSession(params: {
@@ -112,37 +149,83 @@ export async function startSession(params: {
   return data as WorkoutSession;
 }
 
+/**
+ * Release a session the user started but left without saving, so the next
+ * `startSession` is not competing with a stale `in_progress` row.
+ */
+export async function abandonSession(sessionId: string): Promise<void> {
+  await supabase
+    .from('workout_sessions')
+    .update({ status: 'abandoned' })
+    .eq('id', sessionId)
+    .eq('status', 'in_progress');
+}
+
+/**
+ * True when a write failed only because migration 004 has not been applied.
+ *
+ * Postgres reports an unknown column as 42703; PostgREST rejects it earlier,
+ * from its own schema cache, as PGRST204. The app ships through the Play Store
+ * while migrations are run by hand, so a build can reach a user before the SQL
+ * does — and a finished workout must never be lost to that ordering.
+ */
+function isMissingProgressionColumn(error: { code?: string } | null): boolean {
+  return error?.code === '42703' || error?.code === 'PGRST204';
+}
+
+/** Shape of the profile row the progression rules read and write. */
+export type ProfileRow = {
+  id: string;
+  display_name: string | null;
+  current_day_index: number;
+  workouts_completed: number;
+  current_streak: number;
+  last_workout_date: string | null;
+  total_xp: number;
+  longest_streak: number;
+  total_sets: number;
+  total_volume: number;
+};
+
+const PROGRESS_COLUMNS =
+  'workouts_completed, current_streak, longest_streak, last_workout_date, current_day_index, total_xp, total_sets, total_volume';
+
+/** The same row as it exists before migration 004. */
+const LEGACY_PROGRESS_COLUMNS =
+  'workouts_completed, current_streak, last_workout_date, current_day_index';
+
+/**
+ * Missing columns read as zero rather than NaN — migration 004 backfills real
+ * values, but a client running against a database that has not had it applied
+ * yet should show an empty trophy case, not a broken one.
+ */
+export function toProgressStats(profile: Partial<ProfileRow> | null | undefined): ProgressStats {
+  return {
+    workoutsCompleted: profile?.workouts_completed ?? 0,
+    currentStreak: profile?.current_streak ?? 0,
+    longestStreak: profile?.longest_streak ?? 0,
+    totalSets: profile?.total_sets ?? 0,
+    totalVolume: Number(profile?.total_volume ?? 0),
+    totalXp: profile?.total_xp ?? 0,
+  };
+}
+
 export async function completeSession(params: {
   sessionId: string;
   userId: string;
   exercises: LiveExercise[];
   dayCount: number;
-  currentDayIndex: number;
-}): Promise<void> {
-  const rows: Omit<SessionSet, 'id'>[] = [];
+  /** day_index of the plan day that was just trained */
+  finishedDayIndex: number;
+}): Promise<WorkoutCompletionResult> {
+  const rows = buildCompletedSetRows(params.sessionId, params.exercises);
 
-  for (const ex of params.exercises) {
-    for (const set of ex.sets) {
-      if (!set.completed && !set.weight && !set.reps) continue;
-      rows.push({
-        session_id: params.sessionId,
-        plan_exercise_id: ex.planExerciseId,
-        exercise_id: ex.exerciseId,
-        exercise_name: ex.name,
-        set_number: set.setNumber,
-        target_reps: set.targetReps,
-        reps: set.reps ? Number(set.reps) : null,
-        weight: set.weight ? Number(set.weight) : null,
-        completed: set.completed,
-        completed_at: set.completed ? new Date().toISOString() : null,
-      } as Omit<SessionSet, 'id'>);
-    }
+  if (!rows.length) {
+    throw new Error('Log at least one set before finishing.');
   }
 
-  if (rows.length) {
-    const { error: setsError } = await supabase.from('session_sets').insert(rows);
-    if (setsError) throw setsError;
-  }
+  const { error: setsError } = await supabase.from('session_sets').insert(rows);
+  if (setsError) throw setsError;
 
   const { error } = await supabase
     .from('workout_sessions')
@@ -154,42 +237,97 @@ export async function completeSession(params: {
 
   if (error) throw error;
 
-  const today = new Date().toISOString().slice(0, 10);
-  const nextDay =
-    params.dayCount > 0
-      ? (params.currentDayIndex + 1) % params.dayCount
-      : 0;
+  const today = localDateString();
 
-  // Best-effort profile progress update
-  const { data: profile } = await supabase
+  let { data: profile, error: readError } = await supabase
     .from('profiles')
-    .select('workouts_completed, current_streak, last_workout_date')
+    .select(PROGRESS_COLUMNS)
     .eq('id', params.userId)
     .maybeSingle();
 
-  let streak = 1;
-  if (profile?.last_workout_date) {
-    const last = new Date(profile.last_workout_date);
-    const now = new Date(today);
-    const diffDays = Math.round(
-      (now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (diffDays === 0) {
-      streak = profile.current_streak ?? 1;
-    } else if (diffDays === 1) {
-      streak = (profile.current_streak ?? 0) + 1;
-    }
+  if (isMissingProgressionColumn(readError)) {
+    ({ data: profile } = await supabase
+      .from('profiles')
+      .select(LEGACY_PROGRESS_COLUMNS)
+      .eq('id', params.userId)
+      .maybeSingle());
   }
 
-  await supabase
+  const before = toProgressStats(profile as Partial<ProfileRow> | null);
+
+  const streak = nextStreak({
+    lastWorkoutDate: (profile as Partial<ProfileRow> | null)?.last_workout_date,
+    currentStreak: before.currentStreak,
+    today,
+    daysPerWeek: params.dayCount,
+  });
+
+  const nextDay = nextRotationIndex({
+    finishedDayIndex: params.finishedDayIndex,
+    rotationIndex: (profile as Partial<ProfileRow> | null)?.current_day_index ?? 0,
+    dayCount: params.dayCount,
+  });
+
+  const volume = sessionVolume(rows);
+  const xp = xpForSession({ setsCompleted: rows.length, streak });
+
+  const after: ProgressStats = {
+    workoutsCompleted: before.workoutsCompleted + 1,
+    currentStreak: streak,
+    longestStreak: Math.max(before.longestStreak, streak),
+    totalSets: before.totalSets + rows.length,
+    totalVolume: before.totalVolume + volume,
+    totalXp: before.totalXp + xp.total,
+  };
+
+  // Rotation and streak predate the gamification columns, so they are written
+  // separately: if 004 has not run, the program still advances and only the XP
+  // half is skipped.
+  const rotationUpdate = {
+    current_day_index: nextDay,
+    workouts_completed: after.workoutsCompleted,
+    current_streak: after.currentStreak,
+    last_workout_date: today,
+  };
+
+  let progressionStored = true;
+  let { error: profileError } = await supabase
     .from('profiles')
     .update({
-      current_day_index: nextDay,
-      workouts_completed: (profile?.workouts_completed ?? 0) + 1,
-      current_streak: streak,
-      last_workout_date: today,
+      ...rotationUpdate,
+      longest_streak: after.longestStreak,
+      total_xp: after.totalXp,
+      total_sets: after.totalSets,
+      total_volume: after.totalVolume,
     })
     .eq('id', params.userId);
+
+  if (isMissingProgressionColumn(profileError)) {
+    progressionStored = false;
+    ({ error: profileError } = await supabase
+      .from('profiles')
+      .update(rotationUpdate)
+      .eq('id', params.userId));
+  }
+
+  if (profileError) throw profileError;
+
+  const levelBefore = levelFromXp(before.totalXp);
+  const levelAfter = levelFromXp(after.totalXp);
+
+  return {
+    setsCompleted: rows.length,
+    volume,
+    streak,
+    xp,
+    before,
+    after,
+    levelBefore,
+    levelAfter,
+    leveledUp: levelAfter.level > levelBefore.level,
+    newAchievements: progressionStored ? newlyEarned(before, after) : [],
+    progressionStored,
+  };
 }
 
 export function useRecentSessions(limit = 10) {
@@ -208,20 +346,33 @@ export function useRecentSessions(limit = 10) {
 
       if (error) throw error;
 
-      const sessions: WorkoutSessionWithSets[] = [];
-      for (const s of data ?? []) {
-        const { data: sets } = await supabase
-          .from('session_sets')
-          .select('*')
-          .eq('session_id', s.id)
-          .order('set_number', { ascending: true });
+      const rows = (data ?? []) as WorkoutSession[];
+      if (rows.length === 0) return [];
 
-        sessions.push({
-          ...(s as WorkoutSession),
-          session_sets: (sets ?? []) as SessionSet[],
-        });
+      // One query for every session's sets — fetching them per session made the
+      // history tab issue 31 sequential requests before it could paint.
+      const { data: sets, error: setsError } = await supabase
+        .from('session_sets')
+        .select('*')
+        .in(
+          'session_id',
+          rows.map((s) => s.id)
+        )
+        .order('set_number', { ascending: true });
+
+      if (setsError) throw setsError;
+
+      const bySession = new Map<string, SessionSet[]>();
+      for (const set of (sets ?? []) as SessionSet[]) {
+        const bucket = bySession.get(set.session_id);
+        if (bucket) bucket.push(set);
+        else bySession.set(set.session_id, [set]);
       }
-      return sessions;
+
+      return rows.map((session) => ({
+        ...session,
+        session_sets: bySession.get(session.id) ?? [],
+      }));
     },
   });
 }
@@ -238,14 +389,7 @@ export function useProfileStats() {
         .eq('id', user!.id)
         .maybeSingle();
       if (error) throw error;
-      return data as {
-        id: string;
-        display_name: string | null;
-        current_day_index: number;
-        workouts_completed: number;
-        current_streak: number;
-        last_workout_date: string | null;
-      } | null;
+      return data as ProfileRow | null;
     },
   });
 }

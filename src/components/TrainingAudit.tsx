@@ -8,11 +8,17 @@ export function TrainingAudit({ plan }: { plan: GeneratedPlan | WorkoutPlanWithD
   const audit = analyzeTrainingPlan(plan);
   const complete = audit.missingDirectCoverage.length === 0;
 
+  const dayCount = audit.days.length;
+  // Time per session is the number someone actually plans around; the weekly
+  // total says little about whether a given evening fits.
+  const perSession = dayCount ? Math.round(audit.estimatedMinutes / dayCount) : 0;
+
   return (
     <View style={styles.card}>
       <Text style={styles.title}>Coverage {audit.coveragePercent}%</Text>
       <Text style={styles.metrics}>
-        {audit.totalSets} sets · ~{audit.estimatedMinutes} min / week
+        {dayCount} {dayCount === 1 ? 'day' : 'days'} a week · {audit.totalSets} sets ·
+        ~{perSession} min a session
       </Text>
       <Text style={[styles.status, { color: complete ? theme.colors.textSecondary : theme.colors.orange }]}>
         {complete

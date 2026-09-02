@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
@@ -10,7 +11,7 @@ type Props = {
   right?: string;
 };
 
-export function ExerciseRow({ exercise, subtitle, onPress, right }: Props) {
+function ExerciseRowBase({ exercise, subtitle, onPress, right }: Props) {
   const muscles = exercise.primary_muscles
     .map((m) => MUSCLE_LABELS[m] ?? m)
     .join(' · ');
@@ -34,6 +35,9 @@ export function ExerciseRow({ exercise, subtitle, onPress, right }: Props) {
   }
   return content;
 }
+
+/** Memoised: the library re-filters on every keystroke of the search box. */
+export const ExerciseRow = memo(ExerciseRowBase);
 
 const styles = StyleSheet.create({
   row: {

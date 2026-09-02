@@ -7,11 +7,13 @@ Built with **Expo (React Native)**, **Expo Router**, **TypeScript**, and **Supab
 ## Features
 
 - Email/password accounts (per-user data)
-- 10 training systems (methodologies) + 5 weekly splits (PPL, Upper/Lower, Bro, Full Body, Push/Pull)
+- One-tap beginner program: 3 short full-body days built from a curated shortlist of staple lifts
+- 11 training systems (methodologies), grouped by experience level, + 6 weekly splits (Beginner Full Body, PPL, Upper/Lower, Bro, Full Body, Push/Pull)
 - Automatic weekly plan generation (full-gym exercises)
 - Day-by-day workout view with target sets × reps
 - Live workout logging (sets, reps, weight) with rest timer
 - Session history, streaks, and profile stats
+- XP, levels, and 22 badges earned from your own logged history
 - Exercise library with muscle filters (~190 movements)
 - In-app account deletion (store-ready)
 - Active plan saved to your Supabase account
@@ -38,6 +40,7 @@ npm install
    - `supabase/seed.sql` (split templates + curated exercises)
    - `supabase/migrations/002_sessions.sql` (live workout logging, streaks, history)
    - `supabase/migrations/003_account_deletion.sql` (in-app account deletion)
+   - `supabase/migrations/004_progression.sql` (XP, levels, badges, best streak — backfills existing history)
 3. Copy **Project URL** and **anon public** key from **Project Settings → API**.
 4. Create env file:
 
@@ -95,8 +98,9 @@ scripts/
 |--------|--------|
 | **Exercise movements** | Curated from **[yuhonas/free-exercise-db](https://github.com/yuhonas/free-exercise-db)** (Unlicense / public domain). ~190 full-gym lifts after filtering. |
 | **Training systems** | Style guides in `src/domain/methodologies.ts` inspired by *publicly documented* principles. **Not official products** of any named coach or brand. |
-| **Weekly structure** | Split templates in `src/domain/catalog.ts` |
+| **Weekly structure** | Split templates in `src/domain/catalog.ts`. Every day in a split declares the same number of focus muscles, and A/B days declare identical ones, so each session runs the same length and each muscle gets a fixed weekly frequency. |
 | **Assembly** | `src/domain/planGenerator.ts` scores exercises by muscle + methodology biases |
+| **Beginner selection** | `preferredExerciseNames` on a methodology names exact catalog lifts to pick first, so a first program gets a barbell squat rather than a Jefferson squat |
 
 The app reads exercises from the bundled `exercises.generated.ts` at runtime. Supabase catalog tables exist for foreign-key integrity when saving plans — keep them in sync via the curate script.
 
@@ -125,7 +129,9 @@ See **Profile → Sources & attribution** in the app.
 | `npm run android` | Open Android |
 | `npm run ios` | Open iOS (macOS) |
 | `npm run web` | Run in browser |
+| `npm test` | Run every domain suite |
 | `npm run test:generator` | Sanity-check plan generation for all splits |
+| `npm run test:progression` | XP curve, level boundaries, badge unlocks |
 | `npm run curate:exercises` | Refresh exercise catalog + seed.sql |
 | `npm run typecheck` | TypeScript check |
 

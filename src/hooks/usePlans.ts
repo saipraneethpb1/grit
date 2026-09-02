@@ -4,6 +4,7 @@ import type {
   GeneratedPlan,
   MuscleGroup,
   PlanDayWithExercises,
+  PlanExerciseWithDetails,
   WorkoutPlan,
   WorkoutPlanWithDays,
 } from '@/src/domain/types';
@@ -46,42 +47,51 @@ async function hydratePlan(plan: WorkoutPlan): Promise<WorkoutPlanWithDays> {
 
   if (daysError) throw daysError;
 
-  const planDays: PlanDayWithExercises[] = [];
+  const dayRows = days ?? [];
+  if (dayRows.length === 0) return { ...plan, plan_days: [] };
 
-  for (const day of days ?? []) {
-    const { data: planExercises, error: peError } = await supabase
-      .from('plan_exercises')
-      .select('*')
-      .eq('plan_day_id', day.id)
-      .order('sort_order', { ascending: true });
+  // Every day's exercises in one request. A query per day meant a 6-day split
+  // cost seven sequential round trips on each plan open.
+  const { data: planExercises, error: peError } = await supabase
+    .from('plan_exercises')
+    .select('*')
+    .in(
+      'plan_day_id',
+      dayRows.map((d) => d.id)
+    )
+    .order('sort_order', { ascending: true });
 
-    if (peError) throw peError;
+  if (peError) throw peError;
 
-    const withDetails = (planExercises ?? []).map((pe) => {
-      const local = getExerciseById(pe.exercise_id);
-      return {
-        ...pe,
-        exercise: local ?? {
-          id: pe.exercise_id,
-          name: 'Unknown exercise',
-          primary_muscles: [],
-          secondary_muscles: [],
-          equipment: [],
-          movement_pattern: 'isolation' as const,
-          default_sets: pe.target_sets,
-          default_reps_min: pe.target_reps_min,
-          default_reps_max: pe.target_reps_max,
-          notes: null,
-        },
-      };
-    });
+  const byDay = new Map<string, PlanExerciseWithDetails[]>();
+  for (const pe of planExercises ?? []) {
+    const local = getExerciseById(pe.exercise_id);
+    const withDetails: PlanExerciseWithDetails = {
+      ...pe,
+      exercise: local ?? {
+        id: pe.exercise_id,
+        name: 'Unknown exercise',
+        primary_muscles: [],
+        secondary_muscles: [],
+        equipment: [],
+        movement_pattern: 'isolation' as const,
+        default_sets: pe.target_sets,
+        default_reps_min: pe.target_reps_min,
+        default_reps_max: pe.target_reps_max,
+        notes: null,
+      },
+    };
 
-    planDays.push({
-      ...day,
-      focus_muscles: day.focus_muscles as MuscleGroup[],
-      plan_exercises: withDetails,
-    });
+    const bucket = byDay.get(pe.plan_day_id);
+    if (bucket) bucket.push(withDetails);
+    else byDay.set(pe.plan_day_id, [withDetails]);
   }
+
+  const planDays: PlanDayWithExercises[] = dayRows.map((day) => ({
+    ...day,
+    focus_muscles: day.focus_muscles as MuscleGroup[],
+    plan_exercises: byDay.get(day.id) ?? [],
+  }));
 
   return { ...plan, plan_days: planDays };
 }
@@ -96,6 +106,9 @@ async function saveGeneratedPlan(
     .update({ is_active: false, updated_at: new Date().toISOString() })
     .eq('user_id', userId)
     .eq('is_active', true);
+
+  // New program starts at day 0
+  await supabase.from('profiles').update({ current_day_index: 0 }).eq('id', userId);
 
   const { data: plan, error: planError } = await supabase
     .from('workout_plans')
@@ -170,6 +183,7 @@ export function useSavePlan() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['activePlan'] });
+      qc.invalidateQueries({ queryKey: ['profileStats'] });
     },
   });
 }

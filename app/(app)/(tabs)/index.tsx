@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,11 +18,20 @@ import { SectionLabel } from '@/src/components/SectionLabel';
 import { StatPill } from '@/src/components/StatPill';
 import { WeekStrip } from '@/src/components/WeekStrip';
 import { WorkoutDoneBanner } from '@/src/components/WorkoutDoneBanner';
+import { XpBar } from '@/src/components/XpBar';
 import { getSplitTemplate } from '@/src/domain/catalog';
+import {
+  getMethodology,
+  QUICK_START_METHODOLOGY_ID,
+} from '@/src/domain/methodologies';
 import { formatMuscles } from '@/src/domain/muscles';
 import { useDisplayName } from '@/src/hooks/useDisplayName';
 import { useActivePlan } from '@/src/hooks/usePlans';
-import { useProfileStats, useRecentSessions } from '@/src/hooks/useSessions';
+import {
+  toProgressStats,
+  useProfileStats,
+  useRecentSessions,
+} from '@/src/hooks/useSessions';
 
 function isSameCalendarDay(a: Date, b: Date): boolean {
   return (
@@ -42,11 +52,17 @@ export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const name = useDisplayName();
-  const { data: plan, isLoading, error, refetch } = useActivePlan();
-  const { data: stats } = useProfileStats();
-  const { data: recent } = useRecentSessions(5);
+  const { data: plan, isLoading, error, refetch, isRefetching } = useActivePlan();
+  const { data: stats, refetch: refetchStats } = useProfileStats();
+  const { data: recent, refetch: refetchRecent } = useRecentSessions(5);
 
   const dayIndex = stats?.current_day_index ?? 0;
+  const progress = toProgressStats(stats);
+  const quickStart = getMethodology(QUICK_START_METHODOLOGY_ID);
+
+  const onRefresh = useCallback(() => {
+    void Promise.all([refetch(), refetchStats(), refetchRecent()]);
+  }, [refetch, refetchStats, refetchRecent]);
 
   const sortedDays = useMemo(() => {
     if (!plan?.plan_days?.length) return [];
@@ -69,6 +85,10 @@ export default function HomeScreen() {
   const todaySetsLogged = todaySession
     ? todaySession.session_sets.filter((s) => s.completed).length
     : 0;
+
+  const todayAlreadyDone = Boolean(
+    todaySession && today && todaySession.plan_day_id === today.id
+  );
 
   const footerPad = Math.max(insets.bottom, theme.space.sm);
 
@@ -102,9 +122,25 @@ export default function HomeScreen() {
         <Text style={styles.greeting}>Hi, {name}</Text>
         <EmptyState
           title="No program yet"
-          message="Choose a training system and split to generate your week."
+          message="Pick a training system and split, or start with the beginner program and change it later."
           action={
-            <PrimaryButton title="Build program" onPress={() => router.push('/(app)/splits')} />
+            <View style={styles.emptyActions}>
+              {quickStart ? (
+                <PrimaryButton
+                  title="Start a beginner program"
+                  onPress={() =>
+                    router.push(
+                      `/(app)/splits/preview?templateId=${quickStart.defaultSplitId}&methodologyId=${quickStart.id}` as never
+                    )
+                  }
+                />
+              ) : null}
+              <PrimaryButton
+                title="Browse all systems"
+                variant="ghost"
+                onPress={() => router.push('/(app)/splits')}
+              />
+            </View>
           }
         />
       </ScrollView>
@@ -118,8 +154,17 @@ export default function HomeScreen() {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: 80 + footerPad }]}
+        contentContainerStyle={[styles.content, { paddingBottom: theme.space.lg }]}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.textSecondary}
+            colors={[theme.colors.text]}
+            progressBackgroundColor={theme.colors.card}
+          />
+        }
       >
         <View style={styles.header}>
           <GritLogo size={32} />
@@ -142,9 +187,19 @@ export default function HomeScreen() {
           <WorkoutDoneBanner dayName={todaySession.day_name} setsLogged={todaySetsLogged} />
         ) : null}
 
+        <Pressable
+          style={styles.xpCard}
+          onPress={() => router.push('/(app)/(tabs)/profile')}
+          accessibilityRole="button"
+          accessibilityLabel="Open profile to see badges"
+        >
+          <XpBar totalXp={progress.totalXp} />
+        </Pressable>
+
         <View style={styles.statsRow}>
-          <StatPill label="Streak" value={stats?.current_streak ?? 0} showDivider />
-          <StatPill label="Sessions" value={stats?.workouts_completed ?? 0} showDivider />
+          <StatPill label="Streak" value={progress.currentStreak} showDivider />
+          <StatPill label="Best" value={progress.longestStreak} showDivider />
+          <StatPill label="Sessions" value={progress.workoutsCompleted} showDivider />
           <StatPill label="Days" value={sortedDays.length} />
         </View>
 
@@ -165,7 +220,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.section}>
-          <SectionLabel>{todaySession ? 'Up next' : 'Today'}</SectionLabel>
+          <SectionLabel>{todayAlreadyDone ? 'Up next' : 'Today'}</SectionLabel>
           <Pressable
             onPress={() =>
               router.push({
@@ -228,7 +283,7 @@ export default function HomeScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: footerPad }]}>
-        {todaySession ? (
+        {todayAlreadyDone ? (
           <PrimaryButton
             title="View today's log"
             variant="ghost"
@@ -258,6 +313,7 @@ const styles = StyleSheet.create({
   },
   emptyWrap: { flexGrow: 1, padding: theme.space.lg, justifyContent: 'center' },
   emptyLogo: { marginBottom: theme.space.lg },
+  emptyActions: { width: '100%', gap: theme.space.sm },
   content: { paddingHorizontal: theme.space.lg, paddingTop: theme.space.md },
   header: {
     flexDirection: 'row',
@@ -278,6 +334,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   profileInitial: { ...theme.font.bodyMedium, color: theme.colors.text },
+  xpCard: {
+    borderWidth: theme.hairline,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.card,
+    padding: theme.space.md,
+    marginBottom: theme.space.sm,
+  },
   statsRow: {
     flexDirection: 'row',
     borderWidth: theme.hairline,

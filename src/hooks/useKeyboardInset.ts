@@ -1,19 +1,33 @@
 import { useEffect, useState } from 'react';
 import { Keyboard, Platform } from 'react-native';
 
-/** Bottom inset while the software keyboard is visible (works in Expo Go on Android). */
-export function useKeyboardInset() {
-  const [inset, setInset] = useState(0);
+export type KeyboardState = {
+  /**
+   * Extra bottom padding the content needs to clear the keyboard.
+   *
+   * Always 0 on Android: `softwareKeyboardLayoutMode: "resize"` (app.json)
+   * already shrinks the window, so padding by the keyboard height as well
+   * leaves a screen-tall gap under the content.
+   */
+  padding: number;
+  /** True whenever the software keyboard is on screen, on any platform. */
+  visible: boolean;
+};
+
+/** Tracks the software keyboard (works in Expo Go on Android). */
+export function useKeyboardInset(): KeyboardState {
+  const [state, setState] = useState<KeyboardState>({ padding: 0, visible: false });
 
   useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const isIOS = Platform.OS === 'ios';
+    const showEvent = isIOS ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = isIOS ? 'keyboardWillHide' : 'keyboardDidHide';
 
     const showSub = Keyboard.addListener(showEvent, (e) => {
-      setInset(e.endCoordinates.height);
+      setState({ padding: isIOS ? e.endCoordinates.height : 0, visible: true });
     });
     const hideSub = Keyboard.addListener(hideEvent, () => {
-      setInset(0);
+      setState({ padding: 0, visible: false });
     });
 
     return () => {
@@ -22,5 +36,5 @@ export function useKeyboardInset() {
     };
   }, []);
 
-  return inset;
+  return state;
 }

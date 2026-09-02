@@ -27,6 +27,28 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
+/**
+ * Large enough that a named lift outranks any keyword or pattern bonus, so a
+ * curated shortlist actually decides the pick when it covers the muscle.
+ */
+const PREFERRED_NAME_BOOST = 130;
+
+const preferredRankCache = new WeakMap<Methodology, Map<string, number>>();
+
+function preferredRank(methodology: Methodology): Map<string, number> {
+  let ranks = preferredRankCache.get(methodology);
+  if (!ranks) {
+    ranks = new Map(
+      (methodology.preferredExerciseNames ?? []).map((name, i) => [
+        name.toLowerCase(),
+        i,
+      ])
+    );
+    preferredRankCache.set(methodology, ranks);
+  }
+  return ranks;
+}
+
 function scoreExercise(
   ex: Exercise,
   muscle: MuscleGroup,
@@ -48,6 +70,11 @@ function scoreExercise(
   score -= (weekUsedCount.get(ex.id) ?? 0) * 30;
 
   if (methodology) {
+    const rank = preferredRank(methodology).get(ex.name.toLowerCase());
+    // Subtracting the rank keeps the author's ordering as a tiebreak between
+    // two shortlisted lifts that both serve this muscle.
+    if (rank !== undefined) score += PREFERRED_NAME_BOOST - rank;
+
     if (methodology.favorPatterns.includes(ex.movement_pattern)) score += 25;
     if (methodology.favorMuscles.some((m) => ex.primary_muscles.includes(m))) score += 12;
     const name = ex.name.toLowerCase();
@@ -232,12 +259,17 @@ export function generatePlan(
       const bf = methodology?.favorMuscles.includes(b) ? 0 : 1;
       return af - bf;
     });
-    const orderedMuscles = priorityMuscles;
-
     // Fill one slot for every focus muscle before adding a second movement.
     // This prevents larger upper/full-body days from spending the exercise
     // budget on the first few muscles and silently omitting the rest.
     for (let slot = 0; slot < slotsPerMuscle; slot++) {
+      // Coverage order only decides who gets their *first* movement. Extra
+      // slots follow the template's declared order, because when
+      // maxExercisesPerDay cannot fund a second movement for every muscle the
+      // author should decide who goes without — and because coverage order
+      // shifts as the week fills up, which would otherwise let Push A and
+      // Push B spend the same budget on different muscles.
+      const orderedMuscles = slot === 0 ? priorityMuscles : muscles;
       for (const muscle of orderedMuscles) {
         if (dayExercises.length >= maxPerDay) break;
         const picked = pickForMuscle(

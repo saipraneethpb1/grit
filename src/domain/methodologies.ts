@@ -9,7 +9,28 @@ import type { MuscleGroup, MovementPattern } from './types';
  * so users can pick a style. Exercise movements come from open-source catalogs.
  */
 
+export type ExperienceLevel = 'beginner' | 'intermediate' | 'advanced';
+
+export const EXPERIENCE_LEVELS: ExperienceLevel[] = [
+  'beginner',
+  'intermediate',
+  'advanced',
+];
+
+export const EXPERIENCE_LEVEL_LABELS: Record<ExperienceLevel, string> = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+};
+
+export const EXPERIENCE_LEVEL_BLURBS: Record<ExperienceLevel, string> = {
+  beginner: 'Short sessions, simple lifts, room to recover. Start here if you are new.',
+  intermediate: 'More volume and more training days once the main lifts feel familiar.',
+  advanced: 'High volume or to-failure work that assumes years of consistent training.',
+};
+
 export type MethodologyId =
+  | 'beginner_basics'
   | 'classic_physique'
   | 'golden_era'
   | 'aesthetic'
@@ -27,6 +48,8 @@ export interface Methodology {
   tagline: string;
   /** Public attribution — not a commercial endorsement */
   inspiredBy: string;
+  /** Drives the grouping and ordering of the training-system picker. */
+  level: ExperienceLevel;
   description: string;
   /** Preferred split template ids from catalog */
   preferredSplits: string[];
@@ -43,6 +66,16 @@ export interface Methodology {
   avoidNameKeywords: string[];
   /** Soft-boost name keywords */
   favorNameKeywords: string[];
+  /**
+   * Exact catalog names to pick before anything else, most-preferred first.
+   *
+   * Keyword scoring cannot tell "Barbell Full Squat" from "Jefferson Squats" —
+   * both are barbell squats for quads — so a style that depends on a specific
+   * shortlist of movements names them outright. Unmatched names are ignored,
+   * and any muscle the list does not cover falls back to normal scoring, so
+   * coverage never depends on this list being complete.
+   */
+  preferredExerciseNames?: string[];
   /** Max exercises per day */
   maxExercisesPerDay: number;
   /** Slots per focus muscle */
@@ -54,7 +87,112 @@ export interface Methodology {
 
 export const METHODOLOGIES: Methodology[] = [
   {
+    id: 'beginner_basics',
+    name: 'Beginner Basics',
+    tagline: 'Learn the main lifts. Three short full-body days.',
+    inspiredBy:
+      'Widely published beginner guidance: full-body frequency, compound lifts, gradual load increases',
+    level: 'beginner',
+    description:
+      'A first program. Three full-body sessions a week, five or six exercises each, built around the movements worth learning early: a squat, a hinge, a push, a pull. Reps sit a little higher so you can practise the pattern with a weight you control, and the low day count leaves plenty of room to recover between sessions.',
+    preferredSplits: ['beginner_full_body', 'full_body', 'upper_lower'],
+    defaultSplitId: 'beginner_full_body',
+    // Catalog defaults, with the rep window nudged up: a beginner should be
+    // practising the pattern for 8-12 reps, not grinding near a limit single.
+    setsBias: 0,
+    repsMinBias: 2,
+    repsMaxBias: 2,
+    favorPatterns: [
+      'squat',
+      'hinge',
+      'horizontal_push',
+      'vertical_pull',
+      'horizontal_pull',
+    ],
+    favorMuscles: ['quads', 'chest', 'back', 'glutes', 'core'],
+    // Technically demanding or easily mis-loaded movements are pushed down the
+    // ranking — not banned, since the catalog may have nothing else for a muscle.
+    avoidNameKeywords: [
+      'snatch',
+      'clean',
+      'jerk',
+      'behind the neck',
+      'guillotine',
+      'kipping',
+      'muscle up',
+      'pistol',
+      'plyo',
+      'upright row',
+      'good morning',
+    ],
+    favorNameKeywords: [
+      'machine',
+      'dumbbell',
+      'cable',
+      'goblet',
+      'leg press',
+      'lat pulldown',
+      'chest press',
+      'row',
+      'curl',
+    ],
+    // The lifts a first program should actually be built from, in preference
+    // order within each muscle. Every name is checked against the catalog by
+    // scripts/test-generator.ts.
+    preferredExerciseNames: [
+      // Squat
+      'Barbell Full Squat',
+      'Dumbbell Squat To A Bench',
+      'Box Squat',
+      'Barbell Lunge',
+      // Hinge
+      'Romanian Deadlift',
+      'Barbell Deadlift',
+      'Stiff-Legged Barbell Deadlift',
+      // Glutes
+      'Barbell Hip Thrust',
+      'Barbell Glute Bridge',
+      'Butt Lift (Bridge)',
+      // Horizontal push
+      'Dumbbell Bench Press',
+      'Barbell Bench Press - Medium Grip',
+      'Cable Chest Press',
+      'Barbell Incline Bench Press - Medium Grip',
+      // Vertical push
+      'Dumbbell Shoulder Press',
+      'Barbell Shoulder Press',
+      'Seated Barbell Military Press',
+      // Pull
+      'Full Range-Of-Motion Lat Pulldown',
+      'Bent Over Two-Dumbbell Row',
+      'Bent Over Barbell Row',
+      'V-Bar Pulldown',
+      'Elevated Cable Rows',
+      // Arms
+      'Barbell Curl',
+      'Alternate Hammer Curl',
+      'Bench Dips',
+      'Close-Grip Barbell Bench Press',
+      'Close-Grip Dumbbell Press',
+      // Core
+      'Bent-Knee Hip Raise',
+      'Press Sit-Up',
+      'Flat Bench Leg Pull-In',
+      'Pallof Press With Rotation',
+    ],
+    maxExercisesPerDay: 6,
+    slotsPerMuscle: 1,
+    intensityStyle: 'moderate',
+    sources: [
+      {
+        title: 'Common beginner programming principles (public domain)',
+        note: 'Full-body frequency, compound-first selection, modest volume, progressive loading.',
+      },
+    ],
+  },
+  {
     id: 'classic_physique',
+    level: 'intermediate',
     name: 'Classic Physique Volume',
     tagline: 'Balanced hypertrophy, clean structure, high-quality sets.',
     inspiredBy: 'Principles popularized in modern classic physique training (e.g. public CBum programming themes)',
@@ -81,6 +219,7 @@ export const METHODOLOGIES: Methodology[] = [
   },
   {
     id: 'golden_era',
+    level: 'advanced',
     name: 'Golden Era Volume',
     tagline: 'High volume, body-part focus, pump work.',
     inspiredBy: 'Arnold-era bodybuilding (Encyclopedia of Modern Bodybuilding principles)',
@@ -107,6 +246,7 @@ export const METHODOLOGIES: Methodology[] = [
   },
   {
     id: 'aesthetic',
+    level: 'intermediate',
     name: 'Aesthetic Hypertrophy',
     tagline: 'V-taper bias: shoulders, back, arms, upper chest.',
     inspiredBy: 'Aesthetic-focused influencers (e.g. David Laid–style public training aesthetics)',
@@ -133,6 +273,7 @@ export const METHODOLOGIES: Methodology[] = [
   },
   {
     id: 'joint_smart',
+    level: 'intermediate',
     name: 'Joint-Smart Strength',
     tagline: 'Shoulder-friendly patterns, scap health, sustainable loading.',
     inspiredBy: 'Injury-conscious coaching themes (e.g. Athlean-X public education themes)',
@@ -159,6 +300,7 @@ export const METHODOLOGIES: Methodology[] = [
   },
   {
     id: 'foundation',
+    level: 'beginner',
     name: 'Foundation Protocol',
     tagline: 'Recovery-aware, progressive, no junk volume.',
     inspiredBy: 'Performance + recovery principles discussed in public science communication (e.g. Huberman Lab themes)',
@@ -185,6 +327,7 @@ export const METHODOLOGIES: Methodology[] = [
   },
   {
     id: 'fst7_pump',
+    level: 'advanced',
     name: 'Pump Finisher (FST-7 style)',
     tagline: 'Standard hypertrophy day + high-rep stretch/pump finisher.',
     inspiredBy: 'FST-7 concept as publicly described by Hany Rambod',
@@ -211,6 +354,7 @@ export const METHODOLOGIES: Methodology[] = [
   },
   {
     id: 'heavy_duty',
+    level: 'advanced',
     name: 'Heavy Duty HIT',
     tagline: 'Low volume, high effort, long recovery.',
     inspiredBy: 'Mike Mentzer Heavy Duty / HIT principles (public writings)',
@@ -237,6 +381,7 @@ export const METHODOLOGIES: Methodology[] = [
   },
   {
     id: 'power_hypertrophy',
+    level: 'intermediate',
     name: 'Power + Hypertrophy',
     tagline: 'Strength compounds first, then muscle accessories.',
     inspiredBy: 'Powerbuilding community standards (open lifting culture)',
@@ -263,6 +408,7 @@ export const METHODOLOGIES: Methodology[] = [
   },
   {
     id: 'anatomy_first',
+    level: 'intermediate',
     name: 'Anatomy-First Hypertrophy',
     tagline: 'Prime movers first, then isolation for the target muscle.',
     inspiredBy:
@@ -313,6 +459,7 @@ export const METHODOLOGIES: Methodology[] = [
   },
   {
     id: 'practical_gym',
+    level: 'intermediate',
     name: 'Practical Gym Hypertrophy',
     tagline: 'Blog-style full-gym sessions: simple, equipment-friendly, effective.',
     inspiredBy:
@@ -366,4 +513,11 @@ export const METHODOLOGIES: Methodology[] = [
 
 export function getMethodology(id: string): Methodology | undefined {
   return METHODOLOGIES.find((m) => m.id === id);
+}
+
+/** The one-tap starting point offered to anyone without a program yet. */
+export const QUICK_START_METHODOLOGY_ID: MethodologyId = 'beginner_basics';
+
+export function getMethodologiesByLevel(level: ExperienceLevel): Methodology[] {
+  return METHODOLOGIES.filter((m) => m.level === level);
 }

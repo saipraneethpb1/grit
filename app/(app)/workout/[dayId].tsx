@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  BackHandler,
   Keyboard,
   Platform,
   Pressable,
@@ -16,12 +17,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { RestTimer } from '@/src/components/RestTimer';
+import { WorkoutCompleteSheet } from '@/src/components/WorkoutCompleteSheet';
+import { sanitizeRepsInput, sanitizeWeightInput } from '@/src/domain/liveWorkout';
+import type { WorkoutCompletionResult } from '@/src/domain/progression';
 import { formatMuscles } from '@/src/domain/muscles';
 import type { LiveExercise } from '@/src/domain/types';
 import { useAuth } from '@/src/hooks/useAuth';
 import { useKeyboardInset } from '@/src/hooks/useKeyboardInset';
 import { usePlan } from '@/src/hooks/usePlans';
 import {
+  abandonSession,
   buildLiveExercises,
   enrichWithHistory,
   startSession,
@@ -45,7 +50,7 @@ export default function WorkoutPlayerScreen() {
   const complete = useCompleteWorkout();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const keyboardInset = useKeyboardInset();
+  const { padding: keyboardPadding, visible: keyboardVisible } = useKeyboardInset();
   const scrollRef = useRef<ScrollView>(null);
 
   const day = useMemo(
@@ -56,62 +61,115 @@ export default function WorkoutPlayerScreen() {
   const [exercises, setExercises] = useState<LiveExercise[]>([]);
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
   const [activeSetIndex, setActiveSetIndex] = useState(0);
-  const [sessionId, setSessionId] = useState<string | null>(null);
   const [booting, setBooting] = useState(true);
   const [restOpen, setRestOpen] = useState(false);
   const [restSec, setRestSec] = useState(90);
   const [finishing, setFinishing] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  // Held so the celebration sheet keeps the duration the workout actually took
+  // rather than a timer that carries on ticking behind it.
+  const [completion, setCompletion] = useState<WorkoutCompletionResult | null>(null);
+  const [finishedElapsed, setFinishedElapsed] = useState('');
   const sessionStartedAt = useRef<number | null>(null);
+
+  const sessionIdRef = useRef<string | null>(null);
+  const pendingSession = useRef<Promise<string> | null>(null);
+  const savedRef = useRef(false);
+  const bootedForDay = useRef<string | null>(null);
+
+  /**
+   * The session row is created on the first completed set rather than on mount:
+   * it keeps one round trip out of the screen's cold start, and stops a user who
+   * only opens the day to look at it from leaving an `in_progress` row behind.
+   */
+  const ensureSession = useCallback(async (): Promise<string> => {
+    if (sessionIdRef.current) return sessionIdRef.current;
+    if (!user || !plan || !day) throw new Error('Workout is still loading.');
+
+    if (!pendingSession.current) {
+      pendingSession.current = startSession({
+        userId: user.id,
+        planId: plan.id,
+        planDayId: day.id,
+        dayName: day.name,
+      })
+        .then((session) => {
+          sessionIdRef.current = session.id;
+          return session.id;
+        })
+        .catch((e) => {
+          pendingSession.current = null;
+          throw e;
+        });
+    }
+    return pendingSession.current;
+  }, [user?.id, plan?.id, day?.id, day?.name]);
 
   useEffect(() => {
     let cancelled = false;
     async function boot() {
-      if (!day || !user || !plan) return;
+      // Wait for the plan query rather than reporting failure: `day` is only
+      // resolvable once it lands.
+      if (isLoading) return;
+      if (!user || !plan || !day) {
+        setBooting(false);
+        return;
+      }
+      // Load the day exactly once. Re-running would replace `exercises` with a
+      // blank slate and discard every set logged so far.
+      if (bootedForDay.current === day.id) {
+        setBooting(false);
+        return;
+      }
+      bootedForDay.current = day.id;
+
       setBooting(true);
       try {
         const base = buildLiveExercises(day);
         const enriched = await enrichWithHistory(user.id, base);
         if (cancelled) return;
         setExercises(enriched);
-        const session = await startSession({
-          userId: user.id,
-          planId: plan.id,
-          planDayId: day.id,
-          dayName: day.name,
-        });
+      } catch {
         if (cancelled) return;
-        setSessionId(session.id);
-        sessionStartedAt.current = Date.now();
-        setElapsedSeconds(0);
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : 'Could not start workout';
-        Alert.alert('Could not start session', msg);
+        // History is a convenience — fall back to the plan targets rather than
+        // blocking the workout on it.
+        setExercises(buildLiveExercises(day));
       } finally {
-        if (!cancelled) setBooting(false);
+        if (!cancelled) {
+          sessionStartedAt.current = Date.now();
+          setElapsedSeconds(0);
+          setBooting(false);
+        }
       }
     }
     boot();
     return () => {
       cancelled = true;
     };
-  }, [day?.id, user?.id, plan?.id]);
+  }, [isLoading, day?.id, user?.id, plan?.id]);
+
+  /** Release the row if the user walks away without finishing. */
+  useEffect(() => {
+    return () => {
+      const id = sessionIdRef.current;
+      if (id && !savedRef.current) void abandonSession(id);
+    };
+  }, []);
 
   useEffect(() => {
-    if (!sessionStartedAt.current || booting) return;
+    if (booting || sessionStartedAt.current === null) return;
     const id = setInterval(() => {
       setElapsedSeconds(Math.floor((Date.now() - sessionStartedAt.current!) / 1000));
     }, 1000);
     return () => clearInterval(id);
-  }, [booting, sessionId]);
+  }, [booting]);
 
   useEffect(() => {
-    if (keyboardInset > 0) {
-      requestAnimationFrame(() => {
-        scrollRef.current?.scrollTo({ y: 160, animated: true });
-      });
-    }
-  }, [keyboardInset]);
+    if (!keyboardVisible) return;
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    });
+  }, [keyboardVisible]);
 
   const current = exercises[activeExerciseIndex];
   const currentSet = current?.sets[activeSetIndex];
@@ -171,7 +229,11 @@ export default function WorkoutPlayerScreen() {
     if (!current || currentSet?.completed) return;
     updateSet(activeExerciseIndex, activeSetIndex, { completed: true });
     Keyboard.dismiss();
-    setRestOpen(true);
+    // Open the session in the background so the row exists while the user
+    // trains; a failure here is recoverable because finishing retries it.
+    void ensureSession().catch(() => {});
+    // Nothing left to rest for once the final set is in.
+    if (!isLastSet) setRestOpen(true);
   }
 
   function onRestClose() {
@@ -180,19 +242,24 @@ export default function WorkoutPlayerScreen() {
   }
 
   async function onFinish() {
-    if (!sessionId || !user || !plan || !day) return;
+    if (!user || !plan || !day || finishing) return;
+    if (doneSets === 0) {
+      Alert.alert('Nothing to save', 'Complete at least one set before finishing.');
+      return;
+    }
     setFinishing(true);
     try {
-      await complete.mutateAsync({
-        sessionId,
+      const id = await ensureSession();
+      const result = await complete.mutateAsync({
+        sessionId: id,
         userId: user.id,
         exercises,
         dayCount: plan.plan_days.length,
-        currentDayIndex: day.day_index,
+        finishedDayIndex: day.day_index,
       });
-      Alert.alert('Done', `Workout saved in ${formatElapsed(elapsedSeconds)}.`, [
-        { text: 'OK', onPress: () => router.replace('/(app)/(tabs)') },
-      ]);
+      savedRef.current = true;
+      setFinishedElapsed(formatElapsed(elapsedSeconds));
+      setCompletion(result);
     } catch (e) {
       Alert.alert('Error', e instanceof Error ? e.message : 'Failed to save workout');
     } finally {
@@ -202,6 +269,10 @@ export default function WorkoutPlayerScreen() {
 
   function confirmFinish() {
     Keyboard.dismiss();
+    if (doneSets === 0) {
+      Alert.alert('Nothing to save', 'Complete at least one set before finishing.');
+      return;
+    }
     const remaining = totalSets - doneSets;
     if (remaining <= 0) {
       onFinish();
@@ -217,6 +288,38 @@ export default function WorkoutPlayerScreen() {
     );
   }
 
+  const confirmExit = useCallback(() => {
+    if (doneSets > 0) {
+      Keyboard.dismiss();
+      Alert.alert(
+        'Leave without saving?',
+        `${doneSets} set${doneSets === 1 ? '' : 's'} logged will be lost. Use Finish workout to save.`,
+        [
+          { text: 'Stay', style: 'cancel' },
+          { text: 'Leave', style: 'destructive', onPress: () => router.back() },
+        ]
+      );
+      return;
+    }
+    router.back();
+  }, [doneSets, router]);
+
+  /**
+   * Android's back gesture would otherwise pop the player straight off the stack
+   * and silently discard every logged set.
+   */
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      // The sheet owns back once the workout is saved; leaking through to
+      // confirmExit would warn about losing sets that are already persisted.
+      if (finishing || completion) return true;
+      confirmExit();
+      return true;
+    });
+    return () => sub.remove();
+  }, [confirmExit, finishing, completion]);
+
   function jumpToExercise(exIdx: number) {
     setActiveExerciseIndex(exIdx);
     const firstIncomplete = exercises[exIdx]?.sets.findIndex((s) => !s.completed);
@@ -231,23 +334,33 @@ export default function WorkoutPlayerScreen() {
     );
   }
 
-  if (!day || !current || !currentSet) {
+  if (!day) {
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>Workout not found.</Text>
+        <PrimaryButton title="Go back" variant="ghost" onPress={() => router.back()} style={styles.errorBtn} />
+      </View>
+    );
+  }
+
+  if (!current || !currentSet) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>This day has no exercises yet.</Text>
+        <PrimaryButton title="Go back" variant="ghost" onPress={() => router.back()} style={styles.errorBtn} />
       </View>
     );
   }
 
   const footerPad = Math.max(insets.bottom, theme.space.sm);
-  const bottomPad = 72 + footerPad + keyboardInset + theme.space.md;
+  const bottomPad = 72 + footerPad + keyboardPadding + theme.space.md;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       {/* Compact fixed header */}
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <Pressable onPress={() => router.back()} hitSlop={12}>
+          <Pressable onPress={confirmExit} hitSlop={12}>
             <Text style={styles.back}>← Exit</Text>
           </Pressable>
           <Text style={styles.elapsed}>{formatElapsed(elapsedSeconds)}</Text>
@@ -327,7 +440,7 @@ export default function WorkoutPlayerScreen() {
                 value={currentSet.weight}
                 onChangeText={(t) =>
                   updateSet(activeExerciseIndex, activeSetIndex, {
-                    weight: t.replace(/[^0-9.]/g, ''),
+                    weight: sanitizeWeightInput(t),
                   })
                 }
                 keyboardType="decimal-pad"
@@ -343,7 +456,7 @@ export default function WorkoutPlayerScreen() {
                 value={currentSet.reps}
                 onChangeText={(t) =>
                   updateSet(activeExerciseIndex, activeSetIndex, {
-                    reps: t.replace(/[^0-9]/g, ''),
+                    reps: sanitizeRepsInput(t),
                   })
                 }
                 keyboardType="number-pad"
@@ -401,6 +514,13 @@ export default function WorkoutPlayerScreen() {
         onClose={onRestClose}
         onChangeDuration={setRestSec}
       />
+
+      <WorkoutCompleteSheet
+        visible={Boolean(completion)}
+        result={completion}
+        elapsedLabel={finishedElapsed}
+        onDismiss={() => router.replace('/(app)/(tabs)')}
+      />
     </View>
   );
 }
@@ -414,6 +534,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   errorText: { ...theme.font.body, color: theme.colors.text },
+  errorBtn: { marginTop: theme.space.md, minWidth: 160 },
   header: {
     paddingHorizontal: theme.space.lg,
     paddingBottom: theme.space.sm,

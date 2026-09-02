@@ -4,36 +4,40 @@
 -- https://github.com/yuhonas/free-exercise-db
 
 insert into public.split_templates (id, name, description, days_per_week, is_active) values
+  ('beginner_full_body', 'Beginner Full Body', 'Three interchangeable full-body sessions of four lifts each. Every session is the same length, so missing a day costs little while you build the habit.', 3, true),
   ('ppl', 'Push / Pull / Legs', 'Classic 6-day structure: push, pull, legs — twice per week for high frequency.', 6, true),
   ('upper_lower', 'Upper / Lower', 'Four days alternating upper and lower. Strong balance of frequency and recovery.', 4, true),
-  ('bro', 'Bro Split', 'Five body-part days: chest, back, shoulders, arms, legs. High volume per muscle.', 5, true),
+  ('bro', 'Bro Split', 'Five body-part days: chest, back, shoulders, arms, legs. Three muscles each, so no day runs long.', 5, true),
   ('full_body', 'Full Body', 'Three full-body sessions. Ideal for HIT, foundations, or busy schedules.', 3, true),
-  ('push_pull', 'Push / Pull', 'Four days alternating push (+ quads) and pull (+ hinges). Simple and effective.', 4, true)
+  ('push_pull', 'Push / Pull', 'Four days alternating push (+ quads) and pull (+ hinges). Each muscle twice a week.', 4, true)
 on conflict (id) do update set name = excluded.name, description = excluded.description, days_per_week = excluded.days_per_week, is_active = excluded.is_active;
 
 insert into public.split_template_days (id, template_id, day_index, name, focus_muscles) values
-  ('ppl-d0', 'ppl', 0, 'Push A', ARRAY['chest','shoulders','triceps']::text[]),
-  ('ppl-d1', 'ppl', 1, 'Pull A', ARRAY['back','biceps','traps']::text[]),
+  ('bfb-d0', 'beginner_full_body', 0, 'Session A', ARRAY['quads','chest','back','core']::text[]),
+  ('bfb-d1', 'beginner_full_body', 1, 'Session B', ARRAY['hamstrings','glutes','shoulders','core']::text[]),
+  ('bfb-d2', 'beginner_full_body', 2, 'Session C', ARRAY['quads','chest','back','biceps']::text[]),
+  ('ppl-d0', 'ppl', 0, 'Push A', ARRAY['chest','shoulders','triceps','core']::text[]),
+  ('ppl-d1', 'ppl', 1, 'Pull A', ARRAY['back','biceps','traps','forearms']::text[]),
   ('ppl-d2', 'ppl', 2, 'Legs A', ARRAY['quads','hamstrings','glutes','calves']::text[]),
-  ('ppl-d3', 'ppl', 3, 'Push B', ARRAY['chest','shoulders','triceps']::text[]),
-  ('ppl-d4', 'ppl', 4, 'Pull B', ARRAY['back','biceps','forearms']::text[]),
+  ('ppl-d3', 'ppl', 3, 'Push B', ARRAY['chest','shoulders','triceps','core']::text[]),
+  ('ppl-d4', 'ppl', 4, 'Pull B', ARRAY['back','biceps','traps','forearms']::text[]),
   ('ppl-d5', 'ppl', 5, 'Legs B', ARRAY['quads','hamstrings','glutes','calves']::text[]),
   ('ul-d0', 'upper_lower', 0, 'Upper A', ARRAY['chest','back','shoulders','biceps','triceps']::text[]),
   ('ul-d1', 'upper_lower', 1, 'Lower A', ARRAY['quads','hamstrings','glutes','calves','core']::text[]),
   ('ul-d2', 'upper_lower', 2, 'Upper B', ARRAY['chest','back','shoulders','biceps','triceps']::text[]),
   ('ul-d3', 'upper_lower', 3, 'Lower B', ARRAY['quads','hamstrings','glutes','calves','core']::text[]),
-  ('bro-d0', 'bro', 0, 'Chest Day', ARRAY['chest','triceps']::text[]),
+  ('bro-d0', 'bro', 0, 'Chest Day', ARRAY['chest','triceps','core']::text[]),
   ('bro-d1', 'bro', 1, 'Back Day', ARRAY['back','biceps','traps']::text[]),
-  ('bro-d2', 'bro', 2, 'Shoulder Day', ARRAY['shoulders','traps','triceps']::text[]),
+  ('bro-d2', 'bro', 2, 'Shoulder Day', ARRAY['shoulders','traps','calves']::text[]),
   ('bro-d3', 'bro', 3, 'Arm Day', ARRAY['biceps','triceps','forearms']::text[]),
-  ('bro-d4', 'bro', 4, 'Leg Day', ARRAY['quads','hamstrings','glutes','calves']::text[]),
+  ('bro-d4', 'bro', 4, 'Leg Day', ARRAY['quads','hamstrings','glutes']::text[]),
   ('fb-d0', 'full_body', 0, 'Full Body A', ARRAY['quads','chest','back','shoulders','core']::text[]),
   ('fb-d1', 'full_body', 1, 'Full Body B', ARRAY['hamstrings','glutes','chest','back','biceps']::text[]),
   ('fb-d2', 'full_body', 2, 'Full Body C', ARRAY['quads','shoulders','back','triceps','core']::text[]),
-  ('pp-d0', 'push_pull', 0, 'Push A', ARRAY['chest','shoulders','triceps','quads']::text[]),
-  ('pp-d1', 'push_pull', 1, 'Pull A', ARRAY['back','biceps','hamstrings','glutes']::text[]),
-  ('pp-d2', 'push_pull', 2, 'Push B', ARRAY['chest','shoulders','triceps','quads']::text[]),
-  ('pp-d3', 'push_pull', 3, 'Pull B', ARRAY['back','biceps','hamstrings','calves']::text[])
+  ('pp-d0', 'push_pull', 0, 'Push A', ARRAY['chest','shoulders','triceps','quads','core']::text[]),
+  ('pp-d1', 'push_pull', 1, 'Pull A', ARRAY['back','biceps','hamstrings','glutes','calves']::text[]),
+  ('pp-d2', 'push_pull', 2, 'Push B', ARRAY['chest','shoulders','triceps','quads','core']::text[]),
+  ('pp-d3', 'push_pull', 3, 'Pull B', ARRAY['back','biceps','hamstrings','glutes','calves']::text[])
 on conflict (id) do update set template_id = excluded.template_id, day_index = excluded.day_index, name = excluded.name, focus_muscles = excluded.focus_muscles;
 
 insert into public.exercises (id, name, primary_muscles, secondary_muscles, equipment, movement_pattern, default_sets, default_reps_min, default_reps_max, notes) values

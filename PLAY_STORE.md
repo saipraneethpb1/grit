@@ -8,7 +8,7 @@ You need:
 
 1. **Google Play Console** account — [one-time $25 fee](https://play.google.com/console/)
 2. **Expo account** — [expo.dev/signup](https://expo.dev/signup)
-3. **Production Supabase** project with all migrations applied (including `003_account_deletion.sql`)
+3. **Production Supabase** project with all migrations applied (including `003_account_deletion.sql` and `004_progression.sql`)
 4. **Public privacy policy URL** — required by Google Play (see step 3)
 
 ## 1. Link the project to Expo

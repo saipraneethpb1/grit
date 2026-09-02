@@ -1,3 +1,4 @@
+import type { TextStyle } from 'react-native';
 import { colors } from './Colors';
 
 /** Shared layout and typography tokens for a minimal UI. */
@@ -26,7 +27,7 @@ export const theme = {
     bodyMedium: { fontSize: 15, fontWeight: '500' as const, lineHeight: 22 },
     caption: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18 },
     label: { fontSize: 12, fontWeight: '500' as const, letterSpacing: 0.2 },
-    mono: { fontSize: 13, fontWeight: '500' as const, fontVariant: ['tabular-nums'] as const },
+    mono: { fontSize: 13, fontWeight: '500' as const, fontVariant: ['tabular-nums'] as TextStyle['fontVariant'] },
   },
 
   hairline: 1,

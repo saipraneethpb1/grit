@@ -3,19 +3,23 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { theme } from '@/constants/theme';
+import { AchievementGrid } from '@/src/components/AchievementGrid';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { StatPill } from '@/src/components/StatPill';
+import { XpBar } from '@/src/components/XpBar';
 import { EXERCISE_SOURCE_META } from '@/src/domain/catalog';
 import { LEGAL_LINKS, LEGAL_ROUTES } from '@/src/domain/legal';
+import { formatCount } from '@/src/domain/progression';
 import { useAuth } from '@/src/hooks/useAuth';
 import { useDisplayName } from '@/src/hooks/useDisplayName';
-import { useProfileStats } from '@/src/hooks/useSessions';
+import { toProgressStats, useProfileStats } from '@/src/hooks/useSessions';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, signOut, deleteAccount } = useAuth();
   const [deleting, setDeleting] = useState(false);
   const { data: stats } = useProfileStats();
+  const progress = toProgressStats(stats);
   const displayName = useDisplayName();
 
   function confirmDeleteAccount() {
@@ -52,9 +56,19 @@ export default function ProfileScreen() {
       <Text style={styles.name}>{displayName}</Text>
       <Text style={styles.email}>{user?.email}</Text>
 
+      <View style={styles.xpCard}>
+        <XpBar totalXp={progress.totalXp} />
+      </View>
+
       <View style={styles.stats}>
-        <StatPill label="Streak" value={stats?.current_streak ?? 0} />
-        <StatPill label="Sessions" value={stats?.workouts_completed ?? 0} />
+        <StatPill label="Streak" value={progress.currentStreak} showDivider />
+        <StatPill label="Best" value={progress.longestStreak} showDivider />
+        <StatPill label="Sessions" value={progress.workoutsCompleted} showDivider />
+        <StatPill label="Sets" value={formatCount(progress.totalSets)} />
+      </View>
+
+      <View style={styles.badges}>
+        <AchievementGrid stats={progress} />
       </View>
 
       <Text style={styles.about}>
@@ -94,6 +108,15 @@ const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: theme.space.lg, paddingBottom: theme.space.xl },
   name: { ...theme.font.display, fontSize: 24, color: theme.colors.text, marginBottom: 4 },
   email: { ...theme.font.caption, color: theme.colors.textMuted, marginBottom: theme.space.lg },
+  xpCard: {
+    borderWidth: theme.hairline,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.card,
+    padding: theme.space.md,
+    marginBottom: theme.space.sm,
+  },
+  badges: { marginBottom: theme.space.lg },
   stats: {
     flexDirection: 'row',
     borderWidth: theme.hairline,
