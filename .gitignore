@@ -11,11 +11,6 @@ expo-env.d.ts
 
 # Native
 *.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
 
 # Metro
 .metro-health-check*
@@ -27,13 +22,32 @@ yarn-error.*
 
 # macOS
 .DS_Store
-*.pem
 
-# local env files
+# Secrets — never commit. `.env.*` is denied by default and .env.example is
+# the single opt-in, so a new .env.production or .env.staging is ignored
+# without anyone having to remember to add it.
 .env
-.env*.local
+.env.*
+!.env.example
+
+# Signing material and store credentials
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
+*service-account*.json
 google-service-account.json
+credentials.json
+.easignore.local
+
+# Signed build output
 releases/
+*.aab
+*.apk
+*.ipa
 
 # editor / agent (not project source)
 .cursor/

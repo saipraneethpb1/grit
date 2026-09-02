@@ -140,6 +140,8 @@ See **Profile → Sources & attribution** in the app.
 - User tables are protected with **Row Level Security** (`user_id = auth.uid()`).
 - Only the **anon** key is embedded in the app (via `EXPO_PUBLIC_*`). Never put the service role key in the client.
 - Catalog tables are readable by authenticated users; only user plan tables are writable by the owner.
+- `.gitignore` denies `.env.*` by default and opts `.env.example` back in, so a new `.env.production` cannot be committed by accident. Signing material (`*.jks`, `*.keystore`, `*.p8`, `*.p12`, `*.pem`), any `*service-account*.json`, and signed build output (`*.aab`, `*.apk`, `*.ipa`) are ignored too.
+- **This repository is public.** Anything committed here is permanent and world-readable — treat every file as published before you `git add` it.
 
 ## Store release
 
