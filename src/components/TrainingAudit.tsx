@@ -15,14 +15,13 @@ export function TrainingAudit({ plan }: { plan: GeneratedPlan | WorkoutPlanWithD
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Coverage {audit.coveragePercent}%</Text>
+      <Text style={styles.kicker}>Coverage · {audit.coveragePercent}%</Text>
       <Text style={styles.metrics}>
-        {dayCount} {dayCount === 1 ? 'day' : 'days'} a week · {audit.totalSets} sets ·
-        ~{perSession} min a session
+        {dayCount} {dayCount === 1 ? 'day' : 'days'} a week · {audit.totalSets} sets · ~{perSession} min a session
       </Text>
-      <Text style={[styles.status, { color: complete ? theme.colors.textSecondary : theme.colors.orange }]}>
+      <Text style={[styles.status, !complete && styles.warn]}>
         {complete
-          ? 'All focus muscles have direct work.'
+          ? 'Every focus muscle has direct work.'
           : `Missing: ${audit.missingDirectCoverage.map((m) => MUSCLE_LABELS[m]).join(', ')}`}
       </Text>
     </View>
@@ -31,14 +30,16 @@ export function TrainingAudit({ plan }: { plan: GeneratedPlan | WorkoutPlanWithD
 
 const styles = StyleSheet.create({
   card: {
+    backgroundColor: theme.colors.surfaceTint,
     borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.borderTint,
     borderRadius: theme.radius.md,
-    padding: theme.space.md,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
     marginBottom: theme.space.md,
-    backgroundColor: theme.colors.card,
   },
-  title: { ...theme.font.bodyMedium, color: theme.colors.text },
-  metrics: { ...theme.font.caption, color: theme.colors.textMuted, marginTop: 4 },
-  status: { ...theme.font.caption, marginTop: theme.space.sm, lineHeight: 18 },
+  kicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 7 },
+  metrics: { ...theme.font.body, color: theme.colors.textSecondary },
+  status: { ...theme.font.small, color: theme.colors.textDim, marginTop: 4 },
+  warn: { color: theme.colors.danger },
 });

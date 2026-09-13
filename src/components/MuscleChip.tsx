@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import type { MuscleGroup } from '@/src/domain/types';
@@ -9,35 +9,40 @@ type Props = {
   onPress?: () => void;
 };
 
+/** Filter pill: outlined at rest, accent-soft when selected. */
 export function MuscleChip({ muscle, selected, onPress }: Props) {
   const label = muscle === 'all' ? 'All' : MUSCLE_LABELS[muscle];
 
   return (
     <Pressable
       onPress={onPress}
-      style={[
-        styles.chip,
-        {
-          backgroundColor: selected ? theme.colors.white : 'transparent',
-          borderColor: selected ? theme.colors.white : theme.colors.border,
-        },
-      ]}
+      accessibilityRole="button"
+      accessibilityState={{ selected: Boolean(selected) }}
+      style={({ pressed }) => [styles.chip, pressed && !selected && styles.pressed]}
     >
-      <Text style={[styles.text, { color: selected ? theme.colors.black : theme.colors.textSecondary }]}>
-        {label}
-      </Text>
+      {selected ? <View style={styles.selectedFill} /> : null}
+      <Text style={styles.text}>{label}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   chip: {
+    minHeight: 34,
+    justifyContent: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 6,
     borderRadius: theme.radius.full,
     borderWidth: theme.hairline,
-    marginRight: theme.space.sm,
-    marginBottom: theme.space.sm,
+    borderColor: theme.colors.border,
+    overflow: 'hidden',
   },
-  text: { ...theme.font.caption, fontWeight: '500' },
+  pressed: { borderColor: theme.colors.accentDim },
+  selectedFill: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    borderRadius: theme.radius.full,
+    backgroundColor: theme.colors.accentSoft,
+    borderWidth: theme.hairline,
+    borderColor: theme.colors.accent,
+  },
+  text: { ...theme.font.bodyMedium, fontSize: 12, lineHeight: 16, color: theme.colors.textSecondary },
 });

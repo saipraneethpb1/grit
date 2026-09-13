@@ -7,6 +7,7 @@ type Props = {
   showDivider?: boolean;
 };
 
+/** One cell of the four-up stat strip. Wrap cells in `StatRow`. */
 export function StatPill({ label, value, showDivider }: Props) {
   return (
     <View style={[styles.pill, showDivider && styles.divider]}>
@@ -16,25 +17,33 @@ export function StatPill({ label, value, showDivider }: Props) {
   );
 }
 
+export function StatRow({ children }: { children: React.ReactNode }) {
+  return <View style={styles.row}>{children}</View>;
+}
+
 const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    borderWidth: theme.hairline,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.md,
+    overflow: 'hidden',
+  },
   pill: {
     flex: 1,
-    paddingVertical: theme.space.md,
-    paddingHorizontal: theme.space.sm,
+    paddingVertical: 13,
+    paddingHorizontal: 6,
     alignItems: 'center',
   },
   divider: {
     borderRightWidth: theme.hairline,
     borderRightColor: theme.colors.border,
   },
-  value: {
-    ...theme.font.title,
-    fontSize: 18,
-    color: theme.colors.text,
-    marginBottom: 2,
-  },
+  value: { ...theme.font.stat, color: theme.colors.text },
   label: {
-    ...theme.font.caption,
-    color: theme.colors.textMuted,
+    ...theme.font.kicker,
+    letterSpacing: 0.6,
+    color: theme.colors.textDim,
+    marginTop: 3,
   },
 });

@@ -3,74 +3,53 @@ import { theme } from '@/constants/theme';
 import { AchievementBadge } from '@/src/components/AchievementBadge';
 import {
   ACHIEVEMENTS,
-  ACHIEVEMENT_CATEGORY_LABELS,
   earnedAchievements,
-  type Achievement,
   type AchievementCategory,
   type ProgressStats,
 } from '@/src/domain/progression';
 
 const COLUMNS = 3;
-
 const CATEGORY_ORDER: AchievementCategory[] = ['milestone', 'streak', 'volume', 'level'];
-
-function Row({ items, stats }: { items: Achievement[]; stats: ProgressStats }) {
-  // Pad the final row so a lone badge does not stretch to the full width.
-  const spacers = items.length % COLUMNS === 0 ? 0 : COLUMNS - (items.length % COLUMNS);
-  return (
-    <View style={styles.grid}>
-      {items.map((achievement) => (
-        <AchievementBadge key={achievement.id} achievement={achievement} stats={stats} />
-      ))}
-      {Array.from({ length: spacers }, (_, i) => (
-        <View key={`spacer-${i}`} style={styles.spacer} />
-      ))}
-    </View>
-  );
-}
 
 export function AchievementGrid({ stats }: { stats: ProgressStats }) {
   const earnedCount = earnedAchievements(stats).length;
+  const ordered = CATEGORY_ORDER.flatMap((category) =>
+    ACHIEVEMENTS.filter((a) => a.category === category)
+  );
+  // Pad the final row so a lone badge does not stretch to the full width.
+  const spacers = ordered.length % COLUMNS === 0 ? 0 : COLUMNS - (ordered.length % COLUMNS);
 
   return (
-    <View style={styles.root}>
+    <View>
       <View style={styles.heading}>
-        <Text style={styles.title}>Badges</Text>
+        <Text style={styles.kicker}>Badges</Text>
         <Text style={styles.count}>
           {earnedCount} / {ACHIEVEMENTS.length}
         </Text>
       </View>
-
-      {CATEGORY_ORDER.map((category) => {
-        const items = ACHIEVEMENTS.filter((a) => a.category === category);
-        if (!items.length) return null;
-        return (
-          <View key={category} style={styles.section}>
-            <Text style={styles.sectionLabel}>{ACHIEVEMENT_CATEGORY_LABELS[category]}</Text>
-            <Row items={items} stats={stats} />
+      <View style={styles.grid}>
+        {ordered.map((achievement) => (
+          <View key={achievement.id} style={styles.cell}>
+            <AchievementBadge achievement={achievement} stats={stats} />
           </View>
-        );
-      })}
+        ))}
+        {Array.from({ length: spacers }, (_, i) => (
+          <View key={`spacer-${i}`} style={styles.cell} />
+        ))}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: theme.space.md },
   heading: {
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-between',
+    marginBottom: 10,
   },
-  title: { ...theme.font.title, color: theme.colors.text },
-  count: { ...theme.font.caption, color: theme.colors.textMuted },
-  section: { gap: theme.space.sm },
-  sectionLabel: {
-    ...theme.font.label,
-    color: theme.colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.space.sm },
-  spacer: { flex: 1, minWidth: 96 },
+  kicker: { ...theme.font.kicker, color: theme.colors.textDim },
+  count: { ...theme.font.monoSmall, color: theme.colors.textFaint },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  cell: { width: '31%', flexGrow: 1 },
 });

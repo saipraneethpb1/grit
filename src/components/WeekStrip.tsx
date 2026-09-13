@@ -1,7 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import type { PlanDayWithExercises } from '@/src/domain/types';
-import { CompletionBadge } from './CompletionBadge';
 
 type Props = {
   days: PlanDayWithExercises[];
@@ -29,31 +29,31 @@ export function WeekStrip({
     >
       {days.map((day) => {
         const active = day.day_index === currentIndex;
-        const done = (completedUpToIndex ?? 0) > day.day_index;
-        const doneToday = Boolean(completedTodayDayId && day.id === completedTodayDayId);
+        const done =
+          (completedUpToIndex ?? 0) > day.day_index ||
+          Boolean(completedTodayDayId && day.id === completedTodayDayId);
 
         return (
           <Pressable
             key={day.id}
             onPress={() => onSelect(day)}
-            style={[
+            accessibilityRole="button"
+            accessibilityState={{ selected: active }}
+            accessibilityLabel={`Day ${day.day_index + 1}, ${day.name}${done ? ', completed' : ''}`}
+            style={({ pressed }) => [
               styles.chip,
               active && styles.chipActive,
-              done && !active && styles.chipDone,
-              doneToday && styles.chipDoneToday,
+              pressed && !active && styles.chipPressed,
             ]}
           >
             <View style={styles.chipTop}>
               {done ? (
-                <CompletionBadge size="sm" />
+                <Ionicons name="checkmark-circle" size={13} color={theme.colors.accentDeep} />
               ) : (
-                <Text style={[styles.dayNum, active && styles.dayNumActive]}>{day.day_index + 1}</Text>
+                <Text style={styles.dayNum}>{day.day_index + 1}</Text>
               )}
             </View>
-            <Text
-              style={[styles.dayName, active && styles.dayNameActive, done && !active && styles.dayNameDone]}
-              numberOfLines={2}
-            >
+            <Text style={styles.dayName} numberOfLines={2}>
               {day.name}
             </Text>
           </Pressable>
@@ -65,52 +65,20 @@ export function WeekStrip({
 
 const styles = StyleSheet.create({
   scroll: { flexGrow: 0 },
-  row: { gap: theme.space.sm },
+  row: { gap: 7 },
   chip: {
-    width: 76,
-    borderRadius: theme.radius.sm,
-    borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.card,
-    paddingHorizontal: theme.space.sm,
-    paddingVertical: theme.space.sm,
-    minHeight: 64,
-    justifyContent: 'space-between',
+    width: 64,
+    ...theme.card,
+    paddingHorizontal: 8,
+    paddingVertical: 10,
+    minHeight: 62,
   },
   chipActive: {
-    backgroundColor: theme.colors.white,
-    borderColor: theme.colors.white,
+    borderColor: theme.colors.accent,
+    backgroundColor: theme.colors.accentSoft,
   },
-  chipDone: {
-    borderColor: theme.colors.successBorder,
-    backgroundColor: theme.colors.successSoft,
-  },
-  chipDoneToday: {
-    borderColor: theme.colors.success,
-  },
-  chipTop: {
-    minHeight: 16,
-    justifyContent: 'center',
-    marginBottom: 4,
-  },
-  dayNum: {
-    ...theme.font.caption,
-    color: theme.colors.textMuted,
-    fontVariant: ['tabular-nums'],
-  },
-  dayNumActive: {
-    color: theme.colors.black,
-  },
-  dayName: {
-    ...theme.font.caption,
-    fontWeight: '500',
-    color: theme.colors.text,
-    lineHeight: 16,
-  },
-  dayNameActive: {
-    color: theme.colors.black,
-  },
-  dayNameDone: {
-    color: theme.colors.success,
-  },
+  chipPressed: { borderColor: theme.colors.accentDim },
+  chipTop: { height: 14, justifyContent: 'center', marginBottom: 8 },
+  dayNum: { ...theme.font.monoSmall, fontWeight: '500', color: theme.colors.textDim },
+  dayName: { ...theme.font.small, fontWeight: '500', fontFamily: theme.fontFamily.medium, color: theme.colors.textSecondary, lineHeight: 15 },
 });

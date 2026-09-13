@@ -19,22 +19,8 @@ export function EmptyState({ title, message, action }: Props) {
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    padding: theme.space.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    ...theme.font.title,
-    color: theme.colors.text,
-    marginBottom: theme.space.sm,
-    textAlign: 'center',
-  },
-  message: {
-    ...theme.font.body,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: theme.space.md,
-  },
-  action: { width: '100%', maxWidth: 300 },
+  wrap: { paddingVertical: theme.space.lg },
+  title: { ...theme.font.title, color: theme.colors.text, marginBottom: 6 },
+  message: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: theme.space.lg },
+  action: { width: '100%' },
 });

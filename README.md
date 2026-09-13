@@ -76,7 +76,8 @@ Then press `i` / `a` for simulators, `w` for web, or scan the QR code with Expo 
 app/                    # Expo Router screens
   (auth)/               # Login & signup
   (app)/                # Authenticated app
-    (tabs)/             # Train, Log, Library, You
+    (tabs)/             # Train, Program, Library, You
+    history.tsx         # Session log (reached from Train → Recent)
     splits/             # Methodology + split picker, plan preview
     plan/               # Week & day views
     workout/            # Live session player
@@ -158,3 +159,46 @@ See **Profile → Sources & attribution** in the app.
 ## License
 
 See repository license file if present.
+
+## Validation and security
+
+Use Node 22.13 or newer, then `npm ci` and `npm run validate`.
+`npm run export:web` verifies the static web build.
+See [SECURITY.md](SECURITY.md) for migration order, native session storage,
+remaining dependency advisories, and release verification requirements.
+
+## Exercise demonstrations
+
+Tap **How to perform** under the active exercise in a workout, or on an exercise's
+library detail page. The modal preserves your logged sets and contains a looping
+two-position photo demonstration, pause/step controls, and complete numbered
+instructions. Reduced-motion settings disable automatic playback. These are
+position demonstrations, not full-motion videos.
+
+All 189 guides and 378 JPEG frames are bundled for offline access (approximately
+25 MB of source images); no video service, tracking embed, or API key is required.
+Photos and instructions come from the existing [free-exercise-db source](https://github.com/yuhonas/free-exercise-db)
+under its [Unlicense](assets/exercises/LICENSE.md), matched using exact source IDs.
+
+To refresh guidance, download that repository's `dist/exercises.json`, then run
+`node scripts/import-exercise-guides.mjs /path/to/exercises.json`.
+The importer preserves curated IDs and training targets. Run `npm run test:guides`
+to verify coverage, source mappings, and bundled images.
+
+## Custom programs
+
+Open **New program → Build a custom program**. Name and order 1–7 training days,
+add exercises from the library, set individual set counts and rep ranges, then
+review and activate. The new program replaces the active routine without deleting
+past sessions. Days run in the order you choose; rest days do not need entries.
+Drafts stay in the builder while moving between steps; leaving requires confirmation.
+Drafts are not persisted across app termination.
+
+Apply migration `006_custom_programs.sql` after migration 005 before saving a custom
+program. It adds the custom-program catalog marker; ownership and transaction
+checks remain in the existing save RPC. No live migration is applied automatically.
+
+Exercise screens show three short starting cues below the demo button. The demo
+sheet includes short steps plus **Read full instructions** for complete source
+technique details. Editorial cue overrides are stored separately so refreshing the
+source data does not overwrite them.

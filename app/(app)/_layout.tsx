@@ -9,7 +9,7 @@ export default function AppLayout() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={theme.colors.text} />
+        <ActivityIndicator color={theme.colors.accent} />
       </View>
     );
   }
@@ -24,16 +24,19 @@ export default function AppLayout() {
         headerStyle: { backgroundColor: theme.colors.background },
         headerTintColor: theme.colors.text,
         headerShadowVisible: false,
-        headerTitleStyle: { ...theme.font.bodyMedium, fontSize: 17 },
+        headerTitleStyle: { ...theme.font.heading },
+        headerBackButtonDisplayMode: 'minimal',
         contentStyle: { backgroundColor: theme.colors.background },
       }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="history" options={{ title: 'Log' }} />
       <Stack.Screen name="splits/index" options={{ title: 'New program' }} />
+      <Stack.Screen name="splits/custom" options={{ headerShown: false, gestureEnabled: false }} />
       <Stack.Screen name="splits/preview" options={{ title: 'Preview' }} />
       <Stack.Screen name="plan/[id]" options={{ title: 'Program' }} />
-      <Stack.Screen name="plan/day/[dayId]" options={{ title: 'Day' }} />
-      <Stack.Screen name="exercises/[id]" options={{ title: 'Exercise' }} />
+      <Stack.Screen name="plan/day/[dayId]" options={{ headerShown: false }} />
+      <Stack.Screen name="exercises/[id]" options={{ title: '' }} />
       <Stack.Screen name="sources" options={{ title: 'Sources' }} />
       <Stack.Screen
         name="workout/[dayId]"

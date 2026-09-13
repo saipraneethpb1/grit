@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo } from 'react';
 import {
@@ -11,20 +12,23 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
+import { formatTarget } from '@/src/components/DayWorkoutList';
 import { EmptyState } from '@/src/components/EmptyState';
+import { FadeRule } from '@/src/components/FadeRule';
 import { GritLogo } from '@/src/components/GritLogo';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { SectionLabel } from '@/src/components/SectionLabel';
-import { StatPill } from '@/src/components/StatPill';
+import { StatPill, StatRow } from '@/src/components/StatPill';
 import { WeekStrip } from '@/src/components/WeekStrip';
 import { WorkoutDoneBanner } from '@/src/components/WorkoutDoneBanner';
-import { XpBar } from '@/src/components/XpBar';
 import { getSplitTemplate } from '@/src/domain/catalog';
 import {
   getMethodology,
   QUICK_START_METHODOLOGY_ID,
 } from '@/src/domain/methodologies';
-import { formatMuscles } from '@/src/domain/muscles';
+import { MUSCLE_LABELS } from '@/src/domain/muscles';
+import { analyzeTrainingDay } from '@/src/domain/trainingAnalysis';
+import type { MuscleGroup } from '@/src/domain/types';
 import { useDisplayName } from '@/src/hooks/useDisplayName';
 import { useActivePlan } from '@/src/hooks/usePlans';
 import {
@@ -32,6 +36,9 @@ import {
   useProfileStats,
   useRecentSessions,
 } from '@/src/hooks/useSessions';
+
+const PREVIEW_COUNT = 3;
+const EMPHASIS_COUNT = 4;
 
 function isSameCalendarDay(a: Date, b: Date): boolean {
   return (
@@ -44,8 +51,16 @@ function isSameCalendarDay(a: Date, b: Date): boolean {
 function formatSessionDate(iso: string | null): string {
   if (!iso) return '—';
   const d = new Date(iso);
-  if (isSameCalendarDay(d, new Date())) return 'Today';
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  const now = new Date();
+  if (isSameCalendarDay(d, now)) return 'Today';
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (isSameCalendarDay(d, yesterday)) return 'Yesterday';
+  return d.toLocaleDateString(undefined, { weekday: 'short' });
+}
+
+function todayLabel(): string {
+  return new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' });
 }
 
 export default function HomeScreen() {
@@ -82,6 +97,19 @@ export default function HomeScreen() {
     });
   }, [recent]);
 
+  // Share of the day's effective sets per muscle — the "what this session
+  // actually loads" bars under the day title.
+  const emphasis = useMemo(() => {
+    if (!today) return [];
+    const audit = analyzeTrainingDay(today);
+    const total = Object.values(audit.effectiveSets).reduce((n, v) => n + (v ?? 0), 0);
+    if (!total) return [];
+    return (Object.entries(audit.effectiveSets) as [MuscleGroup, number][])
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, EMPHASIS_COUNT)
+      .map(([muscle, sets]) => ({ muscle, pct: Math.round((sets / total) * 100) }));
+  }, [today]);
+
   const todaySetsLogged = todaySession
     ? todaySession.session_sets.filter((s) => s.completed).length
     : 0;
@@ -90,12 +118,12 @@ export default function HomeScreen() {
     todaySession && today && todaySession.plan_day_id === today.id
   );
 
-  const footerPad = Math.max(insets.bottom, theme.space.sm);
+  const topPad = insets.top + 18;
 
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={theme.colors.text} />
+        <ActivityIndicator color={theme.colors.accent} />
       </View>
     );
   }
@@ -115,14 +143,15 @@ export default function HomeScreen() {
   if (!plan || !today) {
     return (
       <ScrollView
-        contentContainerStyle={[styles.emptyWrap, { paddingTop: insets.top + theme.space.lg }]}
+        contentContainerStyle={[styles.emptyWrap, { paddingTop: topPad }]}
         showsVerticalScrollIndicator={false}
       >
-        <GritLogo showWordmark size={40} style={styles.emptyLogo} />
-        <Text style={styles.greeting}>Hi, {name}</Text>
+        <GritLogo showWordmark size={36} style={styles.emptyLogo} />
+        <Text style={styles.kicker}>{todayLabel()}</Text>
+        <Text style={styles.greeting}>Ready, {name}</Text>
         <EmptyState
           title="No program yet"
-          message="Pick a training system and split, or start with the beginner program and change it later."
+          message="Pick a training style and a weekly split, or write your own days. The week builds itself from there."
           action={
             <View style={styles.emptyActions}>
               {quickStart ? (
@@ -136,9 +165,14 @@ export default function HomeScreen() {
                 />
               ) : null}
               <PrimaryButton
-                title="Browse all systems"
+                title="Browse training styles"
                 variant="ghost"
                 onPress={() => router.push('/(app)/splits')}
+              />
+              <PrimaryButton
+                title="Build a custom program"
+                variant="ghost"
+                onPress={() => router.push('/(app)/splits/custom')}
               />
             </View>
           }
@@ -148,260 +182,232 @@ export default function HomeScreen() {
   }
 
   const template = getSplitTemplate(plan.template_id);
+  const programName = plan.template_id === 'custom' ? plan.name : template?.name ?? 'Program';
+  const audit = analyzeTrainingDay(today);
   const recentSessions = (recent ?? []).slice(0, 3);
+  const openToday = () =>
+    router.push({
+      pathname: '/(app)/plan/day/[dayId]',
+      params: { dayId: today.id, planId: plan.id },
+    });
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: theme.space.lg }]}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={onRefresh}
-            tintColor={theme.colors.textSecondary}
-            colors={[theme.colors.text]}
-            progressBackgroundColor={theme.colors.card}
-          />
-        }
-      >
-        <View style={styles.header}>
-          <GritLogo size={32} />
-          <View style={styles.headerText}>
-            <Text style={styles.greeting}>{name}</Text>
-            <Text style={styles.programMeta}>
-              {template?.name ?? 'Program'} · Day {dayIndex + 1} of {sortedDays.length}
-            </Text>
-          </View>
-          <Pressable
-            onPress={() => router.push('/(app)/(tabs)/profile')}
-            style={styles.profileBtn}
-            accessibilityLabel="Open profile"
-          >
-            <Text style={styles.profileInitial}>{name.slice(0, 1).toUpperCase()}</Text>
-          </Pressable>
+    <ScrollView
+      style={styles.root}
+      contentContainerStyle={[styles.content, { paddingTop: topPad }]}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefetching}
+          onRefresh={onRefresh}
+          tintColor={theme.colors.accent}
+          colors={[theme.colors.accent]}
+          progressBackgroundColor={theme.colors.surface}
+        />
+      }
+    >
+      <View style={styles.header}>
+        <View style={styles.headerText}>
+          <Text style={styles.kicker}>{todayLabel()}</Text>
+          <Text style={styles.greeting}>Ready, {name}</Text>
         </View>
+        <Pressable
+          onPress={() => router.push('/(app)/(tabs)/profile')}
+          style={({ pressed }) => [styles.avatar, pressed && styles.avatarPressed]}
+          accessibilityRole="button"
+          accessibilityLabel="Open profile"
+        >
+          <Text style={styles.avatarText}>{name.slice(0, 1).toUpperCase()}</Text>
+        </Pressable>
+      </View>
 
-        {todaySession ? (
-          <WorkoutDoneBanner dayName={todaySession.day_name} setsLogged={todaySetsLogged} />
+      <View style={styles.week}>
+        <WeekStrip
+          days={sortedDays}
+          currentIndex={today.day_index}
+          completedUpToIndex={dayIndex}
+          completedTodayDayId={todaySession?.plan_day_id}
+          onSelect={(d) =>
+            router.push({
+              pathname: '/(app)/plan/day/[dayId]',
+              params: { dayId: d.id, planId: plan.id },
+            })
+          }
+        />
+      </View>
+
+      {todaySession ? (
+        <WorkoutDoneBanner dayName={todaySession.day_name} setsLogged={todaySetsLogged} />
+      ) : null}
+
+      <View style={styles.todayCard}>
+        <View style={styles.cardKickerRow}>
+          <Ionicons name="archive" size={12} color={theme.colors.accent} />
+          <Text style={styles.cardKicker} numberOfLines={1}>
+            {programName} · Day {today.day_index + 1} of {sortedDays.length}
+          </Text>
+        </View>
+        <Text style={styles.dayName}>{today.name}</Text>
+        <Text style={styles.dayMeta}>
+          {today.plan_exercises.length} exercises · {audit.totalSets} sets · ~{audit.estimatedMinutes} min
+        </Text>
+
+        {emphasis.length ? (
+          <View style={styles.emphasis}>
+            {emphasis.map((m) => (
+              <View key={m.muscle} style={styles.emphasisRow}>
+                <Text style={styles.emphasisLabel} numberOfLines={1}>{MUSCLE_LABELS[m.muscle]}</Text>
+                <View style={styles.emphasisTrack}>
+                  <View style={[styles.emphasisFill, { width: `${m.pct}%` }]} />
+                </View>
+                <Text style={styles.emphasisPct}>{m.pct}%</Text>
+              </View>
+            ))}
+          </View>
         ) : null}
 
-        <Pressable
-          style={styles.xpCard}
-          onPress={() => router.push('/(app)/(tabs)/profile')}
-          accessibilityRole="button"
-          accessibilityLabel="Open profile to see badges"
-        >
-          <XpBar totalXp={progress.totalXp} />
-        </Pressable>
+        <FadeRule style={styles.cardRule} />
 
-        <View style={styles.statsRow}>
+        <View style={styles.preview}>
+          {today.plan_exercises.slice(0, PREVIEW_COUNT).map((pe) => (
+            <View key={pe.id} style={styles.previewRow}>
+              <Text style={styles.previewName} numberOfLines={1}>{pe.exercise.name}</Text>
+              <Text style={styles.previewTarget}>
+                {formatTarget(pe.target_sets, pe.target_reps_min, pe.target_reps_max)}
+              </Text>
+            </View>
+          ))}
+          {today.plan_exercises.length > PREVIEW_COUNT ? (
+            <Text style={styles.more}>+{today.plan_exercises.length - PREVIEW_COUNT} more</Text>
+          ) : null}
+        </View>
+
+        <View style={styles.actions}>
+          {todayAlreadyDone ? (
+            <PrimaryButton
+              title="View log"
+              icon={<Ionicons name="checkmark-circle" size={15} color={theme.colors.accentText} />}
+              onPress={() => router.push('/(app)/history')}
+              style={styles.startBtn}
+            />
+          ) : (
+            <PrimaryButton
+              title="Start"
+              icon={<Ionicons name="play" size={14} color={theme.colors.accentText} />}
+              onPress={() => router.push(`/(app)/workout/${today.id}?planId=${plan.id}` as never)}
+              style={styles.startBtn}
+            />
+          )}
+          <PrimaryButton title="Details" variant="ghost" onPress={openToday} style={styles.detailsBtn} />
+        </View>
+      </View>
+
+      <View style={styles.stats}>
+        <StatRow>
           <StatPill label="Streak" value={progress.currentStreak} showDivider />
           <StatPill label="Best" value={progress.longestStreak} showDivider />
           <StatPill label="Sessions" value={progress.workoutsCompleted} showDivider />
           <StatPill label="Days" value={sortedDays.length} />
-        </View>
-
-        <View style={styles.section}>
-          <SectionLabel>Your program</SectionLabel>
-          <WeekStrip
-            days={sortedDays}
-            currentIndex={today.day_index}
-            completedUpToIndex={dayIndex}
-            completedTodayDayId={todaySession?.plan_day_id}
-            onSelect={(d) =>
-              router.push({
-                pathname: '/(app)/plan/day/[dayId]',
-                params: { dayId: d.id, planId: plan.id },
-              })
-            }
-          />
-        </View>
-
-        <View style={styles.section}>
-          <SectionLabel>{todayAlreadyDone ? 'Up next' : 'Today'}</SectionLabel>
-          <Pressable
-            onPress={() =>
-              router.push({
-                pathname: '/(app)/plan/day/[dayId]',
-                params: { dayId: today.id, planId: plan.id },
-              })
-            }
-            style={styles.todayCard}
-          >
-            <Text style={styles.workoutTitle}>{today.name}</Text>
-            <Text style={styles.workoutMeta}>{formatMuscles(today.focus_muscles)}</Text>
-            <Text style={styles.workoutCount}>
-              {today.plan_exercises.length} exercises
-            </Text>
-
-            {today.plan_exercises.slice(0, 3).map((pe) => (
-              <View key={pe.id} style={styles.exerciseLine}>
-                <Text style={styles.exerciseName} numberOfLines={1}>
-                  {pe.exercise.name}
-                </Text>
-                <Text style={styles.exerciseSets}>
-                  {pe.target_sets}×{pe.target_reps_min}–{pe.target_reps_max}
-                </Text>
-              </View>
-            ))}
-            {today.plan_exercises.length > 3 ? (
-              <Text style={styles.more}>+{today.plan_exercises.length - 3} more</Text>
-            ) : null}
-            <Text style={styles.viewDetails}>View full day →</Text>
-          </Pressable>
-        </View>
-
-        {recentSessions.length > 0 ? (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <SectionLabel style={styles.sectionLabelInline}>Recent</SectionLabel>
-              <Pressable onPress={() => router.push('/(app)/(tabs)/history')} hitSlop={8}>
-                <Text style={styles.seeAll}>See all</Text>
-              </Pressable>
-            </View>
-            {recentSessions.map((s) => (
-              <Pressable
-                key={s.id}
-                onPress={() => router.push('/(app)/(tabs)/history')}
-                style={styles.sessionRow}
-              >
-                <Text style={styles.sessionName}>{s.day_name}</Text>
-                <Text style={styles.sessionMeta}>
-                  {formatSessionDate(s.completed_at)} ·{' '}
-                  {s.session_sets.filter((x) => x.completed).length} sets
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        ) : null}
-
-        <Pressable onPress={() => router.push('/(app)/splits')} style={styles.changeProgram}>
-          <Text style={styles.changeProgramText}>Change program</Text>
-        </Pressable>
-      </ScrollView>
-
-      <View style={[styles.footer, { paddingBottom: footerPad }]}>
-        {todayAlreadyDone ? (
-          <PrimaryButton
-            title="View today's log"
-            variant="ghost"
-            onPress={() => router.push('/(app)/(tabs)/history')}
-          />
-        ) : (
-          <PrimaryButton
-            title="Start workout"
-            onPress={() =>
-              router.push(`/(app)/workout/${today.id}?planId=${plan.id}` as never)
-            }
-          />
-        )}
+        </StatRow>
       </View>
-    </View>
+
+      {recentSessions.length > 0 ? (
+        <View>
+          <View style={styles.sectionHeader}>
+            <SectionLabel style={styles.sectionLabelInline}>Recent</SectionLabel>
+            <Pressable onPress={() => router.push('/(app)/history')} hitSlop={8} accessibilityRole="link">
+              <Text style={styles.seeAll}>See all</Text>
+            </Pressable>
+          </View>
+          {recentSessions.map((s) => (
+            <Pressable
+              key={s.id}
+              onPress={() => router.push('/(app)/history')}
+              accessibilityRole="button"
+              style={({ pressed }) => [styles.sessionRow, pressed && { opacity: 0.6 }]}
+            >
+              <Text style={styles.sessionName} numberOfLines={1}>{s.day_name}</Text>
+              <Text style={styles.sessionMeta}>
+                {formatSessionDate(s.completed_at)} · {s.session_sets.filter((x) => x.completed).length} sets
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
-  scroll: { flex: 1 },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.background,
   },
-  emptyWrap: { flexGrow: 1, padding: theme.space.lg, justifyContent: 'center' },
+  emptyWrap: { flexGrow: 1, paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
   emptyLogo: { marginBottom: theme.space.lg },
-  emptyActions: { width: '100%', gap: theme.space.sm },
-  content: { paddingHorizontal: theme.space.lg, paddingTop: theme.space.md },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.space.md,
-    marginBottom: theme.space.md,
-  },
+  emptyActions: { width: '100%', gap: 9 },
+  content: { paddingHorizontal: theme.space.lg, paddingBottom: theme.space.lg },
+
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
   headerText: { flex: 1 },
-  greeting: { ...theme.font.display, fontSize: 24, color: theme.colors.text },
-  programMeta: { ...theme.font.caption, color: theme.colors.textMuted, marginTop: 4 },
-  profileBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  kicker: { ...theme.font.kicker, color: theme.colors.textDim },
+  greeting: { ...theme.font.display, fontSize: 24, lineHeight: 29, color: theme.colors.text, marginTop: 5 },
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  profileInitial: { ...theme.font.bodyMedium, color: theme.colors.text },
-  xpCard: {
-    borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.card,
-    padding: theme.space.md,
-    marginBottom: theme.space.sm,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    marginBottom: theme.space.lg,
-    overflow: 'hidden',
-  },
-  section: {
-    marginBottom: theme.space.lg,
-  },
+  avatarPressed: { borderColor: theme.colors.accentDim },
+  avatarText: { ...theme.font.bodyMedium, color: theme.colors.textSecondary },
+
+  week: { marginBottom: 18 },
+
+  todayCard: { ...theme.card, paddingHorizontal: 15, paddingVertical: 16, marginBottom: 14 },
+  cardKickerRow: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 11 },
+  cardKicker: { ...theme.font.kicker, color: theme.colors.accentDeep, flex: 1 },
+  dayName: { ...theme.font.title, color: theme.colors.text },
+  dayMeta: { ...theme.font.caption, color: theme.colors.textDim, marginTop: 4 },
+  emphasis: { marginTop: 15, gap: 8 },
+  emphasisRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  emphasisLabel: { ...theme.font.small, color: theme.colors.textMuted, width: 96 },
+  emphasisTrack: { flex: 1, height: 5, borderRadius: 3, backgroundColor: theme.colors.track, overflow: 'hidden' },
+  emphasisFill: { height: 5, borderRadius: 3, backgroundColor: theme.colors.accent },
+  emphasisPct: { ...theme.font.monoSmall, fontSize: 10.5, fontWeight: '500', color: theme.colors.textDim, width: 30, textAlign: 'right' },
+  cardRule: { marginTop: 15, marginBottom: 13 },
+  preview: { gap: 9 },
+  previewRow: { flexDirection: 'row', alignItems: 'baseline', gap: 10 },
+  previewName: { ...theme.font.body, color: theme.colors.textSecondary, flex: 1 },
+  previewTarget: { ...theme.font.monoSmall, fontSize: 11.5, fontWeight: '500', color: theme.colors.textDim },
+  more: { ...theme.font.small, fontSize: 12, color: theme.colors.textFaint },
+  actions: { flexDirection: 'row', gap: 9, marginTop: 16 },
+  startBtn: { flex: 1 },
+  detailsBtn: { width: 96, paddingHorizontal: 8 },
+
+  stats: { marginBottom: 20 },
+
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: theme.space.sm,
+    marginBottom: 2,
   },
-  sectionLabelInline: { marginBottom: 0 },
-  seeAll: { ...theme.font.caption, color: theme.colors.textMuted },
-  todayCard: {
-    borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    padding: theme.space.md,
-    backgroundColor: theme.colors.card,
-  },
-  workoutTitle: { ...theme.font.title, fontSize: 18, color: theme.colors.text, marginBottom: 2 },
-  workoutMeta: { ...theme.font.caption, color: theme.colors.textSecondary, marginBottom: 2 },
-  workoutCount: { ...theme.font.caption, color: theme.colors.textMuted, marginBottom: theme.space.sm },
-  exerciseLine: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: theme.space.sm,
-    borderTopWidth: theme.hairline,
-    borderTopColor: theme.colors.border,
-    gap: theme.space.sm,
-  },
-  exerciseName: { ...theme.font.body, color: theme.colors.text, flex: 1 },
-  exerciseSets: { ...theme.font.caption, color: theme.colors.textMuted },
-  more: { ...theme.font.caption, color: theme.colors.textMuted, marginTop: theme.space.xs },
-  viewDetails: {
-    ...theme.font.caption,
-    color: theme.colors.textMuted,
-    marginTop: theme.space.sm,
-  },
+  sectionLabelInline: { marginBottom: 8 },
+  seeAll: { ...theme.font.small, color: theme.colors.textFaint, marginBottom: 8 },
   sessionRow: {
-    paddingVertical: theme.space.md,
+    paddingVertical: 13,
     borderBottomWidth: theme.hairline,
-    borderBottomColor: theme.colors.border,
+    borderBottomColor: theme.colors.divider,
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 10,
   },
-  sessionName: { ...theme.font.bodyMedium, color: theme.colors.text, marginBottom: 2 },
-  sessionMeta: { ...theme.font.caption, color: theme.colors.textMuted },
-  changeProgram: { paddingVertical: theme.space.md, alignItems: 'center' },
-  changeProgramText: { ...theme.font.caption, color: theme.colors.textMuted },
-  footer: {
-    paddingHorizontal: theme.space.lg,
-    paddingTop: theme.space.sm,
-    borderTopWidth: theme.hairline,
-    borderTopColor: theme.colors.border,
-    backgroundColor: theme.colors.background,
-  },
+  sessionName: { ...theme.font.body, color: theme.colors.textSecondary, flex: 1 },
+  sessionMeta: { ...theme.font.monoSmall, fontSize: 11.5, color: theme.colors.textDim },
 });

@@ -1,4 +1,9 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import {
+  Inter_300Light,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+} from '@expo-google-fonts/inter';
 import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
@@ -46,7 +51,14 @@ function useAppStateFocusManager() {
 }
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts(FontAwesome.font);
+  // Inter is the whole typographic system; rendering before it lands would
+  // flash every screen in the platform fallback face.
+  const [loaded, error] = useFonts({
+    Inter_300Light,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+  });
   const [queryClient] = useState(makeQueryClient);
 
   useAppStateFocusManager();
@@ -75,11 +87,12 @@ function RootLayoutNav() {
     ...DarkTheme,
     colors: {
       ...DarkTheme.colors,
-      primary: colors.text,
+      primary: colors.accent,
       background: colors.background,
       card: colors.background,
       text: colors.text,
-      border: colors.border,
+      border: colors.divider,
+      notification: colors.accent,
     },
   };
 

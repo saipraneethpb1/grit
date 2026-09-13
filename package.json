@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
+    "@expo-google-fonts/inter": "^0.4.2",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.110.3",
@@ -12,19 +13,21 @@
     "expo-font": "~57.0.0",
     "expo-linking": "~57.0.2",
     "expo-router": "~57.0.4",
+    "expo-secure-store": "~57.0.4",
     "expo-splash-screen": "~57.0.2",
-    "expo-web-browser": "~57.0.0",
+    "expo-web-browser": "~57.0.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.86.0",
-    "react-native-reanimated": "4.5.0",
+    "react-native": "0.86.3",
+    "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "4.25.2",
+    "react-native-screens": "~4.26.0",
     "react-native-url-polyfill": "^3.0.0",
     "react-native-web": "~0.21.0",
-    "react-native-worklets": "0.10.0"
+    "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@types/react": "~19.2.2",
     "tsx": "^4.23.1",
     "typescript": "~6.0.3"
@@ -42,11 +45,19 @@
     "release:android": "bash scripts/release-android.sh",
     "test:generator": "npx tsx scripts/test-generator.ts",
     "test:session": "npx tsx scripts/test-session-complete.ts",
-    "test": "npm run test:generator && npm run test:session && npm run test:live && npm run test:progression",
+    "test": "npm run test:generator && npm run test:session && npm run test:live && npm run test:progression && npm run test:database && npm run test:guides && npm run test:custom",
     "curate:exercises": "node scripts/curate-exercises.mjs",
     "typecheck": "tsc --noEmit",
     "test:live": "npx tsx scripts/test-live-workout.ts",
-    "test:progression": "npx tsx scripts/test-progression.ts"
+    "test:progression": "npx tsx scripts/test-progression.ts",
+    "validate": "npm run typecheck && npm test",
+    "audit:security": "npm audit",
+    "test:database": "node scripts/test-database.mjs",
+    "test:guides": "node scripts/test-exercise-guides.mjs",
+    "test:custom": "node --import tsx scripts/test-custom-program.mjs"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  }
 }

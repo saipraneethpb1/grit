@@ -1,8 +1,8 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   BackHandler,
   Keyboard,
   Platform,
@@ -15,10 +15,19 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
+import { formatTarget } from '@/src/components/DayWorkoutList';
+import { ExerciseGuide } from '@/src/components/ExerciseGuide';
+import { FadeRule } from '@/src/components/FadeRule';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { RestTimer } from '@/src/components/RestTimer';
+import { WorkoutDialog, type WorkoutDialogState } from '@/src/components/WorkoutDialog';
 import { WorkoutCompleteSheet } from '@/src/components/WorkoutCompleteSheet';
-import { sanitizeRepsInput, sanitizeWeightInput } from '@/src/domain/liveWorkout';
+import {
+  parseRepsValue,
+  parseWeightValue,
+  sanitizeRepsInput,
+  sanitizeWeightInput,
+} from '@/src/domain/liveWorkout';
 import type { WorkoutCompletionResult } from '@/src/domain/progression';
 import { formatMuscles } from '@/src/domain/muscles';
 import type { LiveExercise } from '@/src/domain/types';
@@ -33,6 +42,8 @@ import {
   useCompleteWorkout,
 } from '@/src/hooks/useSessions';
 
+const WEIGHT_STEP = 2.5;
+
 function formatElapsed(totalSeconds: number): string {
   const h = Math.floor(totalSeconds / 3600);
   const m = Math.floor((totalSeconds % 3600) / 60);
@@ -41,6 +52,11 @@ function formatElapsed(totalSeconds: number): string {
     return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+/** "95" not "95.0", "92.5" not "92.50". */
+function formatWeight(value: number): string {
+  return String(Math.round(value * 100) / 100);
 }
 
 export default function WorkoutPlayerScreen() {
@@ -65,6 +81,8 @@ export default function WorkoutPlayerScreen() {
   const [restOpen, setRestOpen] = useState(false);
   const [restSec, setRestSec] = useState(90);
   const [finishing, setFinishing] = useState(false);
+  const finishInFlight = useRef(false);
+  const [dialog, setDialog] = useState<WorkoutDialogState | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   // Held so the celebration sheet keeps the duration the workout actually took
   // rather than a timer that carries on ticking behind it.
@@ -179,16 +197,11 @@ export default function WorkoutPlayerScreen() {
     (n, e) => n + e.sets.filter((s) => s.completed).length,
     0
   );
-  const flatSetIndex = useMemo(() => {
-    let idx = 0;
-    for (let i = 0; i < activeExerciseIndex; i++) idx += exercises[i]?.sets.length ?? 0;
-    return idx + activeSetIndex;
-  }, [exercises, activeExerciseIndex, activeSetIndex]);
   const progress = totalSets ? doneSets / totalSets : 0;
+  const allDone = totalSets > 0 && doneSets === totalSets;
   const isLastSet =
     activeExerciseIndex === exercises.length - 1 &&
     activeSetIndex === (current?.sets.length ?? 1) - 1;
-  const isFirstSet = activeExerciseIndex === 0 && activeSetIndex === 0;
 
   const updateSet = useCallback(
     (exIdx: number, setIdx: number, patch: Partial<LiveExercise['sets'][0]>) => {
@@ -213,17 +226,15 @@ export default function WorkoutPlayerScreen() {
     }
   }, [activeExerciseIndex, activeSetIndex, current, exercises.length]);
 
-  const goToPrevSet = useCallback(() => {
-    if (activeSetIndex > 0) {
-      setActiveSetIndex((s) => s - 1);
-      return;
+  /** What the rest timer is counting down to. */
+  const nextLabel = useMemo(() => {
+    if (!current) return '';
+    if (activeSetIndex < current.sets.length - 1) {
+      return `${current.name} · set ${activeSetIndex + 2}`;
     }
-    if (activeExerciseIndex > 0) {
-      const prevEx = exercises[activeExerciseIndex - 1];
-      setActiveExerciseIndex((e) => e - 1);
-      setActiveSetIndex(prevEx.sets.length - 1);
-    }
-  }, [activeExerciseIndex, activeSetIndex, exercises]);
+    const next = exercises[activeExerciseIndex + 1];
+    return next ? next.name : 'Finish';
+  }, [current, exercises, activeExerciseIndex, activeSetIndex]);
 
   function completeCurrentSet() {
     if (!current || currentSet?.completed) return;
@@ -241,13 +252,33 @@ export default function WorkoutPlayerScreen() {
     if (!isLastSet) goToNextSet();
   }
 
+  function stepWeight(direction: 1 | -1) {
+    if (!currentSet) return;
+    const base = parseWeightValue(currentSet.weight) ?? 0;
+    const next = Math.max(0, base + direction * WEIGHT_STEP);
+    updateSet(activeExerciseIndex, activeSetIndex, { weight: formatWeight(next) });
+  }
+
+  function stepReps(direction: 1 | -1) {
+    if (!currentSet) return;
+    const base = parseRepsValue(currentSet.reps, currentSet.targetReps) ?? 0;
+    const next = Math.max(0, base + direction);
+    updateSet(activeExerciseIndex, activeSetIndex, { reps: String(next) });
+  }
+
   async function onFinish() {
-    if (!user || !plan || !day || finishing) return;
-    if (doneSets === 0) {
-      Alert.alert('Nothing to save', 'Complete at least one set before finishing.');
+    if (finishInFlight.current || savedRef.current) return;
+    if (!user || !plan || !day) {
+      setDialog({ title: 'Workout not ready', message: 'Please wait for your workout to finish loading.' });
       return;
     }
+    if (doneSets === 0) {
+      setDialog({ title: 'Nothing to save', message: 'Log at least one set before finishing.' });
+      return;
+    }
+    finishInFlight.current = true;
     setFinishing(true);
+    setRestOpen(false);
     try {
       const id = await ensureSession();
       const result = await complete.mutateAsync({
@@ -261,16 +292,18 @@ export default function WorkoutPlayerScreen() {
       setFinishedElapsed(formatElapsed(elapsedSeconds));
       setCompletion(result);
     } catch (e) {
-      Alert.alert('Error', e instanceof Error ? e.message : 'Failed to save workout');
+      setDialog({ title: 'Could not save workout', message: e instanceof Error ? e.message : 'Your workout could not be saved. Your logged sets are still on this screen.' });
     } finally {
+      finishInFlight.current = false;
       setFinishing(false);
     }
   }
 
   function confirmFinish() {
+    if (finishInFlight.current || savedRef.current) return;
     Keyboard.dismiss();
     if (doneSets === 0) {
-      Alert.alert('Nothing to save', 'Complete at least one set before finishing.');
+      setDialog({ title: 'Nothing to save', message: 'Log at least one set before finishing.' });
       return;
     }
     const remaining = totalSets - doneSets;
@@ -278,27 +311,25 @@ export default function WorkoutPlayerScreen() {
       onFinish();
       return;
     }
-    Alert.alert(
-      'Finish workout?',
-      `${doneSets} of ${totalSets} sets logged. Your progress will be saved.`,
-      [
-        { text: 'Keep going', style: 'cancel' },
-        { text: 'Finish', style: 'destructive', onPress: onFinish },
-      ]
-    );
+    setDialog({
+      title: 'Finish workout early?',
+      message: `${doneSets} of ${totalSets} sets logged. Save these sets and finish? Unlogged sets will not be saved.`,
+      confirmLabel: 'Save and finish',
+      onConfirm: () => { void onFinish(); },
+    });
   }
 
   const confirmExit = useCallback(() => {
+    if (finishInFlight.current || savedRef.current) return;
     if (doneSets > 0) {
       Keyboard.dismiss();
-      Alert.alert(
-        'Leave without saving?',
-        `${doneSets} set${doneSets === 1 ? '' : 's'} logged will be lost. Use Finish workout to save.`,
-        [
-          { text: 'Stay', style: 'cancel' },
-          { text: 'Leave', style: 'destructive', onPress: () => router.back() },
-        ]
-      );
+      setDialog({
+        title: 'Leave without saving?',
+        message: `${doneSets} logged set${doneSets === 1 ? '' : 's'} will be lost. Use Finish and save to keep them.`,
+        confirmLabel: 'Leave workout',
+        destructive: true,
+        onConfirm: () => router.back(),
+      });
       return;
     }
     router.back();
@@ -329,7 +360,7 @@ export default function WorkoutPlayerScreen() {
   if (isLoading || booting) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={theme.colors.text} />
+        <ActivityIndicator color={theme.colors.accent} />
       </View>
     );
   }
@@ -352,29 +383,63 @@ export default function WorkoutPlayerScreen() {
     );
   }
 
-  const footerPad = Math.max(insets.bottom, theme.space.sm);
-  const bottomPad = 72 + footerPad + keyboardPadding + theme.space.md;
+  const bottomPad = Math.max(insets.bottom, theme.space.lg) + keyboardPadding;
+  const target = formatTarget(current.targetSets, current.targetRepsMin, current.targetRepsMax);
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
-      {/* Compact fixed header */}
+    <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <Pressable onPress={confirmExit} hitSlop={12}>
-            <Text style={styles.back}>← Exit</Text>
+          <Pressable
+            onPress={confirmExit}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="Exit workout"
+            style={({ pressed }) => [styles.exit, pressed && { opacity: 0.6 }]}
+          >
+            <Ionicons name="arrow-back" size={14} color={theme.colors.textMuted} />
+            <Text style={styles.exitText}>Exit</Text>
           </Pressable>
           <Text style={styles.elapsed}>{formatElapsed(elapsedSeconds)}</Text>
         </View>
-        <Text style={styles.dayTitle}>{day.name}</Text>
-        <Text style={styles.progressMeta}>
-          Set {flatSetIndex + 1}/{totalSets} · {doneSets} done
-        </Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.dayTitle} numberOfLines={1}>{day.name}</Text>
+          <Text style={styles.setsMeta}>{doneSets}/{totalSets} sets</Text>
+        </View>
         <View style={styles.barTrack}>
           <View style={[styles.barFill, { width: `${Math.round(progress * 100)}%` }]} />
         </View>
       </View>
 
-      {/* One scroll — chips, exercise, inputs, nav (no flex dead zone) */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.chipRow}
+        style={styles.chipScroll}
+      >
+        {exercises.map((ex, i) => {
+          const done = ex.sets.every((s) => s.completed);
+          const active = i === activeExerciseIndex;
+          return (
+            <Pressable
+              key={ex.planExerciseId}
+              onPress={() => jumpToExercise(i)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              style={({ pressed }) => [styles.exChip, (pressed || active) && styles.exChipActive]}
+            >
+              {active ? <View style={styles.activeDot} /> : null}
+              {done ? (
+                <Ionicons name="checkmark-circle" size={12} color={theme.colors.accentDeep} />
+              ) : null}
+              <Text style={styles.exChipText} numberOfLines={1}>
+                {ex.name}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
       <ScrollView
         ref={scrollRef}
         style={styles.scroll}
@@ -383,134 +448,141 @@ export default function WorkoutPlayerScreen() {
         keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
         showsVerticalScrollIndicator={false}
       >
-        <ScrollView
-          horizontal
-          nestedScrollEnabled
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipRow}
-          style={styles.chipScroll}
-        >
-          {exercises.map((ex, i) => {
-            const done = ex.sets.every((s) => s.completed);
-            const active = i === activeExerciseIndex;
+        <Text style={styles.exName}>{current.name}</Text>
+        <Text style={styles.exMeta}>
+          {formatMuscles(current.primaryMuscles)} · {target}
+          {current.previousBest
+            ? ` · last ${current.previousBest.weight} × ${current.previousBest.reps}`
+            : ''}
+        </Text>
+
+        <ExerciseGuide key={current.exerciseId} exerciseId={current.exerciseId} name={current.name} notes={current.notes} />
+
+        <FadeRule style={styles.rule} />
+
+        <View style={styles.setList}>
+          {current.sets.map((s, j) => {
+            const isCurrent = j === activeSetIndex;
+            const value = s.completed
+              ? `${s.weight || '—'} kg × ${s.reps || '—'}`
+              : isCurrent
+                ? `Logging ${s.weight || '0'} × ${s.reps || '0'}`
+                : '—';
             return (
               <Pressable
-                key={ex.planExerciseId}
-                onPress={() => jumpToExercise(i)}
-                style={[
-                  styles.exChip,
-                  {
-                    backgroundColor: active ? theme.colors.white : theme.colors.card,
-                    borderColor: done ? theme.colors.borderStrong : theme.colors.border,
-                  },
-                ]}
+                key={s.setNumber}
+                onPress={() => setActiveSetIndex(j)}
+                accessibilityRole="button"
+                accessibilityLabel={`Set ${s.setNumber}, ${s.completed ? 'logged' : isCurrent ? 'current' : 'pending'}`}
+                style={({ pressed }) => [styles.setRow, isCurrent && styles.setRowCurrent, pressed && styles.setRowPressed]}
               >
-                <Text
-                  style={[styles.exChipText, { color: active ? theme.colors.black : theme.colors.text }]}
-                  numberOfLines={1}
-                >
-                  {ex.name}
-                </Text>
+                <Text style={styles.setNum}>{s.setNumber}</Text>
+                <Text style={[styles.setValue, !s.completed && !isCurrent && styles.setValueDim]}>{value}</Text>
+                {s.completed ? (
+                  <Ionicons name="checkmark" size={14} color={theme.colors.accent} />
+                ) : isCurrent ? (
+                  <Text style={styles.now}>NOW</Text>
+                ) : null}
               </Pressable>
             );
           })}
-        </ScrollView>
-
-        <View style={styles.section}>
-          <Text style={styles.exName}>{current.name}</Text>
-          <Text style={styles.exMeta}>
-            {formatMuscles(current.primaryMuscles)} · {current.targetRepsMin}–{current.targetRepsMax} reps
-            {current.previousBest
-              ? ` · last ${current.previousBest.weight}×${current.previousBest.reps}`
-              : ''}
-          </Text>
         </View>
 
-        <View style={styles.divider} />
-
-        <View style={styles.section}>
-          <Text style={styles.setLabel}>
-            Set {currentSet.setNumber} of {current.sets.length}
-          </Text>
-
-          <View style={styles.inputRow}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>kg</Text>
-              <TextInput
-                value={currentSet.weight}
-                onChangeText={(t) =>
-                  updateSet(activeExerciseIndex, activeSetIndex, {
-                    weight: sanitizeWeightInput(t),
-                  })
-                }
-                keyboardType="decimal-pad"
-                placeholder="0"
-                placeholderTextColor={theme.colors.textMuted}
-                style={styles.input}
-                selectTextOnFocus
-              />
+        <View style={styles.logCard}>
+          <View style={styles.inputs}>
+            <View style={styles.weightGroup}>
+              <Text style={styles.inputLabel}>Kilos</Text>
+              <View style={styles.stepper}>
+                <Pressable onPress={() => stepWeight(-1)} accessibilityRole="button" accessibilityLabel="Less weight" style={({ pressed }) => [styles.stepBtn, pressed && styles.stepBtnPressed]}>
+                  <Ionicons name="remove" size={14} color={theme.colors.textSecondary} />
+                </Pressable>
+                <TextInput
+                  value={currentSet.weight}
+                  onChangeText={(t) =>
+                    updateSet(activeExerciseIndex, activeSetIndex, { weight: sanitizeWeightInput(t) })
+                  }
+                  editable={!currentSet.completed}
+                  keyboardType="decimal-pad"
+                  placeholder="0"
+                  placeholderTextColor={theme.colors.textFaint}
+                  selectionColor={theme.colors.accent}
+                  accessibilityLabel="Weight in kilos"
+                  style={styles.figure}
+                  selectTextOnFocus
+                />
+                <Pressable onPress={() => stepWeight(1)} accessibilityRole="button" accessibilityLabel="More weight" style={({ pressed }) => [styles.stepBtn, pressed && styles.stepBtnPressed]}>
+                  <Ionicons name="add" size={14} color={theme.colors.textSecondary} />
+                </Pressable>
+              </View>
             </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>reps</Text>
-              <TextInput
-                value={currentSet.reps}
-                onChangeText={(t) =>
-                  updateSet(activeExerciseIndex, activeSetIndex, {
-                    reps: sanitizeRepsInput(t),
-                  })
-                }
-                keyboardType="number-pad"
-                placeholder={String(currentSet.targetReps)}
-                placeholderTextColor={theme.colors.textMuted}
-                style={styles.input}
-                selectTextOnFocus
-              />
+            <View style={styles.repsGroup}>
+              <Text style={styles.inputLabel}>Reps</Text>
+              <View style={styles.stepper}>
+                <Pressable onPress={() => stepReps(-1)} accessibilityRole="button" accessibilityLabel="Fewer reps" style={({ pressed }) => [styles.stepBtn, styles.stepBtnNarrow, pressed && styles.stepBtnPressed]}>
+                  <Ionicons name="remove" size={13} color={theme.colors.textSecondary} />
+                </Pressable>
+                <TextInput
+                  value={currentSet.reps}
+                  onChangeText={(t) =>
+                    updateSet(activeExerciseIndex, activeSetIndex, { reps: sanitizeRepsInput(t) })
+                  }
+                  editable={!currentSet.completed}
+                  keyboardType="number-pad"
+                  placeholder={String(currentSet.targetReps)}
+                  placeholderTextColor={theme.colors.textFaint}
+                  selectionColor={theme.colors.accent}
+                  accessibilityLabel="Reps"
+                  style={styles.figure}
+                  selectTextOnFocus
+                />
+                <Pressable onPress={() => stepReps(1)} accessibilityRole="button" accessibilityLabel="More reps" style={({ pressed }) => [styles.stepBtn, styles.stepBtnNarrow, pressed && styles.stepBtnPressed]}>
+                  <Ionicons name="add" size={13} color={theme.colors.textSecondary} />
+                </Pressable>
+              </View>
             </View>
           </View>
 
-          <Pressable
-            onPress={() =>
-              currentSet.completed
-                ? updateSet(activeExerciseIndex, activeSetIndex, { completed: false })
-                : completeCurrentSet()
-            }
-            style={[styles.completeBtn, currentSet.completed && styles.completeBtnDone]}
-          >
-            <Text style={[styles.completeBtnText, currentSet.completed && styles.completeBtnTextDone]}>
-              {currentSet.completed ? 'Completed ✓' : 'Complete set'}
-            </Text>
-          </Pressable>
+          {currentSet.completed ? (
+            <PrimaryButton
+              title={`Unlog set ${currentSet.setNumber}`}
+              variant="ghost"
+              onPress={() => updateSet(activeExerciseIndex, activeSetIndex, { completed: false })}
+              style={styles.logBtn}
+            />
+          ) : (
+            <PrimaryButton
+              title={`Log set ${currentSet.setNumber}`}
+              icon={<Ionicons name="checkmark" size={15} color={theme.colors.accentText} />}
+              onPress={completeCurrentSet}
+              style={styles.logBtn}
+            />
+          )}
         </View>
 
-        <View style={styles.navRow}>
+        {allDone ? (
           <PrimaryButton
-            title="Previous"
-            variant="ghost"
-            disabled={isFirstSet}
-            onPress={goToPrevSet}
-            style={styles.navBtn}
+            title="Finish workout"
+            variant="filled"
+            onPress={confirmFinish}
+            loading={finishing}
+            style={styles.finish}
           />
-          <PrimaryButton
-            title="Next set"
-            disabled={isLastSet}
-            onPress={goToNextSet}
-            style={styles.navBtn}
-          />
-        </View>
+        ) : null}
+        <PrimaryButton
+          title="Finish and save"
+          variant="link"
+          onPress={confirmFinish}
+          loading={finishing && !allDone}
+          style={styles.finishLink}
+        />
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: footerPad }]}>
-        <PrimaryButton
-          title="Finish workout"
-          variant="ghost"
-          onPress={confirmFinish}
-          loading={finishing}
-        />
-      </View>
+      <WorkoutDialog dialog={dialog} onClose={() => setDialog(null)} />
 
       <RestTimer
         visible={restOpen}
         seconds={restSec}
+        nextLabel={nextLabel}
         onClose={onRestClose}
         onChangeDuration={setRestSec}
       />
@@ -532,130 +604,101 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.background,
+    padding: theme.space.lg,
   },
   errorText: { ...theme.font.body, color: theme.colors.text },
   errorBtn: { marginTop: theme.space.md, minWidth: 160 },
-  header: {
-    paddingHorizontal: theme.space.lg,
-    paddingBottom: theme.space.sm,
-    borderBottomWidth: theme.hairline,
-    borderBottomColor: theme.colors.border,
-  },
+
+  header: { paddingHorizontal: theme.space.lg, paddingBottom: 12 },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.space.xs,
+    minHeight: 30,
   },
-  back: { ...theme.font.caption, color: theme.colors.textSecondary },
-  elapsed: {
-    ...theme.font.caption,
-    color: theme.colors.text,
-    fontVariant: ['tabular-nums'],
-  },
-  dayTitle: {
-    ...theme.font.bodyMedium,
-    fontSize: 17,
-    color: theme.colors.text,
-    marginBottom: 2,
-  },
-  progressMeta: { ...theme.font.caption, color: theme.colors.textMuted, marginBottom: theme.space.xs },
-  barTrack: { height: 2, backgroundColor: theme.colors.border, borderRadius: 1, overflow: 'hidden' },
-  barFill: { height: '100%', backgroundColor: theme.colors.white },
-  scroll: { flex: 1 },
-  scrollContent: {
-    paddingHorizontal: theme.space.lg,
-    paddingTop: theme.space.sm,
-  },
-  chipScroll: {
-    flexGrow: 0,
-    marginBottom: theme.space.sm,
-  },
-  chipRow: {
-    gap: theme.space.sm,
-    paddingRight: theme.space.sm,
-  },
+  exit: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  exitText: { ...theme.font.body, fontSize: 13, color: theme.colors.textMuted },
+  elapsed: { ...theme.font.mono, fontSize: 13, color: theme.colors.text },
+  titleRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginTop: 8 },
+  dayTitle: { ...theme.font.heading, color: theme.colors.text, flex: 1 },
+  setsMeta: { ...theme.font.monoSmall, fontSize: 11.5, color: theme.colors.textDim },
+  barTrack: { height: 2, backgroundColor: theme.colors.track, borderRadius: 1, marginTop: 10, overflow: 'hidden' },
+  barFill: { height: 2, borderRadius: 1, backgroundColor: theme.colors.accent, ...theme.shadow.glow },
+
+  chipScroll: { flexGrow: 0 },
+  chipRow: { gap: 7, paddingHorizontal: theme.space.lg, paddingTop: 6, paddingBottom: 12 },
   exChip: {
-    borderWidth: theme.hairline,
-    borderRadius: theme.radius.sm,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    maxWidth: 140,
-  },
-  exChipText: { fontSize: 12, fontWeight: '500' },
-  section: {
-    marginBottom: theme.space.sm,
-  },
-  divider: {
-    height: theme.hairline,
-    backgroundColor: theme.colors.border,
-    marginBottom: theme.space.md,
-  },
-  exName: {
-    ...theme.font.title,
-    fontSize: 18,
-    color: theme.colors.text,
-    marginBottom: 2,
-  },
-  exMeta: {
-    ...theme.font.caption,
-    color: theme.colors.textMuted,
-    lineHeight: 18,
-  },
-  setLabel: {
-    ...theme.font.bodyMedium,
-    color: theme.colors.text,
-    marginBottom: theme.space.sm,
-  },
-  inputRow: {
+    ...theme.card,
     flexDirection: 'row',
-    gap: theme.space.md,
-    marginBottom: theme.space.md,
-  },
-  inputGroup: { flex: 1 },
-  inputLabel: {
-    ...theme.font.caption,
-    color: theme.colors.textMuted,
-    marginBottom: 6,
-  },
-  input: {
-    borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.sm,
-    backgroundColor: theme.colors.card,
-    paddingVertical: 12,
-    paddingHorizontal: theme.space.md,
-    fontSize: 22,
-    fontWeight: '500',
-    color: theme.colors.text,
-    textAlign: 'center',
-    fontVariant: ['tabular-nums'],
-  },
-  completeBtn: {
-    paddingVertical: 13,
-    borderRadius: theme.radius.sm,
-    borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
     alignItems: 'center',
-    backgroundColor: theme.colors.card,
+    gap: 7,
+    maxWidth: 150,
+    paddingHorizontal: 11,
+    paddingVertical: 8,
   },
-  completeBtnDone: {
-    backgroundColor: theme.colors.success,
-    borderColor: theme.colors.success,
-  },
-  completeBtnText: { ...theme.font.bodyMedium, color: theme.colors.text },
-  completeBtnTextDone: { color: theme.colors.successOn },
-  navRow: {
+  exChipActive: { borderColor: theme.colors.accentDim },
+  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: theme.colors.accent, ...theme.shadow.glow },
+  exChipText: { ...theme.font.bodyMedium, fontSize: 12, lineHeight: 15, color: theme.colors.textSecondary, flexShrink: 1 },
+
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: theme.space.lg },
+  exName: { ...theme.font.title, fontSize: 20, lineHeight: 25, letterSpacing: -0.3, color: theme.colors.text },
+  exMeta: { ...theme.font.small, fontSize: 12, lineHeight: 18, color: theme.colors.textDim, marginTop: 3 },
+  rule: { marginTop: 18, marginBottom: 14 },
+
+  setList: { gap: 6 },
+  setRow: {
+    ...theme.card,
+    minHeight: 44,
     flexDirection: 'row',
-    gap: theme.space.sm,
-    marginTop: theme.space.md,
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 13,
   },
-  navBtn: { flex: 1 },
-  footer: {
-    paddingHorizontal: theme.space.lg,
-    paddingTop: theme.space.sm,
-    borderTopWidth: theme.hairline,
-    borderTopColor: theme.colors.border,
+  setRowCurrent: { borderColor: theme.colors.borderStrong },
+  setRowPressed: { borderColor: theme.colors.accentDim },
+  setNum: { ...theme.font.mono, color: theme.colors.textDim, width: 18 },
+  setValue: { ...theme.font.bodyMedium, color: theme.colors.textSecondary, flex: 1, fontVariant: ['tabular-nums'] },
+  setValueDim: { color: theme.colors.textFaint },
+  now: { ...theme.font.kicker, letterSpacing: 0.8, color: theme.colors.accent },
+
+  logCard: {
+    marginTop: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 15,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.surface,
+    borderWidth: theme.hairline,
+    borderColor: theme.colors.borderStrong,
+    ...theme.shadow.md,
+  },
+  inputs: { flexDirection: 'row', gap: 11 },
+  weightGroup: { flex: 1 },
+  repsGroup: { width: 112 },
+  inputLabel: { ...theme.font.kicker, color: theme.colors.textDim, marginBottom: 8 },
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  stepBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: theme.radius.md,
+    borderWidth: theme.hairline,
+    borderColor: theme.colors.border,
     backgroundColor: theme.colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  stepBtnNarrow: { width: 32 },
+  stepBtnPressed: { borderColor: theme.colors.accentDim },
+  figure: {
+    flex: 1,
+    minWidth: 0,
+    textAlign: 'center',
+    ...theme.font.figure,
+    color: theme.colors.text,
+    paddingVertical: 4,
+  },
+  logBtn: { marginTop: 14 },
+
+  finish: { marginTop: 16 },
+  finishLink: { marginTop: 6 },
 });

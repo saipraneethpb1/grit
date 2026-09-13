@@ -9,8 +9,7 @@ type Props = {
 };
 
 /**
- * Minimal Grit mark — hairline square with a single white bar (loaded weight).
- * Matches the app's dark, restrained visual system.
+ * Minimal Grit mark — hairline square with a single accent bar (loaded weight).
  */
 export function GritLogo({ size = 36, showWordmark = false, style }: Props) {
   const barWidth = Math.round(size * 0.46);
@@ -18,16 +17,7 @@ export function GritLogo({ size = 36, showWordmark = false, style }: Props) {
 
   return (
     <View style={[styles.wrap, style]}>
-      <View
-        style={[
-          styles.mark,
-          {
-            width: size,
-            height: size,
-            borderRadius: theme.radius.sm,
-          },
-        ]}
-      >
+      <View style={[styles.mark, { width: size, height: size, borderRadius: theme.radius.md }]}>
         <View style={[styles.bar, { width: barWidth, height: barHeight, borderRadius: barHeight }]} />
       </View>
       {showWordmark ? <Text style={styles.wordmark}>grit</Text> : null}
@@ -36,26 +26,14 @@ export function GritLogo({ size = 36, showWordmark = false, style }: Props) {
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.space.sm,
-  },
+  wrap: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   mark: {
     borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.card,
+    borderColor: theme.colors.borderStrong,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bar: {
-    backgroundColor: theme.colors.white,
-    marginTop: 1,
-  },
-  wordmark: {
-    ...theme.font.label,
-    color: theme.colors.textMuted,
-    textTransform: 'lowercase',
-    letterSpacing: 1.2,
-  },
+  bar: { backgroundColor: theme.colors.accent, marginTop: 1, ...theme.shadow.glow },
+  wordmark: { ...theme.font.kicker, fontSize: 11, color: theme.colors.textMuted },
 });

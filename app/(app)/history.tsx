@@ -56,19 +56,20 @@ function summarize(session: WorkoutSessionWithSets): SessionSummary {
 function SessionCard({ session }: { session: SessionSummary }) {
   return (
     <View style={styles.card}>
-      <Text style={styles.day}>{session.dayName}</Text>
+      <View style={styles.cardHead}>
+        <Text style={styles.day}>{session.dayName}</Text>
+        <Text style={styles.when}>{session.when}</Text>
+      </View>
       <Text style={styles.meta}>
-        {session.when} · {session.setCount} sets · {session.volume} kg
+        {session.setCount} sets{session.volume > 0 ? ` · ${session.volume} kg moved` : ''}
       </Text>
 
       {session.exercises.map((ex) => (
         <View key={ex.name} style={styles.exBlock}>
           <Text style={styles.exName}>{ex.name}</Text>
-          {ex.sets.map((s) => (
-            <Text key={s.id} style={styles.setLine}>
-              {s.set_number}. {s.weight ?? '—'} kg × {s.reps ?? '—'}
-            </Text>
-          ))}
+          <Text style={styles.setLine}>
+            {ex.sets.map((s) => `${s.weight ?? '—'} × ${s.reps ?? '—'}`).join('   ')}
+          </Text>
         </View>
       ))}
     </View>
@@ -90,7 +91,7 @@ export default function HistoryScreen() {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={theme.colors.text} />
+        <ActivityIndicator color={theme.colors.accent} />
       </View>
     );
   }
@@ -129,13 +130,13 @@ export default function HistoryScreen() {
         <RefreshControl
           refreshing={isRefetching}
           onRefresh={refetch}
-          tintColor={theme.colors.textSecondary}
-          colors={[theme.colors.text]}
-          progressBackgroundColor={theme.colors.card}
+          tintColor={theme.colors.accent}
+          colors={[theme.colors.accent]}
+          progressBackgroundColor={theme.colors.surface}
         />
       }
       ListHeaderComponent={
-        sessions.length > 0 ? <Text style={styles.subtitle}>Completed sessions</Text> : null
+        sessions.length > 0 ? <Text style={styles.kicker}>Completed sessions</Text> : null
       }
       ListEmptyComponent={
         <EmptyState
@@ -157,15 +158,13 @@ const styles = StyleSheet.create({
   },
   content: { padding: theme.space.lg, paddingBottom: theme.space.xl },
   contentEmpty: { flexGrow: 1, justifyContent: 'center' },
-  subtitle: { ...theme.font.caption, color: theme.colors.textMuted, marginBottom: theme.space.md },
-  card: {
-    borderTopWidth: theme.hairline,
-    borderTopColor: theme.colors.border,
-    paddingVertical: theme.space.md,
-  },
-  day: { ...theme.font.bodyMedium, color: theme.colors.text, marginBottom: 4 },
-  meta: { ...theme.font.caption, color: theme.colors.textMuted, marginBottom: theme.space.sm },
-  exBlock: { marginTop: theme.space.sm },
-  exName: { ...theme.font.caption, color: theme.colors.textSecondary, marginBottom: 2 },
-  setLine: { ...theme.font.caption, color: theme.colors.textMuted, lineHeight: 20 },
+  kicker: { ...theme.font.kicker, color: theme.colors.textDim, marginBottom: 10 },
+  card: { ...theme.card, padding: 14, marginBottom: 8 },
+  cardHead: { flexDirection: 'row', alignItems: 'baseline', gap: 10 },
+  day: { ...theme.font.bodyMedium, fontSize: 14.5, color: theme.colors.text, flex: 1 },
+  when: { ...theme.font.monoSmall, fontSize: 11.5, color: theme.colors.textDim },
+  meta: { ...theme.font.small, color: theme.colors.textDim, marginTop: 3 },
+  exBlock: { marginTop: 10 },
+  exName: { ...theme.font.caption, color: theme.colors.textSecondary },
+  setLine: { ...theme.font.monoSmall, fontSize: 11.5, color: theme.colors.textDim, marginTop: 2 },
 });

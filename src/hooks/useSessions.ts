@@ -402,6 +402,23 @@ export function useCompleteWorkout() {
       qc.invalidateQueries({ queryKey: ['sessions'] });
       qc.invalidateQueries({ queryKey: ['profileStats'] });
       qc.invalidateQueries({ queryKey: ['activePlan'] });
+      qc.invalidateQueries({ queryKey: ['previousBests'] });
     },
+  });
+}
+
+/**
+ * Last logged weight × reps for a set of exercises, for screens that only
+ * display it (day detail). The player fetches its own copy through
+ * `enrichWithHistory` because it also pre-fills the inputs from it.
+ */
+export function usePreviousBests(exerciseIds: string[]) {
+  const { user } = useAuth();
+  // Sorted and joined so the key is stable however the caller orders the ids.
+  const key = [...new Set(exerciseIds)].sort().join(',');
+  return useQuery({
+    queryKey: ['previousBests', user?.id, key],
+    enabled: Boolean(user?.id && key),
+    queryFn: () => fetchPreviousBests(user!.id, key.split(',')),
   });
 }

@@ -12,19 +12,19 @@ type Props = {
 
 const TONE: Record<ExperienceLevel, { fg: string; bg: string; border: string }> = {
   beginner: {
-    fg: theme.colors.success,
-    bg: theme.colors.successSoft,
-    border: theme.colors.successBorder,
+    fg: theme.colors.accentText,
+    bg: theme.colors.accentSoft,
+    border: theme.colors.accentDim,
   },
   intermediate: {
     fg: theme.colors.textSecondary,
-    bg: theme.colors.chip,
-    border: theme.colors.border,
+    bg: theme.colors.track,
+    border: theme.colors.borderStrong,
   },
   advanced: {
-    fg: theme.colors.orange,
-    bg: 'rgba(251, 146, 60, 0.12)',
-    border: 'rgba(251, 146, 60, 0.35)',
+    fg: theme.colors.text,
+    bg: theme.colors.borderStrong,
+    border: theme.colors.textFaint,
   },
 };
 
@@ -33,26 +33,19 @@ export function LevelBadge({ level, style }: Props) {
   const tone = TONE[level];
 
   return (
-    <View
-      style={[styles.badge, { backgroundColor: tone.bg, borderColor: tone.border }, style]}
-    >
-      <Text style={[styles.text, { color: tone.fg }]}>
-        {EXPERIENCE_LEVEL_LABELS[level]}
-      </Text>
+    <View style={[styles.badge, { backgroundColor: tone.bg, borderColor: tone.border }, style]}>
+      <Text style={[styles.text, { color: tone.fg }]}>{EXPERIENCE_LEVEL_LABELS[level]}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   badge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 9,
     paddingVertical: 3,
     borderRadius: theme.radius.full,
     borderWidth: theme.hairline,
     alignSelf: 'flex-start',
   },
-  text: {
-    ...theme.font.label,
-    fontSize: 11,
-  },
+  text: { ...theme.font.monoSmall, fontWeight: '500', letterSpacing: 0.5 },
 });

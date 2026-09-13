@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
+import { PrimaryButton } from './PrimaryButton';
 
 const PRESETS = [60, 90, 120, 180];
 
 type Props = {
   visible: boolean;
   seconds: number;
+  /** What the lifter is resting for, e.g. "Bench Press · set 3". */
+  nextLabel?: string;
   onClose: () => void;
   onChangeDuration: (sec: number) => void;
 };
 
-export function RestTimer({ visible, seconds, onClose, onChangeDuration }: Props) {
+export function RestTimer({ visible, seconds, nextLabel, onClose, onChangeDuration }: Props) {
   const [remaining, setRemaining] = useState(seconds);
   const endAt = useRef<number>(Date.now() + seconds * 1000);
 
@@ -31,7 +34,7 @@ export function RestTimer({ visible, seconds, onClose, onChangeDuration }: Props
     return () => clearInterval(id);
   }, [visible, seconds]);
 
-  const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
+  const mm = Math.floor(remaining / 60);
   const ss = String(remaining % 60).padStart(2, '0');
   const done = remaining <= 0;
 
@@ -39,39 +42,31 @@ export function RestTimer({ visible, seconds, onClose, onChangeDuration }: Props
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={styles.sheet}>
-          <Text style={styles.label}>{done ? 'Done' : 'Rest'}</Text>
-          <Text style={[styles.time, done && { color: theme.colors.textSecondary }]}>
-            {done ? '00:00' : `${mm}:${ss}`}
+          <Text style={styles.kicker}>{done ? 'Ready' : 'Rest'}</Text>
+          <Text style={[styles.time, done && styles.timeDone]}>
+            {mm}:{ss}
           </Text>
+          {nextLabel ? <Text style={styles.next}>Next · {nextLabel}</Text> : null}
 
           <View style={styles.presets}>
-            {PRESETS.map((p) => (
-              <Pressable
-                key={p}
-                onPress={() => onChangeDuration(p)}
-                style={[
-                  styles.preset,
-                  {
-                    backgroundColor: seconds === p ? theme.colors.white : 'transparent',
-                    borderColor: seconds === p ? theme.colors.white : theme.colors.border,
-                  },
-                ]}
-              >
-                <Text
-                  style={{
-                    color: seconds === p ? theme.colors.black : theme.colors.textSecondary,
-                    ...theme.font.caption,
-                  }}
+            {PRESETS.map((p) => {
+              const on = seconds === p;
+              return (
+                <Pressable
+                  key={p}
+                  onPress={() => onChangeDuration(p)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: on }}
+                  style={styles.preset}
                 >
-                  {p}s
-                </Text>
-              </Pressable>
-            ))}
+                  {on ? <View style={styles.presetOn} /> : null}
+                  <Text style={[styles.presetText, on && styles.presetTextOn]}>{p}s</Text>
+                </Pressable>
+              );
+            })}
           </View>
 
-          <Pressable onPress={onClose} style={styles.btn}>
-            <Text style={styles.btnText}>{done ? 'Continue' : 'Skip'}</Text>
-          </Pressable>
+          <PrimaryButton title={done ? 'Next set' : 'Skip rest'} onPress={onClose} />
         </View>
       </View>
     </Modal>
@@ -81,45 +76,49 @@ export function RestTimer({ visible, seconds, onClose, onChangeDuration }: Props
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.85)',
+    backgroundColor: theme.colors.backdrop,
     justifyContent: 'center',
-    padding: theme.space.lg,
+    padding: 24,
   },
   sheet: {
     borderRadius: theme.radius.lg,
     borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.card,
-    padding: theme.space.lg,
+    borderColor: theme.colors.borderStrong,
+    backgroundColor: theme.colors.surface,
+    paddingVertical: 26,
+    paddingHorizontal: 20,
     alignItems: 'center',
+    ...theme.shadow.lg,
   },
-  label: { ...theme.font.caption, color: theme.colors.textMuted, marginBottom: theme.space.sm },
-  time: {
-    fontSize: 48,
-    fontWeight: '300',
-    color: theme.colors.text,
-    fontVariant: ['tabular-nums'],
-    marginBottom: theme.space.lg,
-  },
+  kicker: { ...theme.font.kicker, letterSpacing: 1.5, color: theme.colors.accentDeep },
+  time: { ...theme.font.clock, color: theme.colors.text, marginTop: 14, marginBottom: 4 },
+  timeDone: { color: theme.colors.accentText },
+  next: { ...theme.font.caption, color: theme.colors.textDim, marginBottom: 20 },
   presets: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: theme.space.sm,
+    gap: 7,
     justifyContent: 'center',
-    marginBottom: theme.space.lg,
+    marginBottom: 20,
+    alignSelf: 'stretch',
   },
   preset: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    minWidth: 56,
+    minHeight: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: theme.radius.full,
     borderWidth: theme.hairline,
+    borderColor: theme.colors.border,
+    overflow: 'hidden',
   },
-  btn: {
-    width: '100%',
-    borderRadius: theme.radius.md,
-    paddingVertical: 14,
-    alignItems: 'center',
-    backgroundColor: theme.colors.white,
+  presetOn: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    borderRadius: theme.radius.full,
+    backgroundColor: theme.colors.accentSoft,
+    borderWidth: theme.hairline,
+    borderColor: theme.colors.accent,
   },
-  btnText: { ...theme.font.bodyMedium, color: theme.colors.black },
+  presetText: { ...theme.font.mono, color: theme.colors.textMuted },
+  presetTextOn: { color: theme.colors.accentText },
 });

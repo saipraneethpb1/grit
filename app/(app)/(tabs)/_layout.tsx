@@ -1,69 +1,50 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
+import type { ColorValue } from 'react-native';
 import { theme } from '@/constants/theme';
-import { GritLogo } from '@/src/components/GritLogo';
 
-function TabIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={20} name={props.name} color={props.color} />;
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+/** Filled glyph when focused, outline otherwise — the accent as a line, not a flood. */
+function tabIcon(filled: IconName, outline: IconName) {
+  return ({ focused, color }: { focused: boolean; color: ColorValue }) => (
+    <Ionicons size={19} name={focused ? filled : outline} color={color} />
+  );
 }
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.colors.text,
-        tabBarInactiveTintColor: theme.colors.tabIconDefault,
+        headerShown: false,
+        tabBarActiveTintColor: theme.colors.accent,
+        tabBarInactiveTintColor: theme.colors.textFaint,
         tabBarStyle: {
           backgroundColor: theme.colors.background,
-          borderTopColor: theme.colors.border,
+          borderTopColor: theme.colors.divider,
           borderTopWidth: theme.hairline,
-          height: 56,
-          paddingBottom: 6,
           paddingTop: 6,
         },
-        tabBarLabelStyle: { ...theme.font.caption, fontSize: 11 },
-        headerStyle: { backgroundColor: theme.colors.background },
-        headerTintColor: theme.colors.text,
-        headerShadowVisible: false,
-        headerTitleStyle: { ...theme.font.bodyMedium, fontSize: 17 },
+        tabBarItemStyle: { paddingVertical: 2 },
+        tabBarLabelStyle: { ...theme.font.tab },
+        sceneStyle: { backgroundColor: theme.colors.background },
       }}
     >
       <Tabs.Screen
         name="index"
-        options={{
-          title: 'Train',
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <View style={{ opacity: focused ? 1 : 0.4 }}>
-              <GritLogo size={22} />
-            </View>
-          ),
-        }}
+        options={{ title: 'Train', tabBarIcon: tabIcon('flash', 'flash-outline') }}
       />
       <Tabs.Screen
-        name="history"
-        options={{
-          title: 'Log',
-          tabBarIcon: ({ color }) => <TabIcon name="list" color={String(color)} />,
-        }}
+        name="program"
+        options={{ title: 'Program', tabBarIcon: tabIcon('calendar', 'calendar-outline') }}
       />
       <Tabs.Screen
         name="exercises"
-        options={{
-          title: 'Library',
-          tabBarIcon: ({ color }) => <TabIcon name="search" color={String(color)} />,
-        }}
+        options={{ title: 'Library', tabBarIcon: tabIcon('barbell', 'barbell-outline') }}
       />
       <Tabs.Screen
         name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabIcon name="user-o" color={String(color)} />,
-        }}
+        options={{ title: 'You', tabBarIcon: tabIcon('person', 'person-outline') }}
       />
     </Tabs>
   );

@@ -3,21 +3,22 @@ import { theme } from '@/constants/theme';
 
 type Props = {
   children: string;
+  /** Accent tone for a kicker that names the block's subject rather than its type. */
+  accent?: boolean;
   style?: ViewStyle;
 };
 
-export function SectionLabel({ children, style }: Props) {
+/** Uppercase monospace kicker above a block. */
+export function SectionLabel({ children, accent, style }: Props) {
   return (
     <View style={[styles.wrap, style]}>
-      <Text style={styles.text}>{children}</Text>
+      <Text style={[styles.text, accent && styles.accent]}>{children}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { marginBottom: theme.space.sm },
-  text: {
-    ...theme.font.label,
-    color: theme.colors.textMuted,
-  },
+  wrap: { marginBottom: 10 },
+  text: { ...theme.font.kicker, color: theme.colors.textDim },
+  accent: { color: theme.colors.accentDeep },
 });

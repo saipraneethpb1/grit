@@ -97,62 +97,11 @@ async function hydratePlan(plan: WorkoutPlan): Promise<WorkoutPlanWithDays> {
 }
 
 async function saveGeneratedPlan(
-  userId: string,
   generated: GeneratedPlan
 ): Promise<string> {
-  // Deactivate existing active plans
-  await supabase
-    .from('workout_plans')
-    .update({ is_active: false, updated_at: new Date().toISOString() })
-    .eq('user_id', userId)
-    .eq('is_active', true);
-
-  // New program starts at day 0
-  await supabase.from('profiles').update({ current_day_index: 0 }).eq('id', userId);
-
-  const { data: plan, error: planError } = await supabase
-    .from('workout_plans')
-    .insert({
-      user_id: userId,
-      template_id: generated.template_id,
-      name: generated.name,
-      is_active: true,
-    })
-    .select('*')
-    .single();
-
-  if (planError) throw planError;
-
-  for (const day of generated.days) {
-    const { data: planDay, error: dayError } = await supabase
-      .from('plan_days')
-      .insert({
-        plan_id: plan.id,
-        day_index: day.day_index,
-        name: day.name,
-        focus_muscles: day.focus_muscles,
-      })
-      .select('*')
-      .single();
-
-    if (dayError) throw dayError;
-
-    if (day.exercises.length > 0) {
-      const rows = day.exercises.map((ex) => ({
-        plan_day_id: planDay.id,
-        exercise_id: ex.exercise_id,
-        sort_order: ex.sort_order,
-        target_sets: ex.target_sets,
-        target_reps_min: ex.target_reps_min,
-        target_reps_max: ex.target_reps_max,
-      }));
-
-      const { error: peError } = await supabase.from('plan_exercises').insert(rows);
-      if (peError) throw peError;
-    }
-  }
-
-  return plan.id as string;
+  const { data, error } = await supabase.rpc('save_generated_plan', { payload: generated });
+  if (error) throw error;
+  return data as string;
 }
 
 export function useActivePlan() {
@@ -165,10 +114,11 @@ export function useActivePlan() {
 }
 
 export function usePlan(planId: string | undefined) {
+  const { user } = useAuth();
   return useQuery({
-    queryKey: ['plan', planId],
+    queryKey: ['plan', user?.id, planId],
     queryFn: () => fetchPlanById(planId!),
-    enabled: Boolean(planId),
+    enabled: Boolean(user?.id && planId),
   });
 }
 
@@ -179,7 +129,7 @@ export function useSavePlan() {
   return useMutation({
     mutationFn: async (generated: GeneratedPlan) => {
       if (!user) throw new Error('Not signed in');
-      return saveGeneratedPlan(user.id, generated);
+      return saveGeneratedPlan(generated);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['activePlan'] });

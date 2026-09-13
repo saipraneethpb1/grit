@@ -4,7 +4,7 @@ import { levelFromXp } from '@/src/domain/progression';
 
 type Props = {
   totalXp: number;
-  /** Drops the caption row for tight spots like the home header. */
+  /** Drops the caption row for tight spots. */
   compact?: boolean;
 };
 
@@ -39,7 +39,6 @@ export function XpBar({ totalXp, compact }: Props) {
 
       {!compact ? (
         <Text style={styles.caption}>
-          {level.xpIntoLevel.toLocaleString()} / {level.xpForLevel.toLocaleString()} ·{' '}
           {level.xpToNextLevel.toLocaleString()} XP to level {level.level + 1}
         </Text>
       ) : null}
@@ -48,7 +47,7 @@ export function XpBar({ totalXp, compact }: Props) {
 }
 
 const styles = StyleSheet.create({
-  root: { gap: theme.space.sm },
+  root: { gap: 10 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -56,30 +55,31 @@ const styles = StyleSheet.create({
     gap: theme.space.sm,
   },
   levelChip: {
-    paddingHorizontal: theme.space.sm,
+    paddingHorizontal: 9,
     paddingVertical: 3,
     borderRadius: theme.radius.full,
-    backgroundColor: theme.colors.tintSoft,
+    backgroundColor: theme.colors.accentSoft,
     borderWidth: theme.hairline,
-    borderColor: theme.colors.tintDim,
+    borderColor: theme.colors.accentDim,
   },
   levelChipText: {
-    ...theme.font.label,
+    ...theme.font.mono,
     fontSize: 11,
-    color: theme.colors.tint,
-    letterSpacing: 0.6,
+    letterSpacing: 0.7,
+    color: theme.colors.accentText,
   },
-  xpTotal: { ...theme.font.caption, color: theme.colors.textMuted },
+  xpTotal: { ...theme.font.monoSmall, fontSize: 11.5, color: theme.colors.textDim },
   track: {
     height: 8,
-    borderRadius: theme.radius.full,
-    backgroundColor: theme.colors.chip,
+    borderRadius: 4,
+    backgroundColor: theme.colors.track,
     overflow: 'hidden',
   },
   fill: {
     height: '100%',
-    borderRadius: theme.radius.full,
-    backgroundColor: theme.colors.tint,
+    borderRadius: 4,
+    backgroundColor: theme.colors.accent,
+    ...theme.shadow.glow,
   },
-  caption: { ...theme.font.caption, color: theme.colors.textMuted },
+  caption: { ...theme.font.small, color: theme.colors.textDim, marginTop: -2 },
 });

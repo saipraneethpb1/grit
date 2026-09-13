@@ -4,6 +4,7 @@ import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
 import { DayWorkoutList } from '@/src/components/DayWorkoutList';
+import { FadeRule } from '@/src/components/FadeRule';
 import { LevelBadge } from '@/src/components/LevelBadge';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { TrainingAudit } from '@/src/components/TrainingAudit';
@@ -40,7 +41,7 @@ export default function PreviewPlanScreen() {
   }, [templateId, methodologyId]);
 
   async function onSave() {
-    if (!plan) return;
+    if (!plan || saving) return;
     setSaving(true);
     try {
       const id = await savePlan.mutateAsync(plan);
@@ -56,7 +57,7 @@ export default function PreviewPlanScreen() {
   if (!template || !plan) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>Unknown split template.</Text>
+        <Text style={styles.errorText}>This program is unavailable. Go back and choose another.</Text>
       </View>
     );
   }
@@ -69,7 +70,7 @@ export default function PreviewPlanScreen() {
       >
         {methodology ? (
           <View style={styles.methodRow}>
-            <Text style={styles.method}>{methodology.name}</Text>
+            <Text style={styles.kicker}>{methodology.name}</Text>
             <LevelBadge level={methodology.level} />
           </View>
         ) : null}
@@ -78,8 +79,10 @@ export default function PreviewPlanScreen() {
 
         <TrainingAudit plan={plan} />
 
-        {plan.days.map((day) => (
-          <View key={day.day_index} style={styles.dayBlock}>
+        {plan.days.map((day, i) => (
+          <View key={day.day_index}>
+            {i > 0 ? <FadeRule style={styles.rule} /> : null}
+            <Text style={styles.dayKicker}>Day {day.day_index + 1}</Text>
             <DayWorkoutList day={day} />
           </View>
         ))}
@@ -87,7 +90,7 @@ export default function PreviewPlanScreen() {
 
       <View style={[styles.footer, { paddingBottom: footerPad }]}>
         <PrimaryButton
-          title="Save program"
+          title="Start this program"
           onPress={onSave}
           loading={saving || savePlan.isPending}
           disabled={saving || savePlan.isPending}
@@ -99,32 +102,24 @@ export default function PreviewPlanScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background, padding: theme.space.lg },
   errorText: { ...theme.font.body, color: theme.colors.text },
   content: { padding: theme.space.lg },
-  methodRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.space.sm,
-    marginBottom: theme.space.xs,
-  },
-  method: { ...theme.font.caption, color: theme.colors.textMuted },
-  title: { ...theme.font.title, color: theme.colors.text, marginBottom: theme.space.sm },
-  desc: { ...theme.font.body, color: theme.colors.textSecondary, marginBottom: theme.space.md },
-  dayBlock: {
-    borderTopWidth: theme.hairline,
-    borderTopColor: theme.colors.border,
-    paddingTop: theme.space.md,
-    marginBottom: theme.space.md,
-  },
+  methodRow: { flexDirection: 'row', alignItems: 'center', gap: theme.space.sm, marginBottom: 8 },
+  kicker: { ...theme.font.kicker, color: theme.colors.accentDeep },
+  title: { ...theme.font.display, color: theme.colors.text, marginBottom: 6 },
+  desc: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: theme.space.md },
+  rule: { marginVertical: 18 },
+  dayKicker: { ...theme.font.kicker, color: theme.colors.textDim, marginBottom: 6 },
   footer: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    padding: theme.space.lg,
+    paddingHorizontal: theme.space.lg,
+    paddingTop: 12,
     borderTopWidth: theme.hairline,
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.divider,
     backgroundColor: theme.colors.background,
   },
 });

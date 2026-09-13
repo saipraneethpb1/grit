@@ -9,10 +9,10 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
 import { LevelBadge } from '@/src/components/LevelBadge';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
-import { SectionLabel } from '@/src/components/SectionLabel';
 import { SplitCard } from '@/src/components/SplitCard';
 import { getSplitTemplate, SPLIT_TEMPLATES } from '@/src/domain/catalog';
 import {
@@ -37,8 +37,20 @@ function methodologyCommitment(m: Methodology): string {
   return `${days} · up to ${m.maxExercisesPerDay} exercises a session`;
 }
 
+/** Thin step bars, the onboarding progress mark. */
+function StepBars({ step, total }: { step: number; total: number }) {
+  return (
+    <View style={styles.stepBars} accessibilityLabel={`Step ${step} of ${total}`}>
+      {Array.from({ length: total }, (_, i) => (
+        <View key={i} style={[styles.stepBar, i < step && styles.stepBarOn]} />
+      ))}
+    </View>
+  );
+}
+
 export default function SplitsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [step, setStep] = useState<'method' | 'split'>('method');
   const [methodId, setMethodId] = useState<MethodologyId | null>(null);
 
@@ -68,19 +80,12 @@ export default function SplitsScreen() {
   if (step === 'split') {
     return (
       <ScrollView style={styles.root} contentContainerStyle={styles.content}>
-        <SectionLabel>Step 2 of 2</SectionLabel>
-        <Text style={styles.title}>Weekly split</Text>
+        <StepBars step={2} total={2} />
+        <Text style={styles.kicker}>Step 2 of 2</Text>
+        <Text style={styles.title}>How many days</Text>
         <Text style={styles.lead}>
-          How {method?.name} spreads across your week. The recommended one is set up
-          for this system — the others still work.
+          Fewer days means more muscles per session, never fewer sets per muscle across the week. The recommended split fits {method?.name}.
         </Text>
-
-        <PrimaryButton
-          title="← Back to systems"
-          variant="ghost"
-          onPress={() => setStep('method')}
-          style={{ marginBottom: theme.space.md }}
-        />
 
         {splitList.map((split) => (
           <SplitCard
@@ -93,167 +98,161 @@ export default function SplitsScreen() {
             }
           />
         ))}
+
+        <PrimaryButton
+          title="Back to training styles"
+          variant="link"
+          onPress={() => setStep('method')}
+          style={styles.backLink}
+        />
       </ScrollView>
     );
   }
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.content}>
-      <SectionLabel>Step 1 of 2</SectionLabel>
-      <Text style={styles.title}>Training system</Text>
-      <Text style={styles.lead}>
-        Public training principles. Not affiliated with any coach or brand.
-      </Text>
+    <View style={styles.root}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <StepBars step={1} total={2} />
+        <Text style={styles.kicker}>Step 1 of 2</Text>
+        <Text style={styles.title}>Choose a training style</Text>
+        <Text style={styles.lead}>
+          Every style biases the sets, rep ranges and movement choices the generator makes. Pick what you are chasing, or bring your own routine.
+        </Text>
 
-      {quickStart ? (
-        <View style={styles.quickStart}>
-          <Text style={styles.quickStartKicker}>New to lifting?</Text>
-          <Text style={styles.quickStartTitle}>Skip the setup</Text>
-          <Text style={styles.quickStartBody}>
-            {quickStart.tagline} We will build the whole week for you — you can change
-            it any time.
-          </Text>
-          <PrimaryButton
-            title="Start a beginner program"
-            onPress={() =>
-              router.push(
-                previewHref(quickStart.defaultSplitId, quickStart.id) as never
-              )
-            }
-            style={{ marginTop: theme.space.md }}
-          />
+        <View style={styles.shortcuts}>
+          <Pressable
+            onPress={() => router.push('/(app)/splits/custom')}
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.shortcut, pressed && styles.optionPressed]}
+          >
+            <Text style={styles.shortcutTitle}>Already have a routine?</Text>
+            <Text style={styles.shortcutBody}>Build a custom program from your own days, exercises, sets and reps.</Text>
+          </Pressable>
+          {quickStart ? (
+            <Pressable
+              onPress={() => router.push(previewHref(quickStart.defaultSplitId, quickStart.id) as never)}
+              accessibilityRole="button"
+              style={({ pressed }) => [styles.shortcut, styles.shortcutTint, pressed && styles.optionPressed]}
+            >
+              <Text style={styles.shortcutKicker}>New to lifting?</Text>
+              <Text style={styles.shortcutTitle}>Skip the setup</Text>
+              <Text style={styles.shortcutBody}>
+                {quickStart.tagline} The whole week is built for you and can change any time.
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
-      ) : null}
 
-      <Text style={styles.orLabel}>or pick a system</Text>
+        {EXPERIENCE_LEVELS.map((level) => {
+          const group = getMethodologiesByLevel(level);
+          if (group.length === 0) return null;
 
-      {EXPERIENCE_LEVELS.map((level) => {
-        const group = getMethodologiesByLevel(level);
-        if (group.length === 0) return null;
+          return (
+            <View key={level} style={styles.levelGroup}>
+              <View style={styles.levelHeader}>
+                <Text style={styles.levelTitle}>{EXPERIENCE_LEVEL_LABELS[level]}</Text>
+                <LevelBadge level={level} />
+              </View>
+              <Text style={styles.levelBlurb}>{EXPERIENCE_LEVEL_BLURBS[level]}</Text>
 
-        return (
-          <View key={level} style={styles.levelGroup}>
-            <View style={styles.levelHeader}>
-              <Text style={styles.levelTitle}>{EXPERIENCE_LEVEL_LABELS[level]}</Text>
-              <LevelBadge level={level} />
+              <View style={styles.options}>
+                {group.map((m) => {
+                  const selected = methodId === m.id;
+                  return (
+                    <Pressable
+                      key={m.id}
+                      onPress={() => setMethodId(m.id)}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected }}
+                      style={({ pressed }) => [
+                        styles.option,
+                        selected && styles.optionSelected,
+                        pressed && !selected && styles.optionPressed,
+                      ]}
+                    >
+                      <View style={styles.radio}>
+                        {selected ? <View style={styles.radioDot} /> : null}
+                      </View>
+                      <View style={styles.optionBody}>
+                        <Text style={styles.optionLabel}>{m.name}</Text>
+                        <Text style={styles.optionNote}>{m.tagline}</Text>
+                        <Text style={styles.optionMeta}>{methodologyCommitment(m)}</Text>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
             </View>
-            <Text style={styles.levelBlurb}>{EXPERIENCE_LEVEL_BLURBS[level]}</Text>
-
-            {group.map((m) => {
-              const selected = methodId === m.id;
-              return (
-                <Pressable
-                  key={m.id}
-                  onPress={() => setMethodId(m.id)}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  style={({ pressed }) => [
-                    styles.methodCard,
-                    selected && styles.methodCardSelected,
-                    { opacity: pressed ? 0.75 : 1 },
-                  ]}
-                >
-                  <Text style={[styles.methodName, selected && styles.methodNameSelected]}>
-                    {m.name}
-                  </Text>
-                  <Text style={[styles.methodTag, selected && styles.methodTagSelected]}>
-                    {m.tagline}
-                  </Text>
-                  <Text style={[styles.methodMeta, selected && styles.methodMetaSelected]}>
-                    {methodologyCommitment(m)}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        );
-      })}
-
-      <View style={styles.footerSpacer} />
-
-      <PrimaryButton
-        title={method ? `Continue with ${method.name}` : 'Choose a system to continue'}
-        disabled={!methodId}
-        onPress={() => setStep('split')}
-      />
-    </ScrollView>
+          );
+        })}
+      </ScrollView>
+      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, theme.space.md) }]}>
+        <PrimaryButton
+          title={method ? `Continue with ${method.name}` : 'Choose a training style'}
+          disabled={!methodId}
+          onPress={() => setStep('split')}
+          style={styles.cta}
+        />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
-  content: { padding: theme.space.lg, paddingBottom: theme.space.xl },
-  title: { ...theme.font.title, color: theme.colors.text, marginBottom: theme.space.sm },
-  lead: {
-    ...theme.font.body,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.space.lg,
-  },
+  content: { paddingHorizontal: 22, paddingTop: 22, paddingBottom: theme.space.xl },
+  stepBars: { flexDirection: 'row', gap: 5, marginBottom: 30 },
+  stepBar: { flex: 1, height: 2, borderRadius: 1, backgroundColor: theme.colors.border },
+  stepBarOn: { backgroundColor: theme.colors.accent },
+  kicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 12 },
+  title: { ...theme.font.hero, color: theme.colors.text, marginBottom: 10 },
+  lead: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: 26 },
 
-  quickStart: {
-    borderWidth: theme.hairline,
-    borderColor: theme.colors.successBorder,
-    backgroundColor: theme.colors.successSoft,
-    borderRadius: theme.radius.md,
-    padding: theme.space.md,
-  },
-  quickStartKicker: {
-    ...theme.font.label,
-    color: theme.colors.success,
-    marginBottom: 4,
-  },
-  quickStartTitle: {
-    ...theme.font.title,
-    fontSize: 18,
-    color: theme.colors.text,
-    marginBottom: 4,
-  },
-  quickStartBody: {
-    ...theme.font.caption,
-    color: theme.colors.textSecondary,
-    lineHeight: 19,
-  },
+  shortcuts: { gap: 9, marginBottom: 26 },
+  shortcut: { ...theme.card, paddingHorizontal: 15, paddingVertical: 14, gap: 3 },
+  shortcutTint: { backgroundColor: theme.colors.surfaceTint, borderColor: theme.colors.borderTint },
+  shortcutKicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 3 },
+  shortcutTitle: { ...theme.font.bodyMedium, color: theme.colors.text },
+  shortcutBody: { ...theme.font.small, color: theme.colors.textDim },
 
-  orLabel: {
-    ...theme.font.caption,
-    color: theme.colors.textMuted,
-    textAlign: 'center',
-    marginVertical: theme.space.lg,
-  },
-
-  levelGroup: { marginBottom: theme.space.lg },
-  levelHeader: {
+  levelGroup: { marginBottom: 24 },
+  levelHeader: { flexDirection: 'row', alignItems: 'center', gap: theme.space.sm, marginBottom: 4 },
+  levelTitle: { ...theme.font.bodyMedium, color: theme.colors.text },
+  levelBlurb: { ...theme.font.small, color: theme.colors.textDim, marginBottom: 10 },
+  options: { gap: 9 },
+  option: {
+    ...theme.card,
+    minHeight: 56,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.space.sm,
-    marginBottom: 4,
+    gap: 13,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
   },
-  levelTitle: { ...theme.font.bodyMedium, color: theme.colors.text },
-  levelBlurb: {
-    ...theme.font.caption,
-    color: theme.colors.textMuted,
-    lineHeight: 18,
-    marginBottom: theme.space.sm,
-  },
-
-  methodCard: {
+  optionSelected: { borderColor: theme.colors.accent, backgroundColor: theme.colors.accentSoft },
+  optionPressed: { borderColor: theme.colors.accentDim },
+  radio: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     borderWidth: theme.hairline,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    padding: theme.space.md,
-    marginBottom: theme.space.sm,
-    backgroundColor: theme.colors.card,
+    borderColor: theme.colors.borderStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  methodCardSelected: {
-    borderColor: theme.colors.white,
-    backgroundColor: theme.colors.white,
-  },
-  methodName: { ...theme.font.bodyMedium, color: theme.colors.text, marginBottom: 4 },
-  methodNameSelected: { color: theme.colors.black },
-  methodTag: { ...theme.font.caption, color: theme.colors.textSecondary, lineHeight: 18 },
-  methodTagSelected: { color: theme.colors.black },
-  methodMeta: { ...theme.font.caption, color: theme.colors.textMuted, marginTop: 6 },
-  methodMetaSelected: { color: theme.colors.black, opacity: 0.7 },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: theme.colors.accent },
+  optionBody: { flex: 1, minWidth: 0 },
+  optionLabel: { ...theme.font.bodyMedium, color: theme.colors.text },
+  optionNote: { ...theme.font.small, color: theme.colors.textDim, marginTop: 2 },
+  optionMeta: { ...theme.font.monoSmall, fontSize: 10.5, color: theme.colors.textFaint, marginTop: 5 },
 
-  footerSpacer: { height: theme.space.sm },
+  footer: {
+    paddingHorizontal: 22,
+    paddingTop: 12,
+    borderTopWidth: theme.hairline,
+    borderTopColor: theme.colors.divider,
+    backgroundColor: theme.colors.background,
+  },
+  cta: { minHeight: 50 },
+  backLink: { marginTop: 8 },
 });

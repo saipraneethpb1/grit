@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { AppState, Platform } from 'react-native';
 import type { Session, User } from '@supabase/supabase-js';
 import { useQueryClient } from '@tanstack/react-query';
 import { isSupabaseConfigured, supabase } from '@/src/lib/supabase';
@@ -41,22 +42,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let mounted = true;
 
+    let authEventReceived = false;
+    let previousUserId: string | undefined;
     supabase.auth.getSession().then(({ data }) => {
-      if (mounted) {
+      if (mounted && !authEventReceived) {
+        previousUserId = data.session?.user.id;
         setSession(data.session);
         setLoading(false);
       }
+    }).catch(() => {
+      if (mounted && !authEventReceived) setLoading(false);
     });
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
       // Drop the previous account's plans and stats, otherwise the next sign-in
       // paints cached data from the last user before its own fetch resolves.
-      if (event === 'SIGNED_OUT') queryClient.clear();
+      if (!mounted) return;
+      authEventReceived = true;
+      if (event === 'SIGNED_OUT' || previousUserId !== next?.user.id) queryClient.clear();
+      previousUserId = next?.user.id;
       setSession(next);
       setLoading(false);
     });
 
+    const refresh = (state: string) => {
+      if (Platform.OS === 'web') return;
+      if (state === 'active') supabase.auth.startAutoRefresh();
+      else supabase.auth.stopAutoRefresh();
+    };
+    refresh(AppState.currentState);
+    const appState = AppState.addEventListener('change', refresh);
+
     return () => {
+      appState.remove();
+      if (Platform.OS !== 'web') supabase.auth.stopAutoRefresh();
       mounted = false;
       sub.subscription.unsubscribe();
     };

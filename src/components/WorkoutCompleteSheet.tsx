@@ -55,8 +55,7 @@ export function WorkoutCompleteSheet({ visible, result, elapsedLabel, onDismiss 
               {progressionStored ? `+${xp.total} XP` : 'Saved'}
             </Text>
             <Text style={styles.sub}>
-              {result.setsCompleted} {result.setsCompleted === 1 ? 'set' : 'sets'} ·{' '}
-              {elapsedLabel}
+              {result.setsCompleted} {result.setsCompleted === 1 ? 'set' : 'sets'} · {elapsedLabel}
               {result.volume > 0 ? ` · ${formatCount(result.volume)} volume` : ''}
             </Text>
 
@@ -64,55 +63,47 @@ export function WorkoutCompleteSheet({ visible, result, elapsedLabel, onDismiss 
                 workout itself is already saved either way. */}
             {!progressionStored ? null : (
               <>
-            <View style={styles.card}>
-              <XpRow label="Session" value={xp.workout} />
-              <XpRow label={`${result.setsCompleted} sets logged`} value={xp.sets} />
-              <XpRow label={`${result.streak}-session streak`} value={xp.streak} />
-            </View>
-
-            {leveledUp ? (
-              <View style={styles.levelUp}>
-                <Text style={styles.levelUpIcon}>🎉</Text>
-                <Text style={styles.levelUpText}>Level {levelAfter.level} reached</Text>
-              </View>
-            ) : null}
-
-            <View style={styles.card}>
-              <XpBar totalXp={after.totalXp} />
-            </View>
-
-            <View style={styles.streakRow}>
-              <Text style={styles.streakIcon}>🔥</Text>
-              <Text style={styles.streakText}>
-                {result.streak} session{result.streak === 1 ? '' : 's'} in a row
-                {after.longestStreak > result.streak
-                  ? ` · best ${after.longestStreak}`
-                  : ''}
-              </Text>
-            </View>
-
-            {newAchievements.length ? (
-              <>
-                <Text style={styles.badgeHeading}>
-                  {newAchievements.length === 1 ? 'New badge' : 'New badges'}
-                </Text>
-                <View style={styles.badgeRow}>
-                  {newAchievements.map((achievement) => (
-                    <AchievementBadge
-                      key={achievement.id}
-                      achievement={achievement}
-                      stats={after}
-                      highlight
-                    />
-                  ))}
+                <View style={styles.card}>
+                  <XpRow label="Session" value={xp.workout} />
+                  <XpRow label={`${result.setsCompleted} sets logged`} value={xp.sets} />
+                  <XpRow label={`${result.streak}-session streak`} value={xp.streak} />
                 </View>
-              </>
-            ) : null}
+
+                {leveledUp ? (
+                  <View style={styles.levelUp}>
+                    <Text style={styles.levelUpKicker}>Level up</Text>
+                    <Text style={styles.levelUpText}>Level {levelAfter.level} reached</Text>
+                  </View>
+                ) : null}
+
+                <View style={styles.card}>
+                  <XpBar totalXp={after.totalXp} />
+                </View>
+
+                <Text style={styles.streakText}>
+                  {result.streak} session{result.streak === 1 ? '' : 's'} in a row
+                  {after.longestStreak > result.streak ? ` · best ${after.longestStreak}` : ''}
+                </Text>
+
+                {newAchievements.length ? (
+                  <>
+                    <Text style={styles.badgeHeading}>
+                      {newAchievements.length === 1 ? 'New badge' : 'New badges'}
+                    </Text>
+                    <View style={styles.badgeRow}>
+                      {newAchievements.map((achievement) => (
+                        <View key={achievement.id} style={styles.badgeCell}>
+                          <AchievementBadge achievement={achievement} stats={after} highlight />
+                        </View>
+                      ))}
+                    </View>
+                  </>
+                ) : null}
               </>
             )}
           </ScrollView>
 
-          <PrimaryButton title="Done" onPress={onDismiss} />
+          <PrimaryButton title="Done" variant="filled" onPress={onDismiss} />
         </View>
       </View>
     </Modal>
@@ -122,60 +113,47 @@ export function WorkoutCompleteSheet({ visible, result, elapsedLabel, onDismiss 
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.82)',
+    backgroundColor: theme.colors.backdrop,
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: theme.colors.backgroundElevated,
+    backgroundColor: theme.colors.surface,
     borderTopLeftRadius: theme.radius.lg,
     borderTopRightRadius: theme.radius.lg,
     borderTopWidth: theme.hairline,
     borderColor: theme.colors.borderStrong,
     paddingHorizontal: theme.space.lg,
-    paddingTop: theme.space.lg,
+    paddingTop: 24,
     maxHeight: '88%',
+    ...theme.shadow.lg,
   },
-  content: { paddingBottom: theme.space.md, gap: theme.space.sm },
-  kicker: {
-    ...theme.font.label,
-    color: theme.colors.textMuted,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-  },
-  headline: { ...theme.font.display, fontSize: 40, color: theme.colors.tint },
-  sub: { ...theme.font.caption, color: theme.colors.textSecondary, marginBottom: theme.space.sm },
+  content: { paddingBottom: theme.space.md, gap: 10 },
+  kicker: { ...theme.font.kicker, color: theme.colors.accentDeep },
+  headline: { ...theme.font.hero, fontSize: 40, lineHeight: 46, letterSpacing: -1.5, color: theme.colors.accentBright },
+  sub: { ...theme.font.caption, color: theme.colors.textDim, marginBottom: 6 },
   card: {
     borderRadius: theme.radius.md,
     borderWidth: theme.hairline,
     borderColor: theme.colors.border,
-    backgroundColor: theme.colors.card,
-    padding: theme.space.md,
-    gap: theme.space.xs,
+    backgroundColor: theme.colors.background,
+    padding: 14,
+    gap: 6,
   },
   xpRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  xpLabel: { ...theme.font.caption, color: theme.colors.textSecondary },
-  xpValue: { ...theme.font.mono, color: theme.colors.text },
+  xpLabel: { ...theme.font.caption, color: theme.colors.textMuted },
+  xpValue: { ...theme.font.mono, color: theme.colors.accentText },
   levelUp: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.space.sm,
     borderRadius: theme.radius.md,
     borderWidth: theme.hairline,
-    borderColor: theme.colors.tintDim,
-    backgroundColor: theme.colors.tintSoft,
-    padding: theme.space.md,
+    borderColor: theme.colors.accent,
+    backgroundColor: theme.colors.accentSoft,
+    padding: 14,
+    gap: 4,
   },
-  levelUpIcon: { fontSize: 20 },
-  levelUpText: { ...theme.font.bodyMedium, color: theme.colors.tint },
-  streakRow: { flexDirection: 'row', alignItems: 'center', gap: theme.space.sm },
-  streakIcon: { fontSize: 16 },
-  streakText: { ...theme.font.caption, color: theme.colors.textSecondary },
-  badgeHeading: {
-    ...theme.font.label,
-    color: theme.colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginTop: theme.space.sm,
-  },
-  badgeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.space.sm },
+  levelUpKicker: { ...theme.font.kicker, color: theme.colors.accentBright },
+  levelUpText: { ...theme.font.heading, color: theme.colors.accentTextStrong },
+  streakText: { ...theme.font.caption, color: theme.colors.textMuted },
+  badgeHeading: { ...theme.font.kicker, color: theme.colors.textDim, marginTop: 6 },
+  badgeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  badgeCell: { width: 96 },
 });

@@ -8,7 +8,7 @@
     "icon": "./assets/images/grit-icon.png",
     "scheme": "grit",
     "userInterfaceStyle": "dark",
-    "primaryColor": "#fafafa",
+    "primaryColor": "#9184d9",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.praneeth.grit",
@@ -31,7 +31,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
       "adaptiveIcon": {
-        "backgroundColor": "#050505",
+        "backgroundColor": "#161826",
         "foregroundImage": "./assets/images/grit-adaptive-foreground.png",
         "monochromeImage": "./assets/images/grit-adaptive-foreground.png"
       },
@@ -49,13 +49,15 @@
         {
           "image": "./assets/images/grit-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#050505",
+          "backgroundColor": "#161826",
           "dark": {
             "image": "./assets/images/grit-icon.png",
-            "backgroundColor": "#050505"
+            "backgroundColor": "#161826"
           }
         }
-      ]
+      ],
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

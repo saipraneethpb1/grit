@@ -15,48 +15,54 @@ export function SplitCard({ split, onPress, selected, badge }: Props) {
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
+      accessibilityState={{ selected: Boolean(selected) }}
       style={({ pressed }) => [
         styles.card,
-        {
-          borderColor: selected ? theme.colors.white : theme.colors.border,
-          opacity: pressed ? 0.7 : 1,
-        },
+        selected && styles.selected,
+        pressed && !selected && styles.pressed,
       ]}
     >
-      {badge ? <Text style={styles.recommended}>{badge}</Text> : null}
-      <View style={styles.header}>
-        <Text style={styles.title}>{split.name}</Text>
-        <Text style={styles.days}>{split.days_per_week} days / week</Text>
+      <View style={styles.radio}>{selected ? <View style={styles.radioDot} /> : null}</View>
+      <View style={styles.body}>
+        {badge ? <Text style={styles.badge}>{badge}</Text> : null}
+        <View style={styles.header}>
+          <Text style={styles.title}>{split.name}</Text>
+          <Text style={styles.days}>{split.days_per_week} days</Text>
+        </View>
+        <Text style={styles.desc} numberOfLines={3}>
+          {split.description}
+        </Text>
       </View>
-      <Text style={styles.desc} numberOfLines={3}>
-        {split.description}
-      </Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: theme.radius.md,
-    borderWidth: theme.hairline,
-    padding: theme.space.md,
-    marginBottom: theme.space.sm,
-    backgroundColor: theme.colors.card,
-  },
-  header: {
+    ...theme.card,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: theme.space.xs,
-    gap: theme.space.sm,
+    gap: 13,
+    paddingHorizontal: 15,
+    paddingVertical: 13,
+    marginBottom: 9,
   },
+  selected: { borderColor: theme.colors.accent, backgroundColor: theme.colors.accentSoft },
+  pressed: { borderColor: theme.colors.accentDim },
+  radio: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: theme.hairline,
+    borderColor: theme.colors.borderStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: theme.colors.accent },
+  body: { flex: 1, minWidth: 0 },
+  header: { flexDirection: 'row', alignItems: 'baseline', gap: theme.space.sm },
   title: { ...theme.font.bodyMedium, color: theme.colors.text, flex: 1 },
-  days: { ...theme.font.caption, color: theme.colors.textMuted },
-  recommended: {
-    ...theme.font.label,
-    fontSize: 11,
-    color: theme.colors.success,
-    marginBottom: theme.space.xs,
-  },
-  desc: { ...theme.font.caption, color: theme.colors.textSecondary, lineHeight: 18 },
+  days: { ...theme.font.monoSmall, color: theme.colors.textDim },
+  badge: { ...theme.font.kicker, fontSize: 10, color: theme.colors.accentDeep, marginBottom: 4 },
+  desc: { ...theme.font.small, color: theme.colors.textDim, marginTop: 2 },
 });
