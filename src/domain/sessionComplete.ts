@@ -99,3 +99,19 @@ export function nextStreak(params: {
   if (diffDays <= streakGapAllowance(daysPerWeek)) return (currentStreak ?? 0) + 1;
   return 1;
 }
+
+/**
+ * Whether finishing should bump profile counters.
+ *
+ * A finish that marked the session completed but died before the profile write
+ * leaves `workouts_completed` behind the completed-session count. Retries must
+ * still apply the bump; a second finish after a full success must not.
+ */
+export function profileNeedsProgressBump(params: {
+  alreadyCompleted: boolean;
+  workoutsCompleted: number;
+  completedSessionCount: number;
+}): boolean {
+  if (!params.alreadyCompleted) return true;
+  return params.workoutsCompleted < params.completedSessionCount;
+}

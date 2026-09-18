@@ -4,6 +4,7 @@ import {
   localDateString,
   nextRotationIndex,
   nextStreak,
+  profileNeedsProgressBump,
   streakGapAllowance,
 } from '../src/domain/sessionComplete';
 import type { LiveExercise } from '../src/domain/types';
@@ -200,6 +201,34 @@ function makeExercise(partial?: {
   assert(
     !(sessionOther && sessionOther.plan_day_id === todayId),
     'home still offers Start when a different day was completed today'
+  );
+}
+
+// --- finish retry / progress bump ---
+{
+  assert(
+    profileNeedsProgressBump({
+      alreadyCompleted: false,
+      workoutsCompleted: 3,
+      completedSessionCount: 3,
+    }),
+    'first finish always bumps profile'
+  );
+  assert(
+    profileNeedsProgressBump({
+      alreadyCompleted: true,
+      workoutsCompleted: 3,
+      completedSessionCount: 4,
+    }),
+    'retry after session-saved/profile-failed still bumps'
+  );
+  assert(
+    !profileNeedsProgressBump({
+      alreadyCompleted: true,
+      workoutsCompleted: 4,
+      completedSessionCount: 4,
+    }),
+    'full success retry does not double-count'
   );
 }
 

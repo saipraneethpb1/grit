@@ -169,8 +169,22 @@ export default function WorkoutPlayerScreen() {
   /** Release the row if the user walks away without finishing. */
   useEffect(() => {
     return () => {
+      if (savedRef.current) return;
       const id = sessionIdRef.current;
-      if (id && !savedRef.current) void abandonSession(id);
+      if (id) {
+        void abandonSession(id);
+        return;
+      }
+      // Session create may still be in flight (first set just logged). Abandon
+      // it once it resolves so we do not leave an orphaned in_progress row.
+      const pending = pendingSession.current;
+      if (pending) {
+        void pending
+          .then((createdId) => {
+            if (!savedRef.current) return abandonSession(createdId);
+          })
+          .catch(() => {});
+      }
     };
   }, []);
 

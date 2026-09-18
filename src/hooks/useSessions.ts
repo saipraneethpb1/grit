@@ -19,6 +19,7 @@ import {
   localDateString,
   nextRotationIndex,
   nextStreak,
+  profileNeedsProgressBump,
 } from '@/src/domain/sessionComplete';
 import type {
   LiveExercise,
@@ -127,11 +128,12 @@ export async function startSession(params: {
   dayName: string;
 }): Promise<WorkoutSession> {
   // Abandon any stuck in-progress sessions
-  await supabase
+  const { error: abandonError } = await supabase
     .from('workout_sessions')
     .update({ status: 'abandoned' })
     .eq('user_id', params.userId)
     .eq('status', 'in_progress');
+  if (abandonError) throw abandonError;
 
   const { data, error } = await supabase
     .from('workout_sessions')
@@ -224,18 +226,36 @@ export async function completeSession(params: {
     throw new Error('Log at least one set before finishing.');
   }
 
+  const { data: existingSession, error: existingError } = await supabase
+    .from('workout_sessions')
+    .select('status')
+    .eq('id', params.sessionId)
+    .single();
+  if (existingError) throw existingError;
+
+  const alreadyCompleted = existingSession.status === 'completed';
+
+  // Replace rows so a retry after a mid-write failure cannot trip the unique
+  // (session_id, plan_exercise_id, set_number) constraint.
+  const { error: clearError } = await supabase
+    .from('session_sets')
+    .delete()
+    .eq('session_id', params.sessionId);
+  if (clearError) throw clearError;
+
   const { error: setsError } = await supabase.from('session_sets').insert(rows);
   if (setsError) throw setsError;
 
-  const { error } = await supabase
-    .from('workout_sessions')
-    .update({
-      status: 'completed',
-      completed_at: new Date().toISOString(),
-    })
-    .eq('id', params.sessionId);
-
-  if (error) throw error;
+  if (!alreadyCompleted) {
+    const { error } = await supabase
+      .from('workout_sessions')
+      .update({
+        status: 'completed',
+        completed_at: new Date().toISOString(),
+      })
+      .eq('id', params.sessionId);
+    if (error) throw error;
+  }
 
   const today = localDateString();
 
@@ -254,9 +274,26 @@ export async function completeSession(params: {
   }
 
   const before = toProgressStats(profile as Partial<ProfileRow> | null);
+  const typedProfile = profile as Partial<ProfileRow> | null;
+
+  // If the session row was marked completed but the profile write failed, the
+  // completed-session count outruns workouts_completed — retry the progress
+  // bump without treating it as a brand-new workout for the status flag.
+  const { count: completedCount, error: countError } = await supabase
+    .from('workout_sessions')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', params.userId)
+    .eq('status', 'completed');
+  if (countError) throw countError;
+
+  const profileNeedsBump = profileNeedsProgressBump({
+    alreadyCompleted,
+    workoutsCompleted: before.workoutsCompleted,
+    completedSessionCount: completedCount ?? 0,
+  });
 
   const streak = nextStreak({
-    lastWorkoutDate: (profile as Partial<ProfileRow> | null)?.last_workout_date,
+    lastWorkoutDate: typedProfile?.last_workout_date,
     currentStreak: before.currentStreak,
     today,
     daysPerWeek: params.dayCount,
@@ -264,53 +301,55 @@ export async function completeSession(params: {
 
   const nextDay = nextRotationIndex({
     finishedDayIndex: params.finishedDayIndex,
-    rotationIndex: (profile as Partial<ProfileRow> | null)?.current_day_index ?? 0,
+    rotationIndex: typedProfile?.current_day_index ?? 0,
     dayCount: params.dayCount,
   });
 
   const volume = sessionVolume(rows);
   const xp = xpForSession({ setsCompleted: rows.length, streak });
 
-  const after: ProgressStats = {
-    workoutsCompleted: before.workoutsCompleted + 1,
-    currentStreak: streak,
-    longestStreak: Math.max(before.longestStreak, streak),
-    totalSets: before.totalSets + rows.length,
-    totalVolume: before.totalVolume + volume,
-    totalXp: before.totalXp + xp.total,
-  };
-
-  // Rotation and streak predate the gamification columns, so they are written
-  // separately: if 004 has not run, the program still advances and only the XP
-  // half is skipped.
-  const rotationUpdate = {
-    current_day_index: nextDay,
-    workouts_completed: after.workoutsCompleted,
-    current_streak: after.currentStreak,
-    last_workout_date: today,
-  };
+  const after: ProgressStats = profileNeedsBump
+    ? {
+        workoutsCompleted: before.workoutsCompleted + 1,
+        currentStreak: streak,
+        longestStreak: Math.max(before.longestStreak, streak),
+        totalSets: before.totalSets + rows.length,
+        totalVolume: before.totalVolume + volume,
+        totalXp: before.totalXp + xp.total,
+      }
+    : before;
 
   let progressionStored = true;
-  let { error: profileError } = await supabase
-    .from('profiles')
-    .update({
-      ...rotationUpdate,
-      longest_streak: after.longestStreak,
-      total_xp: after.totalXp,
-      total_sets: after.totalSets,
-      total_volume: after.totalVolume,
-    })
-    .eq('id', params.userId);
 
-  if (isMissingProgressionColumn(profileError)) {
-    progressionStored = false;
-    ({ error: profileError } = await supabase
+  if (profileNeedsBump) {
+    const rotationUpdate = {
+      current_day_index: nextDay,
+      workouts_completed: after.workoutsCompleted,
+      current_streak: after.currentStreak,
+      last_workout_date: today,
+    };
+
+    let { error: profileError } = await supabase
       .from('profiles')
-      .update(rotationUpdate)
-      .eq('id', params.userId));
-  }
+      .update({
+        ...rotationUpdate,
+        longest_streak: after.longestStreak,
+        total_xp: after.totalXp,
+        total_sets: after.totalSets,
+        total_volume: after.totalVolume,
+      })
+      .eq('id', params.userId);
 
-  if (profileError) throw profileError;
+    if (isMissingProgressionColumn(profileError)) {
+      progressionStored = false;
+      ({ error: profileError } = await supabase
+        .from('profiles')
+        .update(rotationUpdate)
+        .eq('id', params.userId));
+    }
+
+    if (profileError) throw profileError;
+  }
 
   const levelBefore = levelFromXp(before.totalXp);
   const levelAfter = levelFromXp(after.totalXp);
@@ -318,14 +357,14 @@ export async function completeSession(params: {
   return {
     setsCompleted: rows.length,
     volume,
-    streak,
+    streak: after.currentStreak,
     xp,
     before,
     after,
     levelBefore,
     levelAfter,
     leveledUp: levelAfter.level > levelBefore.level,
-    newAchievements: progressionStored ? newlyEarned(before, after) : [],
+    newAchievements: progressionStored && profileNeedsBump ? newlyEarned(before, after) : [],
     progressionStored,
   };
 }
