@@ -70,6 +70,26 @@ npx expo start
 
 Then press `i` / `a` for simulators, `w` for web, or scan the QR code with Expo Go.
 
+## Describe your week (TypeSafe)
+
+People can type how they want to train ("four days at home with dumbbells, bigger arms") instead of walking the picker. The `plan-intent` Supabase Edge Function sends that text to [TypeSafe](https://docs.typesafe.ai) with a fixed set of questions: which training style, how many days, and which equipment. The app turns the typed answers into a style, split, and equipment list in `src/domain/planIntent.ts`, shows them for review with anything uncertain marked "Check this", and only then generates the plan. The TypeSafe key stays on the server.
+
+Setup (once):
+
+```bash
+supabase secrets set TYPESAFE_API_KEY=...
+supabase functions deploy plan-intent
+```
+
+Before deploying, check how real wording is read:
+
+```bash
+TYPESAFE_API_KEY=... npx tsx scripts/try-plan-intent.ts
+TYPESAFE_API_KEY=... npx tsx scripts/try-plan-intent.ts "3 days, home, bands only"
+```
+
+Without the function deployed, the screen shows an error and a link to the manual picker. The questions live in `supabase/functions/_shared/planIntentQuestions.ts`; `npm run test:intent` fails if their options drift from the app's styles or catalog equipment.
+
 ## Project structure
 
 ```
@@ -78,7 +98,7 @@ app/                    # Expo Router screens
   (app)/                # Authenticated app
     (tabs)/             # Train, Program, Library, You
     history.tsx         # Session log (reached from Train → Recent)
-    splits/             # Methodology + split picker, plan preview
+    splits/             # Describe-your-week, methodology + split picker, plan preview
     plan/               # Week & day views
     workout/            # Live session player
 src/
@@ -87,6 +107,7 @@ src/
   components/           # UI pieces
   lib/supabase.ts       # Supabase client
 supabase/
+  functions/            # plan-intent edge function (TypeSafe)
   migrations/           # Schema + RLS
   seed.sql              # Catalog seed (auto-generated with curate script)
 scripts/

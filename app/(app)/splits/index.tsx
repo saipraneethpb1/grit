@@ -121,6 +121,17 @@ export default function SplitsScreen() {
 
         <View style={styles.shortcuts}>
           <Pressable
+            onPress={() => router.push('/(app)/splits/describe' as never)}
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.shortcut, styles.shortcutTint, pressed && styles.optionPressed]}
+          >
+            <Text style={styles.shortcutKicker}>Fastest</Text>
+            <Text style={styles.shortcutTitle}>Describe your week</Text>
+            <Text style={styles.shortcutBody}>
+              Say how often you train, where, and what you are after. We build the program for you to check.
+            </Text>
+          </Pressable>
+          <Pressable
             onPress={() => router.push('/(app)/splits/custom')}
             accessibilityRole="button"
             style={({ pressed }) => [styles.shortcut, pressed && styles.optionPressed]}

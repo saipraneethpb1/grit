@@ -72,9 +72,14 @@ export default function ProgramScreen() {
           message="Choose a training style and a weekly split, or write your own days."
           action={
             <View style={styles.emptyActions}>
+              <PrimaryButton
+                title="Describe your week"
+                onPress={() => router.push('/(app)/splits/describe' as never)}
+              />
               {quickStart ? (
                 <PrimaryButton
                   title="Start a beginner program"
+                  variant="ghost"
                   onPress={() =>
                     router.push(
                       `/(app)/splits/preview?templateId=${quickStart.defaultSplitId}&methodologyId=${quickStart.id}` as never

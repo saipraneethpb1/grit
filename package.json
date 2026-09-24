@@ -45,7 +45,7 @@
     "release:android": "bash scripts/release-android.sh",
     "test:generator": "npx tsx scripts/test-generator.ts",
     "test:session": "npx tsx scripts/test-session-complete.ts",
-    "test": "npm run test:generator && npm run test:session && npm run test:live && npm run test:progression && npm run test:database && npm run test:guides && npm run test:custom",
+    "test": "npm run test:generator && npm run test:session && npm run test:live && npm run test:progression && npm run test:database && npm run test:guides && npm run test:custom && npm run test:intent",
     "curate:exercises": "node scripts/curate-exercises.mjs",
     "typecheck": "tsc --noEmit",
     "test:live": "npx tsx scripts/test-live-workout.ts",
@@ -54,7 +54,8 @@
     "audit:security": "npm audit",
     "test:database": "node scripts/test-database.mjs",
     "test:guides": "node scripts/test-exercise-guides.mjs",
-    "test:custom": "node --import tsx scripts/test-custom-program.mjs"
+    "test:custom": "node --import tsx scripts/test-custom-program.mjs",
+    "test:intent": "npx tsx scripts/test-plan-intent.ts"
   },
   "private": true,
   "engines": {

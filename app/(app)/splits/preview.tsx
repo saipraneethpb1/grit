@@ -11,12 +11,15 @@ import { TrainingAudit } from '@/src/components/TrainingAudit';
 import { EXERCISES, getSplitTemplate } from '@/src/domain/catalog';
 import { getMethodology } from '@/src/domain/methodologies';
 import { generatePlan } from '@/src/domain/planGenerator';
+import { filterCatalogForEquipment, parseEquipmentParam } from '@/src/domain/planIntent';
 import { useSavePlan } from '@/src/hooks/usePlans';
 
 export default function PreviewPlanScreen() {
-  const { templateId, methodologyId } = useLocalSearchParams<{
+  const { templateId, methodologyId, equipment } = useLocalSearchParams<{
     templateId: string;
     methodologyId?: string;
+    /** Comma list from "Describe your week"; absent means a full gym. */
+    equipment?: string;
   }>();
   const router = useRouter();
   const savePlan = useSavePlan();
@@ -27,18 +30,21 @@ export default function PreviewPlanScreen() {
   const template = templateId ? getSplitTemplate(templateId) : undefined;
   const methodology = methodologyId ? getMethodology(methodologyId) : undefined;
 
+  const kit = useMemo(() => parseEquipmentParam(equipment), [equipment]);
+
   const plan = useMemo(() => {
     if (!templateId) return null;
     try {
+      const exercises = kit ? filterCatalogForEquipment(EXERCISES, kit, templateId).exercises : EXERCISES;
       return generatePlan({
         templateId,
-        exercises: EXERCISES,
+        exercises,
         methodologyId: methodologyId || undefined,
       });
     } catch {
       return null;
     }
-  }, [templateId, methodologyId]);
+  }, [templateId, methodologyId, kit]);
 
   async function onSave() {
     if (!plan || saving) return;

@@ -1,6 +1,6 @@
 export const PRIVACY_POLICY = `Privacy Policy — Grit
 
-Last updated: August 2026
+Last updated: September 2026
 
 Grit ("we", "the app") is a strength-training planner and workout log operated by the developer listed on the Google Play store listing.
 
@@ -8,6 +8,7 @@ What we collect
 • Account information: email address and optional display name when you sign up.
 • Workout data: training plans, logged sets (weight, reps), session history, and profile stats (streak, workouts completed).
 • Technical data: standard authentication tokens required to keep you signed in.
+• Program descriptions: if you use "Describe your week", the text you type is sent to TypeSafe to read it. It is not stored with your account.
 
 What we do not collect
 • Location, contacts, photos, microphone, or camera data.
@@ -26,6 +27,7 @@ You can delete your account and all associated data from Profile → Delete acco
 
 Third parties
 • Supabase provides authentication and database hosting under their privacy policy.
+• TypeSafe (typesafe.ai) reads the text you type into "Describe your week" to suggest a program. Only that text is sent: no email, name, or workout history.
 • We do not sell your personal data.
 
 Children
@@ -39,7 +41,7 @@ We may update this policy. Continued use after changes means you accept the upda
 
 export const TERMS_OF_SERVICE = `Terms of Service — Grit
 
-Last updated: August 2026
+Last updated: September 2026
 
 By using Grit you agree to these terms.
 
