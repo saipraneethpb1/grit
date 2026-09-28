@@ -1,0 +1,52 @@
+name: Keep Supabase awake
+
+# Supabase pauses free-plan projects after a week without database activity,
+# and a paused project takes the whole app offline until someone restores it
+# by hand. This runs a real query every two days so that never happens. The
+# two-day gap leaves room for GitHub skipping or delaying a scheduled run.
+#
+# Needs two repository secrets (Settings -> Secrets and variables -> Actions):
+#   SUPABASE_URL       https://<project-ref>.supabase.co
+#   SUPABASE_ANON_KEY  the same anon key the app ships with
+#
+# If a run fails, GitHub emails the repository owner: that is the signal the
+# project is paused or the secrets are wrong.
+
+on:
+  schedule:
+    - cron: '23 5 */2 * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Query the database through the REST API
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::Set the SUPABASE_URL and SUPABASE_ANON_KEY repository secrets."
+            exit 1
+          fi
+          status=$(curl -sS -o response.json -w '%{http_code}' \
+            --retry 3 --retry-delay 20 --retry-all-errors --max-time 30 \
+            "$SUPABASE_URL/rest/v1/exercises?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY") || status=000
+          echo "HTTP $status"
+          # 200 is a normal read (row-level security may return no rows) and
+          # 401 is Postgres refusing the anon role. Both mean the query reached
+          # the database, which is what counts as activity.
+          case "$status" in
+            200|401) echo "Database reached." ;;
+            *)
+              head -c 300 response.json 2>/dev/null || true
+              echo "::error::Supabase did not answer (HTTP $status). The project may be paused: restore it from the Supabase dashboard."
+              exit 1
+              ;;
+          esac

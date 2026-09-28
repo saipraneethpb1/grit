@@ -90,6 +90,10 @@ TYPESAFE_API_KEY=... npx tsx scripts/try-plan-intent.ts "3 days, home, bands onl
 
 Without the function deployed, the screen shows an error and a link to the manual picker. The questions live in `supabase/functions/_shared/planIntentQuestions.ts`; `npm run test:intent` fails if their options drift from the app's styles or catalog equipment.
 
+## Keeping the backend online
+
+Supabase pauses free-plan projects after a week without database activity, which takes the app offline until the project is restored by hand. `.github/workflows/keep-supabase-awake.yml` queries the database every two days to prevent that. It needs two repository secrets, `SUPABASE_URL` and `SUPABASE_ANON_KEY` (the same values as the app's `.env`). A failed run means the project is paused or the secrets are wrong, and GitHub emails the owner. Run it once by hand from the Actions tab after adding the secrets. The Supabase Pro plan never pauses and makes the job unnecessary.
+
 ## Project structure
 
 ```
