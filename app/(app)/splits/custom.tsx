@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   stepLabel: { ...theme.font.kicker, color: theme.colors.accentDeep },
   body: { ...theme.font.caption, color: theme.colors.textMuted, marginVertical: 4 },
   label: { ...theme.font.bodyMedium, color: theme.colors.text },
-  input: { minHeight: 44, borderRadius: theme.radius.md, borderWidth: theme.hairline, borderColor: theme.colors.border, paddingHorizontal: 12, paddingVertical: 10, ...theme.font.body, fontSize: 14, color: theme.colors.text, backgroundColor: theme.colors.surface },
+  input: { minHeight: 54, borderRadius: theme.radius.md, borderWidth: theme.hairline, borderColor: theme.colors.border, paddingHorizontal: 12, paddingVertical: 10, ...theme.font.body, fontSize: 14, color: theme.colors.text, backgroundColor: theme.colors.surface },
   card: { ...theme.card, padding: 14, gap: 10 },
   row: { flexDirection: 'row', gap: 8 }, flex: { flex: 1 },
   tabs: { gap: 7 }, tab: { paddingHorizontal: 12, paddingVertical: 9, borderWidth: theme.hairline, borderColor: theme.colors.border, borderRadius: theme.radius.md }, selected: { borderColor: theme.colors.accent, backgroundColor: theme.colors.accentSoft },

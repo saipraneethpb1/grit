@@ -39,6 +39,7 @@ export default function ExercisesScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 18 }]}>
       <Text style={styles.title}>Library</Text>
+      <Text style={styles.subtitle}>Find your next movement.</Text>
 
       <View style={styles.search}>
         <Ionicons name="search" size={14} color={theme.colors.textDim} />
@@ -101,10 +102,11 @@ export default function ExercisesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: theme.space.lg, backgroundColor: theme.colors.background },
-  title: { ...theme.font.display, color: theme.colors.text, marginBottom: 14 },
+  container: { flex: 1, width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, backgroundColor: theme.colors.background },
+  title: { ...theme.font.display, color: theme.colors.text, marginBottom: 6 },
+  subtitle: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: 24 },
   search: {
-    minHeight: 44,
+    minHeight: 54,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 9,
@@ -123,6 +125,6 @@ const styles = StyleSheet.create({
   chipScroll: { flexGrow: 0, marginBottom: 14, marginHorizontal: -theme.space.lg },
   chips: { gap: 7, paddingHorizontal: theme.space.lg },
   list: { paddingBottom: theme.space.lg },
-  count: { ...theme.font.monoSmall, color: theme.colors.textFaint, marginBottom: 4 },
+  count: { ...theme.font.kicker, color: theme.colors.textMuted, marginBottom: 14 },
   empty: { ...theme.font.body, color: theme.colors.textDim, marginTop: theme.space.lg },
 });

@@ -41,6 +41,9 @@ npm install
    - `supabase/migrations/002_sessions.sql` (live workout logging, streaks, history)
    - `supabase/migrations/003_account_deletion.sql` (in-app account deletion)
    - `supabase/migrations/004_progression.sql` (XP, levels, badges, best streak — backfills existing history)
+   - `supabase/migrations/005_security_and_atomic_plans.sql` (transactional program save, ownership checks)
+   - `supabase/migrations/006_custom_programs.sql` (custom-program catalog marker)
+   - `supabase/migrations/007_atomic_sessions.sql` (one-request, transactional workout start/finish)
 3. Copy **Project URL** and **anon public** key from **Project Settings → API**.
 4. Create env file:
 

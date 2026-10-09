@@ -8,8 +8,8 @@ type Props = {
   loading?: boolean;
   disabled?: boolean;
   /**
-   * primary: outlined accent — the system's default action.
-   * filled: accent-soft fill for the one action that closes a flow.
+   * primary: solid accent for the main action.
+   * filled: solid accent for the action that closes a flow.
    * ghost: outlined neutral. danger: outlined red. link: bare text.
    */
   variant?: 'primary' | 'filled' | 'ghost' | 'danger' | 'link';
@@ -18,8 +18,8 @@ type Props = {
 };
 
 const VARIANTS = {
-  primary: { fg: theme.colors.accentText, border: theme.colors.accent, bg: 'transparent', pressed: theme.colors.accentSoft },
-  filled: { fg: theme.colors.accentTextStrong, border: theme.colors.accent, bg: theme.colors.accentSoft, pressed: theme.colors.borderTint },
+  primary: { fg: theme.colors.onAccent, border: theme.colors.accent, bg: theme.colors.accent, pressed: theme.colors.accentBright },
+  filled: { fg: theme.colors.onAccent, border: theme.colors.accent, bg: theme.colors.accent, pressed: theme.colors.accentBright },
   ghost: { fg: theme.colors.textMuted, border: theme.colors.border, bg: 'transparent', pressed: theme.colors.surface },
   danger: { fg: theme.colors.danger, border: theme.colors.danger, bg: 'transparent', pressed: theme.colors.dangerSoft },
   link: { fg: theme.colors.textDim, border: 'transparent', bg: 'transparent', pressed: 'transparent' },
@@ -50,6 +50,7 @@ export function PrimaryButton({
           backgroundColor: pressed ? tone.pressed : tone.bg,
           borderColor: tone.border,
           opacity: disabled ? 0.45 : 1,
+          transform: [{ scale: pressed ? 0.98 : 1 }],
         },
         style,
       ]}
@@ -68,7 +69,7 @@ export function PrimaryButton({
 
 const styles = StyleSheet.create({
   btn: {
-    minHeight: 48,
+    minHeight: 54,
     flexDirection: 'row',
     gap: theme.space.sm,
     justifyContent: 'center',

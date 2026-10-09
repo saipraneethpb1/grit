@@ -145,7 +145,7 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
-  scroll: { flexGrow: 1, paddingHorizontal: 22, justifyContent: 'center' },
+  scroll: { flexGrow: 1, paddingHorizontal: 24, width: '100%', maxWidth: 480, alignSelf: 'center', justifyContent: 'center' },
   brand: { marginBottom: 30 },
   kicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 12 },
   headline: { ...theme.font.hero, color: theme.colors.text, marginBottom: 10 },
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   form: { marginBottom: 14 },
   label: { ...theme.font.small, fontSize: 12, color: theme.colors.textMuted, marginBottom: 5 },
   input: {
-    minHeight: 44,
+    minHeight: 56,
     borderRadius: theme.radius.md,
     borderWidth: theme.hairline,
     borderColor: theme.colors.border,

@@ -65,7 +65,8 @@ export default function ProgramScreen() {
   if (!plan || !plan.plan_days.length) {
     return (
       <ScrollView contentContainerStyle={[styles.content, { paddingTop: topPad }]}>
-        <Text style={styles.title}>Program</Text>
+        <Text style={styles.kicker}>THE LONG GAME</Text>
+        <Text style={styles.title}>Your program</Text>
         <Text style={styles.meta}>Nothing active yet</Text>
         <EmptyState
           title="Pick a program"
@@ -111,7 +112,8 @@ export default function ProgramScreen() {
         />
       }
     >
-      <Text style={styles.title}>Program</Text>
+      <Text style={styles.kicker}>THE LONG GAME</Text>
+      <Text style={styles.title}>Your program</Text>
       <Text style={styles.meta}>
         {programName} · {plan.plan_days.length}-day rotation · week {week}
       </Text>
@@ -145,7 +147,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: theme.colors.background,
   },
-  content: { paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
+  content: { width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
+  kicker: { ...theme.font.kicker, color: theme.colors.accent, marginBottom: 10 },
   title: { ...theme.font.display, color: theme.colors.text },
   meta: { ...theme.font.caption, color: theme.colors.textDim, marginTop: 6, marginBottom: 18 },
   emptyActions: { gap: 9 },

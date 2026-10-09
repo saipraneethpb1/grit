@@ -242,11 +242,12 @@ export default function HomeScreen() {
 
       <View style={styles.todayCard}>
         <View style={styles.cardKickerRow}>
-          <Ionicons name="archive" size={12} color={theme.colors.accent} />
+          <Ionicons name="barbell-outline" size={12} color={theme.colors.accent} />
           <Text style={styles.cardKicker} numberOfLines={1}>
             {programName} · Day {today.day_index + 1} of {sortedDays.length}
           </Text>
         </View>
+        <Text style={styles.sessionLabel}>TODAY’S SESSION</Text>
         <Text style={styles.dayName}>{today.name}</Text>
         <Text style={styles.dayMeta}>
           {today.plan_exercises.length} exercises · {audit.totalSets} sets · ~{audit.estimatedMinutes} min
@@ -286,14 +287,14 @@ export default function HomeScreen() {
           {todayAlreadyDone ? (
             <PrimaryButton
               title="View log"
-              icon={<Ionicons name="checkmark-circle" size={15} color={theme.colors.accentText} />}
+              icon={<Ionicons name="checkmark-circle" size={15} color={theme.colors.onAccent} />}
               onPress={() => router.push('/(app)/history')}
               style={styles.startBtn}
             />
           ) : (
             <PrimaryButton
-              title="Start"
-              icon={<Ionicons name="play" size={14} color={theme.colors.accentText} />}
+              title="Start workout"
+              icon={<Ionicons name="play" size={14} color={theme.colors.onAccent} />}
               onPress={() => router.push(`/(app)/workout/${today.id}?planId=${plan.id}` as never)}
               style={styles.startBtn}
             />
@@ -346,19 +347,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: theme.colors.background,
   },
-  emptyWrap: { flexGrow: 1, paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
+  emptyWrap: { flexGrow: 1, width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
   emptyLogo: { marginBottom: theme.space.lg },
   emptyActions: { width: '100%', gap: 9 },
-  content: { paddingHorizontal: theme.space.lg, paddingBottom: theme.space.lg },
+  content: { width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.lg },
 
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
   headerText: { flex: 1 },
   kicker: { ...theme.font.kicker, color: theme.colors.textDim },
-  greeting: { ...theme.font.display, fontSize: 24, lineHeight: 29, color: theme.colors.text, marginTop: 5 },
+  greeting: { ...theme.font.display, fontSize: 30, lineHeight: 37, color: theme.colors.text, marginTop: 5 },
   avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 46,
+    height: 46,
+    backgroundColor: theme.colors.accentSoft,
+    borderRadius: 23,
     borderWidth: theme.hairline,
     borderColor: theme.colors.borderStrong,
     alignItems: 'center',
@@ -369,9 +371,10 @@ const styles = StyleSheet.create({
 
   week: { marginBottom: 18 },
 
-  todayCard: { ...theme.card, paddingHorizontal: 15, paddingVertical: 16, marginBottom: 14 },
+  todayCard: { ...theme.card, backgroundColor: theme.colors.surfaceTint, padding: 22, marginBottom: 20, borderColor: theme.colors.borderTint },
   cardKickerRow: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 11 },
   cardKicker: { ...theme.font.kicker, color: theme.colors.accentDeep, flex: 1 },
+  sessionLabel: { ...theme.font.small, color: theme.colors.textMuted, marginBottom: 6 },
   dayName: { ...theme.font.title, color: theme.colors.text },
   dayMeta: { ...theme.font.caption, color: theme.colors.textDim, marginTop: 4 },
   emphasis: { marginTop: 15, gap: 8 },
@@ -386,8 +389,8 @@ const styles = StyleSheet.create({
   previewName: { ...theme.font.body, color: theme.colors.textSecondary, flex: 1 },
   previewTarget: { ...theme.font.monoSmall, fontSize: 11.5, fontWeight: '500', color: theme.colors.textDim },
   more: { ...theme.font.small, fontSize: 12, color: theme.colors.textFaint },
-  actions: { flexDirection: 'row', gap: 9, marginTop: 16 },
-  startBtn: { flex: 1 },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 22 },
+  startBtn: { flex: 1, minWidth: 150 },
   detailsBtn: { width: 96, paddingHorizontal: 8 },
 
   stats: { marginBottom: 20 },
@@ -401,7 +404,11 @@ const styles = StyleSheet.create({
   sectionLabelInline: { marginBottom: 8 },
   seeAll: { ...theme.font.small, color: theme.colors.textFaint, marginBottom: 8 },
   sessionRow: {
-    paddingVertical: 13,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.md,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    paddingVertical: 16,
     borderBottomWidth: theme.hairline,
     borderBottomColor: theme.colors.divider,
     flexDirection: 'row',

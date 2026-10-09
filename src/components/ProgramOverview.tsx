@@ -75,7 +75,7 @@ export function ProgramDayList({ plan, completedUpToIndex = 0, completedTodayDay
             </View>
             {done ? (
               <Ionicons name="checkmark-circle" size={16} color={theme.colors.accentDeep} />
-            ) : null}
+            ) : <Ionicons name="chevron-forward" size={16} color={theme.colors.textMuted} />}
           </Pressable>
         );
       })}
@@ -88,9 +88,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surfaceTint,
     borderWidth: theme.hairline,
     borderColor: theme.colors.borderTint,
-    borderRadius: theme.radius.md,
-    paddingHorizontal: 14,
-    paddingVertical: 15,
+    borderRadius: theme.radius.lg,
+    paddingHorizontal: 20,
+    paddingVertical: 22,
     marginBottom: 18,
   },
   volumeKicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 9 },
@@ -102,13 +102,13 @@ const styles = StyleSheet.create({
   barValue: { ...theme.font.monoSmall, fontSize: 10.5, fontWeight: '500', color: theme.colors.textDim, width: 48, textAlign: 'right' },
 
   days: { gap: 8 },
-  dayRow: { ...theme.card, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  dayRow: { ...theme.card, padding: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   dayRowPressed: { borderColor: theme.colors.accentDim },
   dayNum: {
-    width: 28,
-    height: 28,
+    width: 42,
+    height: 42,
     borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.track,
+    backgroundColor: theme.colors.accentSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

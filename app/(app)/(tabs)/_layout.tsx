@@ -1,14 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import type { ColorValue } from 'react-native';
+import { View, type ColorValue } from 'react-native';
 import { theme } from '@/constants/theme';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
-/** Filled glyph when focused, outline otherwise — the accent as a line, not a flood. */
+/** A quiet filled capsule makes the active destination easy to recognize. */
 function tabIcon(filled: IconName, outline: IconName) {
   return ({ focused, color }: { focused: boolean; color: ColorValue }) => (
-    <Ionicons size={19} name={focused ? filled : outline} color={color} />
+    <View style={{ width: 48, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: focused ? theme.colors.accentSoft : 'transparent' }}>
+      <Ionicons size={21} name={focused ? filled : outline} color={color} />
+    </View>
   );
 }
 
@@ -18,14 +20,14 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.colors.accent,
-        tabBarInactiveTintColor: theme.colors.textFaint,
+        tabBarInactiveTintColor: theme.colors.textMuted,
         tabBarStyle: {
-          backgroundColor: theme.colors.background,
+          backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.divider,
           borderTopWidth: theme.hairline,
-          paddingTop: 6,
+          paddingTop: 8,
         },
-        tabBarItemStyle: { paddingVertical: 2 },
+        tabBarItemStyle: { paddingVertical: 3 },
         tabBarLabelStyle: { ...theme.font.tab },
         sceneStyle: { backgroundColor: theme.colors.background },
       }}

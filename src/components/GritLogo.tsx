@@ -35,5 +35,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bar: { backgroundColor: theme.colors.accent, marginTop: 1, ...theme.shadow.glow },
-  wordmark: { ...theme.font.kicker, fontSize: 11, color: theme.colors.textMuted },
+  wordmark: { ...theme.font.title, fontSize: 26, letterSpacing: -1, color: theme.colors.text },
 });

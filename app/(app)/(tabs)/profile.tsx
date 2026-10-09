@@ -124,6 +124,7 @@ export default function ProfileScreen() {
       contentContainerStyle={[styles.container, { paddingTop: insets.top + 18 }]}
       showsVerticalScrollIndicator={false}
     >
+      <Text style={styles.kicker}>BUILT BY CONSISTENCY</Text>
       <Text style={styles.name}>{displayName}</Text>
       <Text style={styles.email}>{user?.email}</Text>
 
@@ -219,16 +220,17 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
-  container: { flexGrow: 1, paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
+  container: { flexGrow: 1, width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
+  kicker: { ...theme.font.kicker, color: theme.colors.accent, marginBottom: 10 },
   name: { ...theme.font.display, color: theme.colors.text },
   email: { ...theme.font.caption, color: theme.colors.textDim, marginTop: 5, marginBottom: 18 },
-  xpCard: { ...theme.card, paddingHorizontal: 14, paddingVertical: 15, marginBottom: 14 },
+  xpCard: { ...theme.card, paddingHorizontal: 22, paddingVertical: 24, marginBottom: 14 },
   stats: { marginBottom: 18 },
 
-  chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 92, paddingHorizontal: 2 },
+  chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 124, paddingHorizontal: 2 },
   chartCol: { flex: 1, height: '100%', justifyContent: 'flex-end', gap: 6 },
   chartBarWrap: { flex: 1, justifyContent: 'flex-end' },
-  chartBar: { borderTopLeftRadius: 3, borderTopRightRadius: 3, width: '100%' },
+  chartBar: { borderTopLeftRadius: 6, borderTopRightRadius: 6, width: '100%' },
   chartLabel: { ...theme.font.monoSmall, fontSize: 9.5, lineHeight: 12, color: theme.colors.textFaint, textAlign: 'center' },
   emptyNote: { ...theme.font.caption, color: theme.colors.textFaint },
   rule: { marginTop: 16, marginBottom: 14 },

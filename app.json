@@ -8,7 +8,7 @@
     "icon": "./assets/images/grit-icon.png",
     "scheme": "grit",
     "userInterfaceStyle": "dark",
-    "primaryColor": "#9184d9",
+    "primaryColor": "#c2ed79",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.praneeth.grit",
@@ -31,7 +31,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
       "adaptiveIcon": {
-        "backgroundColor": "#161826",
+        "backgroundColor": "#111512",
         "foregroundImage": "./assets/images/grit-adaptive-foreground.png",
         "monochromeImage": "./assets/images/grit-adaptive-foreground.png"
       },
@@ -49,10 +49,10 @@
         {
           "image": "./assets/images/grit-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#161826",
+          "backgroundColor": "#111512",
           "dark": {
             "image": "./assets/images/grit-icon.png",
-            "backgroundColor": "#161826"
+            "backgroundColor": "#111512"
           }
         }
       ],

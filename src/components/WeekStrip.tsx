@@ -65,13 +65,13 @@ export function WeekStrip({
 
 const styles = StyleSheet.create({
   scroll: { flexGrow: 0 },
-  row: { gap: 7 },
+  row: { gap: 9 },
   chip: {
-    width: 64,
+    width: 80,
     ...theme.card,
     paddingHorizontal: 8,
-    paddingVertical: 10,
-    minHeight: 62,
+    paddingVertical: 14,
+    minHeight: 82,
   },
   chipActive: {
     borderColor: theme.colors.accent,

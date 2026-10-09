@@ -1,43 +1,40 @@
-/**
- * Nocturne palette — a near-neutral blue-grey ground with a blurple accent
- * used as a line and a glow rather than a flood. Contrast comes from the
- * tonal ramp, not from saturation.
- */
+/** Warm charcoal surfaces and a lime accent for training actions. */
 
 export const colors = {
-  background: '#161826',
+  background: '#111512',
   /** Cards and inputs. */
-  surface: '#1d1f2e',
+  surface: '#1c231e',
   /** Accent-tinted card (cues, program volume). */
-  surfaceTint: '#1b1c2b',
-  border: '#2e3140',
-  borderStrong: '#3f424d',
+  surfaceTint: '#202a20',
+  border: '#323d34',
+  borderStrong: '#48594b',
   /** Border for accent-tinted cards. */
-  borderTint: '#2b2741',
+  borderTint: '#303e25',
   /** Rules between list rows. */
-  divider: '#23252f',
+  divider: '#2a342d',
   /** Progress tracks and number tiles. */
-  track: '#292b31',
+  track: '#303a32',
 
-  text: '#e9e9ed',
-  textSecondary: '#cfd3e5',
-  textMuted: '#9397ab',
-  textDim: '#75798c',
-  textFaint: '#595d6c',
+  text: '#f3f5ed',
+  textSecondary: '#d8dfd4',
+  textMuted: '#a8b5a6',
+  textDim: '#97a593',
+  textFaint: '#859381',
 
-  accent: '#9184d9',
-  accentBright: '#b5abfc',
+  onAccent: '#19230f',
+  accent: '#c2ed79',
+  accentBright: '#daf7a7',
   /** Label colour on an outlined primary action. */
-  accentText: '#d2cefd',
-  accentTextStrong: '#e7e5fe',
+  accentText: '#d5f3a7',
+  accentTextStrong: '#e9ffd0',
   /** Kickers and completed marks. */
-  accentDeep: '#796cbf',
+  accentDeep: '#b5d98a',
   /** Hover borders and glows. */
-  accentDim: '#5d5294',
+  accentDim: '#91b65f',
   /** Selected fills. */
-  accentSoft: '#2b2741',
+  accentSoft: '#303e25',
 
-  backdrop: 'rgba(15, 16, 25, 0.88)',
+  backdrop: 'rgba(6, 12, 8, 0.88)',
   danger: '#f28b8b',
   dangerSoft: 'rgba(242, 139, 139, 0.12)',
   white: '#ffffff',

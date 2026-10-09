@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   BackHandler,
@@ -22,15 +22,13 @@ import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { RestTimer } from '@/src/components/RestTimer';
 import { WorkoutDialog, type WorkoutDialogState } from '@/src/components/WorkoutDialog';
 import { WorkoutCompleteSheet } from '@/src/components/WorkoutCompleteSheet';
-import {
-  parseRepsValue,
-  parseWeightValue,
-  sanitizeRepsInput,
-  sanitizeWeightInput,
-} from '@/src/domain/liveWorkout';
 import type { WorkoutCompletionResult } from '@/src/domain/progression';
 import { formatMuscles } from '@/src/domain/muscles';
-import type { LiveExercise } from '@/src/domain/types';
+import {
+  initialPlayerState,
+  playerReducer,
+  summarizePlayer,
+} from '@/src/domain/workoutPlayer';
 import { useAuth } from '@/src/hooks/useAuth';
 import { useKeyboardInset } from '@/src/hooks/useKeyboardInset';
 import { usePlan } from '@/src/hooks/usePlans';
@@ -42,8 +40,6 @@ import {
   useCompleteWorkout,
 } from '@/src/hooks/useSessions';
 
-const WEIGHT_STEP = 2.5;
-
 function formatElapsed(totalSeconds: number): string {
   const h = Math.floor(totalSeconds / 3600);
   const m = Math.floor((totalSeconds % 3600) / 60);
@@ -52,11 +48,6 @@ function formatElapsed(totalSeconds: number): string {
     return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-/** "95" not "95.0", "92.5" not "92.50". */
-function formatWeight(value: number): string {
-  return String(Math.round(value * 100) / 100);
 }
 
 export default function WorkoutPlayerScreen() {
@@ -74,9 +65,8 @@ export default function WorkoutPlayerScreen() {
     [plan, dayId]
   );
 
-  const [exercises, setExercises] = useState<LiveExercise[]>([]);
-  const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
-  const [activeSetIndex, setActiveSetIndex] = useState(0);
+  const [player, dispatch] = useReducer(playerReducer, initialPlayerState);
+  const { exercises, exerciseIndex: activeExerciseIndex, setIndex: activeSetIndex } = player;
   const [booting, setBooting] = useState(true);
   const [restOpen, setRestOpen] = useState(false);
   const [restSec, setRestSec] = useState(90);
@@ -146,12 +136,12 @@ export default function WorkoutPlayerScreen() {
         const base = buildLiveExercises(day);
         const enriched = await enrichWithHistory(user.id, base);
         if (cancelled) return;
-        setExercises(enriched);
+        dispatch({ type: 'load', exercises: enriched });
       } catch {
         if (cancelled) return;
         // History is a convenience — fall back to the plan targets rather than
         // blocking the workout on it.
-        setExercises(buildLiveExercises(day));
+        dispatch({ type: 'load', exercises: buildLiveExercises(day) });
       } finally {
         if (!cancelled) {
           sessionStartedAt.current = Date.now();
@@ -206,53 +196,11 @@ export default function WorkoutPlayerScreen() {
   const current = exercises[activeExerciseIndex];
   const currentSet = current?.sets[activeSetIndex];
 
-  const totalSets = exercises.reduce((n, e) => n + e.sets.length, 0);
-  const doneSets = exercises.reduce(
-    (n, e) => n + e.sets.filter((s) => s.completed).length,
-    0
-  );
-  const progress = totalSets ? doneSets / totalSets : 0;
-  const allDone = totalSets > 0 && doneSets === totalSets;
-  const isLastSet =
-    activeExerciseIndex === exercises.length - 1 &&
-    activeSetIndex === (current?.sets.length ?? 1) - 1;
-
-  const updateSet = useCallback(
-    (exIdx: number, setIdx: number, patch: Partial<LiveExercise['sets'][0]>) => {
-      setExercises((prev) =>
-        prev.map((ex, i) => {
-          if (i !== exIdx) return ex;
-          const sets = ex.sets.map((s, j) => (j === setIdx ? { ...s, ...patch } : s));
-          return { ...ex, sets };
-        })
-      );
-    },
-    []
-  );
-
-  const goToNextSet = useCallback(() => {
-    if (!current) return;
-    if (activeSetIndex < current.sets.length - 1) {
-      setActiveSetIndex((s) => s + 1);
-    } else if (activeExerciseIndex < exercises.length - 1) {
-      setActiveExerciseIndex((e) => e + 1);
-      setActiveSetIndex(0);
-    }
-  }, [activeExerciseIndex, activeSetIndex, current, exercises.length]);
-
-  /** What the rest timer is counting down to. */
-  const nextLabel = useMemo(() => {
-    if (!current) return '';
-    if (activeSetIndex < current.sets.length - 1) {
-      return `${current.name} · set ${activeSetIndex + 2}`;
-    }
-    const next = exercises[activeExerciseIndex + 1];
-    return next ? next.name : 'Finish';
-  }, [current, exercises, activeExerciseIndex, activeSetIndex]);
+  const { totalSets, doneSets, progress, allDone, isLastSet, nextLabel } = summarizePlayer(player);
 
   function completeCurrentSet() {
     if (!current || currentSet?.completed) return;
-    updateSet(activeExerciseIndex, activeSetIndex, { completed: true });
+    dispatch({ type: 'completeSet' });
     Keyboard.dismiss();
     // Open the session in the background so the row exists while the user
     // trains; a failure here is recoverable because finishing retries it.
@@ -263,21 +211,7 @@ export default function WorkoutPlayerScreen() {
 
   function onRestClose() {
     setRestOpen(false);
-    if (!isLastSet) goToNextSet();
-  }
-
-  function stepWeight(direction: 1 | -1) {
-    if (!currentSet) return;
-    const base = parseWeightValue(currentSet.weight) ?? 0;
-    const next = Math.max(0, base + direction * WEIGHT_STEP);
-    updateSet(activeExerciseIndex, activeSetIndex, { weight: formatWeight(next) });
-  }
-
-  function stepReps(direction: 1 | -1) {
-    if (!currentSet) return;
-    const base = parseRepsValue(currentSet.reps, currentSet.targetReps) ?? 0;
-    const next = Math.max(0, base + direction);
-    updateSet(activeExerciseIndex, activeSetIndex, { reps: String(next) });
+    if (!isLastSet) dispatch({ type: 'advance' });
   }
 
   async function onFinish() {
@@ -365,12 +299,6 @@ export default function WorkoutPlayerScreen() {
     return () => sub.remove();
   }, [confirmExit, finishing, completion]);
 
-  function jumpToExercise(exIdx: number) {
-    setActiveExerciseIndex(exIdx);
-    const firstIncomplete = exercises[exIdx]?.sets.findIndex((s) => !s.completed);
-    setActiveSetIndex(firstIncomplete >= 0 ? firstIncomplete : 0);
-  }
-
   if (isLoading || booting) {
     return (
       <View style={styles.center}>
@@ -437,7 +365,7 @@ export default function WorkoutPlayerScreen() {
           return (
             <Pressable
               key={ex.planExerciseId}
-              onPress={() => jumpToExercise(i)}
+              onPress={() => dispatch({ type: 'selectExercise', exerciseIndex: i })}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
               style={({ pressed }) => [styles.exChip, (pressed || active) && styles.exChipActive]}
@@ -485,7 +413,7 @@ export default function WorkoutPlayerScreen() {
             return (
               <Pressable
                 key={s.setNumber}
-                onPress={() => setActiveSetIndex(j)}
+                onPress={() => dispatch({ type: 'selectSet', setIndex: j })}
                 accessibilityRole="button"
                 accessibilityLabel={`Set ${s.setNumber}, ${s.completed ? 'logged' : isCurrent ? 'current' : 'pending'}`}
                 style={({ pressed }) => [styles.setRow, isCurrent && styles.setRowCurrent, pressed && styles.setRowPressed]}
@@ -507,14 +435,12 @@ export default function WorkoutPlayerScreen() {
             <View style={styles.weightGroup}>
               <Text style={styles.inputLabel}>Kilos</Text>
               <View style={styles.stepper}>
-                <Pressable onPress={() => stepWeight(-1)} accessibilityRole="button" accessibilityLabel="Less weight" style={({ pressed }) => [styles.stepBtn, pressed && styles.stepBtnPressed]}>
+                <Pressable onPress={() => dispatch({ type: 'stepWeight', direction: -1 })} accessibilityRole="button" accessibilityLabel="Less weight" style={({ pressed }) => [styles.stepBtn, pressed && styles.stepBtnPressed]}>
                   <Ionicons name="remove" size={14} color={theme.colors.textSecondary} />
                 </Pressable>
                 <TextInput
                   value={currentSet.weight}
-                  onChangeText={(t) =>
-                    updateSet(activeExerciseIndex, activeSetIndex, { weight: sanitizeWeightInput(t) })
-                  }
+                  onChangeText={(raw) => dispatch({ type: 'editWeight', raw })}
                   editable={!currentSet.completed}
                   keyboardType="decimal-pad"
                   placeholder="0"
@@ -524,7 +450,7 @@ export default function WorkoutPlayerScreen() {
                   style={styles.figure}
                   selectTextOnFocus
                 />
-                <Pressable onPress={() => stepWeight(1)} accessibilityRole="button" accessibilityLabel="More weight" style={({ pressed }) => [styles.stepBtn, pressed && styles.stepBtnPressed]}>
+                <Pressable onPress={() => dispatch({ type: 'stepWeight', direction: 1 })} accessibilityRole="button" accessibilityLabel="More weight" style={({ pressed }) => [styles.stepBtn, pressed && styles.stepBtnPressed]}>
                   <Ionicons name="add" size={14} color={theme.colors.textSecondary} />
                 </Pressable>
               </View>
@@ -532,14 +458,12 @@ export default function WorkoutPlayerScreen() {
             <View style={styles.repsGroup}>
               <Text style={styles.inputLabel}>Reps</Text>
               <View style={styles.stepper}>
-                <Pressable onPress={() => stepReps(-1)} accessibilityRole="button" accessibilityLabel="Fewer reps" style={({ pressed }) => [styles.stepBtn, styles.stepBtnNarrow, pressed && styles.stepBtnPressed]}>
+                <Pressable onPress={() => dispatch({ type: 'stepReps', direction: -1 })} accessibilityRole="button" accessibilityLabel="Fewer reps" style={({ pressed }) => [styles.stepBtn, styles.stepBtnNarrow, pressed && styles.stepBtnPressed]}>
                   <Ionicons name="remove" size={13} color={theme.colors.textSecondary} />
                 </Pressable>
                 <TextInput
                   value={currentSet.reps}
-                  onChangeText={(t) =>
-                    updateSet(activeExerciseIndex, activeSetIndex, { reps: sanitizeRepsInput(t) })
-                  }
+                  onChangeText={(raw) => dispatch({ type: 'editReps', raw })}
                   editable={!currentSet.completed}
                   keyboardType="number-pad"
                   placeholder={String(currentSet.targetReps)}
@@ -549,7 +473,7 @@ export default function WorkoutPlayerScreen() {
                   style={styles.figure}
                   selectTextOnFocus
                 />
-                <Pressable onPress={() => stepReps(1)} accessibilityRole="button" accessibilityLabel="More reps" style={({ pressed }) => [styles.stepBtn, styles.stepBtnNarrow, pressed && styles.stepBtnPressed]}>
+                <Pressable onPress={() => dispatch({ type: 'stepReps', direction: 1 })} accessibilityRole="button" accessibilityLabel="More reps" style={({ pressed }) => [styles.stepBtn, styles.stepBtnNarrow, pressed && styles.stepBtnPressed]}>
                   <Ionicons name="add" size={13} color={theme.colors.textSecondary} />
                 </Pressable>
               </View>
@@ -560,13 +484,13 @@ export default function WorkoutPlayerScreen() {
             <PrimaryButton
               title={`Unlog set ${currentSet.setNumber}`}
               variant="ghost"
-              onPress={() => updateSet(activeExerciseIndex, activeSetIndex, { completed: false })}
+              onPress={() => dispatch({ type: 'undoSet' })}
               style={styles.logBtn}
             />
           ) : (
             <PrimaryButton
               title={`Log set ${currentSet.setNumber}`}
-              icon={<Ionicons name="checkmark" size={15} color={theme.colors.accentText} />}
+              icon={<Ionicons name="checkmark" size={15} color={theme.colors.onAccent} />}
               onPress={completeCurrentSet}
               style={styles.logBtn}
             />
@@ -636,8 +560,8 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginTop: 8 },
   dayTitle: { ...theme.font.heading, color: theme.colors.text, flex: 1 },
   setsMeta: { ...theme.font.monoSmall, fontSize: 11.5, color: theme.colors.textDim },
-  barTrack: { height: 2, backgroundColor: theme.colors.track, borderRadius: 1, marginTop: 10, overflow: 'hidden' },
-  barFill: { height: 2, borderRadius: 1, backgroundColor: theme.colors.accent, ...theme.shadow.glow },
+  barTrack: { height: 6, backgroundColor: theme.colors.track, borderRadius: 3, marginTop: 10, overflow: 'hidden' },
+  barFill: { height: 6, borderRadius: 3, backgroundColor: theme.colors.accent, ...theme.shadow.glow },
 
   chipScroll: { flexGrow: 0 },
   chipRow: { gap: 7, paddingHorizontal: theme.space.lg, paddingTop: 6, paddingBottom: 12 },
@@ -650,26 +574,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 11,
     paddingVertical: 8,
   },
-  exChipActive: { borderColor: theme.colors.accentDim },
+  exChipActive: { borderColor: theme.colors.accent, backgroundColor: theme.colors.accentSoft },
   activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: theme.colors.accent, ...theme.shadow.glow },
   exChipText: { ...theme.font.bodyMedium, fontSize: 12, lineHeight: 15, color: theme.colors.textSecondary, flexShrink: 1 },
 
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: theme.space.lg },
-  exName: { ...theme.font.title, fontSize: 20, lineHeight: 25, letterSpacing: -0.3, color: theme.colors.text },
+  exName: { ...theme.font.title, fontSize: 27, lineHeight: 33, letterSpacing: -0.3, color: theme.colors.text },
   exMeta: { ...theme.font.small, fontSize: 12, lineHeight: 18, color: theme.colors.textDim, marginTop: 3 },
   rule: { marginTop: 18, marginBottom: 14 },
 
-  setList: { gap: 6 },
+  setList: { gap: 9 },
   setRow: {
     ...theme.card,
-    minHeight: 44,
+    minHeight: 56,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     paddingHorizontal: 13,
   },
-  setRowCurrent: { borderColor: theme.colors.borderStrong },
+  setRowCurrent: { borderColor: theme.colors.accent, backgroundColor: theme.colors.surfaceTint },
   setRowPressed: { borderColor: theme.colors.accentDim },
   setNum: { ...theme.font.mono, color: theme.colors.textDim, width: 18 },
   setValue: { ...theme.font.bodyMedium, color: theme.colors.textSecondary, flex: 1, fontVariant: ['tabular-nums'] },
@@ -678,17 +602,17 @@ const styles = StyleSheet.create({
 
   logCard: {
     marginTop: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 15,
+    paddingHorizontal: 18,
+    paddingVertical: 22,
     borderRadius: theme.radius.md,
     backgroundColor: theme.colors.surface,
     borderWidth: theme.hairline,
     borderColor: theme.colors.borderStrong,
     ...theme.shadow.md,
   },
-  inputs: { flexDirection: 'row', gap: 11 },
-  weightGroup: { flex: 1 },
-  repsGroup: { width: 112 },
+  inputs: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
+  weightGroup: { flex: 1, minWidth: 156 },
+  repsGroup: { flex: 1, minWidth: 156 },
   inputLabel: { ...theme.font.kicker, color: theme.colors.textDim, marginBottom: 8 },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   stepBtn: {
@@ -701,7 +625,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepBtnNarrow: { width: 32 },
+  stepBtnNarrow: { width: 44 },
   stepBtnPressed: { borderColor: theme.colors.accentDim },
   figure: {
     flex: 1,

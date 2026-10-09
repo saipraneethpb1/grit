@@ -91,7 +91,7 @@ export default function PlanDayScreen() {
 
       <PrimaryButton
         title="Start workout"
-        icon={<Ionicons name="play" size={14} color={theme.colors.accentText} />}
+        icon={<Ionicons name="play" size={14} color={theme.colors.onAccent} />}
         onPress={() => router.push(`/(app)/workout/${day.id}?planId=${plan.id}` as never)}
         style={styles.start}
       />

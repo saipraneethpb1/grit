@@ -1,11 +1,7 @@
 import { Platform, type TextStyle, type ViewStyle } from 'react-native';
 import { colors } from './Colors';
 
-/**
- * Nocturne tokens: Inter at medium weight, a monospace face for kickers and
- * figures, 8px radii and dense spacing. Every screen reads from here so the
- * look can be retuned in one place.
- */
+/** Shared typography, spacing, and surfaces for the Grit training experience. */
 
 const inter = {
   light: 'Inter_300Light',
@@ -33,21 +29,21 @@ const font = {
     textTransform: 'uppercase' as const,
   },
   /** Onboarding-scale headline. */
-  hero: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 27, lineHeight: 32, letterSpacing: -0.5 },
+  hero: { fontFamily: inter.semibold, fontWeight: '600' as const, fontSize: 38, lineHeight: 43, letterSpacing: -0.5 },
   /** Screen title. */
-  display: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 25, lineHeight: 30, letterSpacing: -0.5 },
+  display: { fontFamily: inter.semibold, fontWeight: '600' as const, fontSize: 32, lineHeight: 38, letterSpacing: -0.5 },
   /** Card title. */
-  title: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 21, lineHeight: 25, letterSpacing: -0.4 },
+  title: { fontFamily: inter.semibold, fontWeight: '600' as const, fontSize: 25, lineHeight: 31, letterSpacing: -0.4 },
   heading: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 17, lineHeight: 21, letterSpacing: -0.2 },
   bodyMedium: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 14, lineHeight: 18 },
-  body: { fontFamily: inter.regular, fontWeight: '400' as const, fontSize: 13.5, lineHeight: 20 },
-  caption: { fontFamily: inter.regular, fontWeight: '400' as const, fontSize: 12.5, lineHeight: 18 },
+  body: { fontFamily: inter.regular, fontWeight: '400' as const, fontSize: 15, lineHeight: 23 },
+  caption: { fontFamily: inter.regular, fontWeight: '400' as const, fontSize: 13, lineHeight: 19 },
   small: { fontFamily: inter.regular, fontWeight: '400' as const, fontSize: 11.5, lineHeight: 16 },
   /** Figures: targets, timers, counts. */
   mono: { fontFamily: mono, fontSize: 12, lineHeight: 16, fontWeight: '500' as const, fontVariant: tabular },
   monoSmall: { fontFamily: mono, fontSize: 11, lineHeight: 14, fontWeight: '400' as const, fontVariant: tabular },
   /** Big number in a stat cell. */
-  stat: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 19, lineHeight: 23, fontVariant: tabular },
+  stat: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 25, lineHeight: 30, fontVariant: tabular },
   /** Stepper value in the logger. */
   figure: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 26, lineHeight: 30, letterSpacing: -0.5, fontVariant: tabular },
   /** Rest countdown. */
@@ -61,10 +57,10 @@ const shadow = {
   /** Raised card. */
   md: {
     shadowColor: '#000',
-    shadowOpacity: 0.45,
+    shadowOpacity: 0.18,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
+    elevation: 3,
   } as ViewStyle,
   /** Sheet or dialog. */
   lg: {
@@ -77,7 +73,7 @@ const shadow = {
   /** Accent glow behind a filled bar. iOS only; Android ignores coloured shadows. */
   glow: {
     shadowColor: colors.accent,
-    shadowOpacity: 0.9,
+    shadowOpacity: 0.2,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 0 },
   } as ViewStyle,
@@ -90,15 +86,15 @@ export const theme = {
   space: {
     xs: 4,
     sm: 8,
-    md: 14,
-    lg: 20,
-    xl: 28,
+    md: 16,
+    lg: 24,
+    xl: 32,
   },
 
   radius: {
-    sm: 6,
-    md: 8,
-    lg: 14,
+    sm: 10,
+    md: 14,
+    lg: 22,
     full: 999,
   },
 
@@ -110,7 +106,7 @@ export const theme = {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: 22,
   } as ViewStyle,
 
   hairline: 1,

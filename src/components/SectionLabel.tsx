@@ -18,7 +18,7 @@ export function SectionLabel({ children, accent, style }: Props) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { marginBottom: 10 },
-  text: { ...theme.font.kicker, color: theme.colors.textDim },
+  wrap: { marginBottom: 14 },
+  text: { ...theme.font.heading, fontSize: 16, color: theme.colors.textSecondary },
   accent: { color: theme.colors.accentDeep },
 });

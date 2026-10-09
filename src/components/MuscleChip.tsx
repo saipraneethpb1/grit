@@ -28,9 +28,9 @@ export function MuscleChip({ muscle, selected, onPress }: Props) {
 
 const styles = StyleSheet.create({
   chip: {
-    minHeight: 34,
+    minHeight: 44,
     justifyContent: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     borderRadius: theme.radius.full,
     borderWidth: theme.hairline,
     borderColor: theme.colors.border,

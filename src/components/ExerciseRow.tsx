@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { exerciseGuideImages } from '@/src/domain/exerciseGuideImages';
 import { theme } from '@/constants/theme';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import type { Exercise } from '@/src/domain/types';
@@ -29,8 +30,13 @@ function ExerciseRowBase({ exercise, subtitle, onPress, right }: Props) {
 
   const content = (
     <View style={styles.row}>
+      <View style={styles.thumbnail}>
+        {exerciseGuideImages[exercise.id] ? (
+          <Image source={exerciseGuideImages[exercise.id][0]} style={styles.image} resizeMode="contain" accessible={false} />
+        ) : <Ionicons name="barbell-outline" size={24} color={theme.colors.accent} />}
+      </View>
       <View style={styles.left}>
-        <Text style={styles.name} numberOfLines={1}>{exercise.name}</Text>
+        <Text style={styles.name} numberOfLines={2}>{exercise.name}</Text>
         <Text style={styles.meta} numberOfLines={1}>{meta}</Text>
       </View>
       {right ? <Text style={styles.right}>{right}</Text> : null}
@@ -62,12 +68,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingVertical: 13,
-    borderBottomWidth: theme.hairline,
-    borderBottomColor: theme.colors.divider,
+    padding: 12,
+    marginBottom: 8,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.md,
   },
+  thumbnail: { width: 54, height: 60, borderRadius: 10, backgroundColor: theme.colors.white, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+  image: { width: '100%', height: '100%' },
   left: { flex: 1, minWidth: 0 },
-  name: { ...theme.font.body, fontSize: 14, lineHeight: 18, color: theme.colors.text },
+  name: { ...theme.font.bodyMedium, fontSize: 14, lineHeight: 20, color: theme.colors.text },
   meta: { ...theme.font.small, color: theme.colors.textDim, marginTop: 3 },
   right: { ...theme.font.mono, color: theme.colors.textSecondary },
 });

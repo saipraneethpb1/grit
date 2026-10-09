@@ -3,7 +3,7 @@
 ## Deployment order
 
 Apply migrations 001–004, then `supabase/migrations/005_security_and_atomic_plans.sql`
-and `supabase/migrations/006_custom_programs.sql` before releasing this client. Program saving now requires `save_generated_plan`;
+and `supabase/migrations/006_custom_programs.sql` before releasing this client. Apply `007_atomic_sessions.sql` after 006 for transactional workout start/finish (the client falls back to the older request-by-request flow until it is applied). Program saving now requires `save_generated_plan`;
 there is deliberately no fallback to partially committed client writes.
 Migration 005 saves programs transactionally and adds restrictive ownership checks
 for session plans, days, and planned exercises. Back up the database before migration.

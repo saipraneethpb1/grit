@@ -24,6 +24,7 @@ export function StatRow({ children }: { children: React.ReactNode }) {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
+    backgroundColor: theme.colors.surface,
     borderWidth: theme.hairline,
     borderColor: theme.colors.border,
     borderRadius: theme.radius.md,
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
   },
   pill: {
     flex: 1,
-    paddingVertical: 13,
+    paddingVertical: 18,
     paddingHorizontal: 6,
     alignItems: 'center',
   },
