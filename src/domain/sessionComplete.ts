@@ -99,3 +99,35 @@ export function nextStreak(params: {
   if (diffDays <= streakGapAllowance(daysPerWeek)) return (currentStreak ?? 0) + 1;
   return 1;
 }
+
+/**
+ * Whether finishing should bump profile counters.
+ *
+ * A finish that marked the session completed but died before the profile write
+ * leaves `workouts_completed` behind the completed-session count. Retries must
+ * still apply the bump; a second finish after a full success must not.
+ */
+export function profileNeedsProgressBump(params: {
+  alreadyCompleted: boolean;
+  workoutsCompleted: number;
+  completedSessionCount: number;
+}): boolean {
+  if (!params.alreadyCompleted) return true;
+  return params.workoutsCompleted < params.completedSessionCount;
+}
+
+/** Postgres unknown-column (42703) and PostgREST schema-cache miss (PGRST204). */
+const MISSING_COLUMN_CODES = new Set(['42703', 'PGRST204']);
+
+/**
+ * True only when a profile read failed because migration 004 is not applied.
+ * Every other error must abort the finish: treating a failed read as an empty
+ * profile overwrites XP, streaks, and volume with a single session.
+ */
+export function isMissingProgressionColumn(error: { code?: string } | null | undefined): boolean {
+  return Boolean(error?.code && MISSING_COLUMN_CODES.has(error.code));
+}
+
+export function isFatalProfileRead(error: { code?: string } | null | undefined): boolean {
+  return Boolean(error) && !isMissingProgressionColumn(error);
+}

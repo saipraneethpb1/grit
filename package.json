@@ -52,7 +52,7 @@
     "test:progression": "npx tsx scripts/test-progression.ts",
     "validate": "npm run typecheck && npm test",
     "audit:security": "npm audit",
-    "test:database": "node scripts/test-database.mjs",
+    "test:database": "node --import tsx scripts/test-database.mjs",
     "test:guides": "node scripts/test-exercise-guides.mjs",
     "test:custom": "node --import tsx scripts/test-custom-program.mjs",
     "test:intent": "npx tsx scripts/test-plan-intent.ts"

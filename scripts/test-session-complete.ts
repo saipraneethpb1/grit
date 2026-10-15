@@ -1,9 +1,12 @@
 import {
   buildCompletedSetRows,
   daysBetweenLocalDates,
+  isFatalProfileRead,
+  isMissingProgressionColumn,
   localDateString,
   nextRotationIndex,
   nextStreak,
+  profileNeedsProgressBump,
   streakGapAllowance,
 } from '../src/domain/sessionComplete';
 import type { LiveExercise } from '../src/domain/types';
@@ -201,6 +204,54 @@ function makeExercise(partial?: {
     !(sessionOther && sessionOther.plan_day_id === todayId),
     'home still offers Start when a different day was completed today'
   );
+}
+
+// --- finish retry / progress bump ---
+{
+  assert(
+    profileNeedsProgressBump({
+      alreadyCompleted: false,
+      workoutsCompleted: 3,
+      completedSessionCount: 3,
+    }),
+    'first finish always bumps profile'
+  );
+  assert(
+    profileNeedsProgressBump({
+      alreadyCompleted: true,
+      workoutsCompleted: 3,
+      completedSessionCount: 4,
+    }),
+    'retry after session-saved/profile-failed still bumps'
+  );
+  assert(
+    !profileNeedsProgressBump({
+      alreadyCompleted: true,
+      workoutsCompleted: 4,
+      completedSessionCount: 4,
+    }),
+    'full success retry does not double-count'
+  );
+  assert(
+    !profileNeedsProgressBump({
+      alreadyCompleted: true,
+      workoutsCompleted: 5,
+      completedSessionCount: 4,
+    }),
+    'a profile ahead of history is not bumped again'
+  );
+}
+
+// A failed profile read must not be treated as an empty profile.
+{
+  assert(isMissingProgressionColumn({ code: '42703' }), 'unknown column is the legacy-schema signal');
+  assert(isMissingProgressionColumn({ code: 'PGRST204' }), 'PostgREST schema-cache miss is the same signal');
+  assert(!isMissingProgressionColumn({ code: '42501' }), 'permission errors are not a missing column');
+  assert(!isMissingProgressionColumn(null), 'a successful read is not a missing column');
+  assert(isFatalProfileRead({ code: '42501' }), 'permission errors abort the finish');
+  assert(isFatalProfileRead({}), 'errors without a code still abort');
+  assert(!isFatalProfileRead({ code: '42703' }), 'missing progression columns take the legacy read');
+  assert(!isFatalProfileRead(null), 'a successful read does not abort');
 }
 
 if (failed) {

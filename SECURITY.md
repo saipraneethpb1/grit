@@ -2,9 +2,14 @@
 
 ## Deployment order
 
-Apply migrations 001–004, then `supabase/migrations/005_security_and_atomic_plans.sql`
-and `supabase/migrations/006_custom_programs.sql` before releasing this client. Program saving now requires `save_generated_plan`;
+Apply migrations 001–004, then `supabase/migrations/005_security_and_atomic_plans.sql`,
+`supabase/migrations/006_custom_programs.sql`, and `supabase/migrations/007_atomic_sessions.sql`
+before releasing this client. Program saving now requires `save_generated_plan`;
 there is deliberately no fallback to partially committed client writes.
+Workout start and finish require `start_workout_session` and `complete_workout_session`.
+Until 007 is applied, the client falls back to its own writes; that fallback refuses to
+overwrite profile counters when the profile read fails, and a retried finish does not
+double-count a session that was already saved.
 Migration 005 saves programs transactionally and adds restrictive ownership checks
 for session plans, days, and planned exercises. Back up the database before migration.
 
@@ -46,7 +51,9 @@ Expo dependency alignment and exports the web app. The local PostgreSQL regressi
 owner isolation, cross-account session rejection, and anonymous RPC rejection.
 Native storage still requires device testing; live Supabase deployment is untested.
 
-Workout completion still uses multiple client writes for sets, session status, and
-profile progression. Interrupted completion can leave inconsistent progression;
-profile totals remain client-writable under owner RLS. Do not use those totals for
-trusted rankings or rewards without moving completion into a server transaction.
+With migration 007 applied, finishing a workout is one transaction: sets, session
+status, and profile counters commit together, and the profile row is locked so two
+devices cannot overwrite each other's XP. A retry after a lost response does not
+count the session twice. Profile totals remain client-writable under owner RLS on
+databases that have not applied 007. Do not use those totals for trusted rankings
+or rewards.

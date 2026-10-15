@@ -16,9 +16,12 @@ import {
 export type { WorkoutCompletionResult };
 import {
   buildCompletedSetRows,
+  isFatalProfileRead,
+  isMissingProgressionColumn,
   localDateString,
   nextRotationIndex,
   nextStreak,
+  profileNeedsProgressBump,
 } from '@/src/domain/sessionComplete';
 import type {
   LiveExercise,
@@ -120,18 +123,42 @@ export async function enrichWithHistory(
   });
 }
 
-export async function startSession(params: {
+/**
+ * True when an RPC failed only because its migration has not been applied.
+ * PostgREST reports an unknown function as PGRST202; Postgres as 42883.
+ */
+function isMissingFunction(error: { code?: string } | null): boolean {
+  return error?.code === 'PGRST202' || error?.code === '42883';
+}
+
+type StartSessionParams = {
   userId: string;
   planId: string;
   planDayId: string;
   dayName: string;
-}): Promise<WorkoutSession> {
-  // Abandon any stuck in-progress sessions
-  await supabase
+};
+
+/**
+ * One round trip via `start_workout_session` (migration 007), which abandons a
+ * stale `in_progress` row and opens the new one in the same transaction.
+ */
+export async function startSession(params: StartSessionParams): Promise<WorkoutSession> {
+  const { data, error } = await supabase.rpc('start_workout_session', {
+    p_plan_day_id: params.planDayId,
+  });
+  if (isMissingFunction(error)) return startSessionLegacy(params);
+  if (error) throw error;
+  return data as WorkoutSession;
+}
+
+/** Pre-007 path: two requests, not atomic. A failed abandon must not be ignored. */
+async function startSessionLegacy(params: StartSessionParams): Promise<WorkoutSession> {
+  const { error: abandonError } = await supabase
     .from('workout_sessions')
     .update({ status: 'abandoned' })
     .eq('user_id', params.userId)
     .eq('status', 'in_progress');
+  if (abandonError) throw abandonError;
 
   const { data, error } = await supabase
     .from('workout_sessions')
@@ -154,23 +181,12 @@ export async function startSession(params: {
  * `startSession` is not competing with a stale `in_progress` row.
  */
 export async function abandonSession(sessionId: string): Promise<void> {
-  await supabase
+  const { error } = await supabase
     .from('workout_sessions')
     .update({ status: 'abandoned' })
     .eq('id', sessionId)
     .eq('status', 'in_progress');
-}
-
-/**
- * True when a write failed only because migration 004 has not been applied.
- *
- * Postgres reports an unknown column as 42703; PostgREST rejects it earlier,
- * from its own schema cache, as PGRST204. The app ships through the Play Store
- * while migrations are run by hand, so a build can reach a user before the SQL
- * does — and a finished workout must never be lost to that ordering.
- */
-function isMissingProgressionColumn(error: { code?: string } | null): boolean {
-  return error?.code === '42703' || error?.code === 'PGRST204';
+  if (error) throw error;
 }
 
 /** Shape of the profile row the progression rules read and write. */
@@ -210,53 +226,175 @@ export function toProgressStats(profile: Partial<ProfileRow> | null | undefined)
   };
 }
 
-export async function completeSession(params: {
+type CompleteSessionParams = {
   sessionId: string;
   userId: string;
   exercises: LiveExercise[];
   dayCount: number;
   /** day_index of the plan day that was just trained */
   finishedDayIndex: number;
-}): Promise<WorkoutCompletionResult> {
+};
+
+/** What `complete_workout_session` returns; field names match ProgressStats. */
+type CompletionRpcResult = {
+  counted: boolean;
+  setsCompleted: number;
+  volume: number | string;
+  streak: number;
+  xp: WorkoutCompletionResult['xp'];
+  before: ProgressStats;
+  after: ProgressStats;
+};
+
+/** `numeric` columns can arrive as strings through PostgREST. */
+function normalizeStats(stats: ProgressStats): ProgressStats {
+  return { ...stats, totalVolume: Number(stats.totalVolume ?? 0) };
+}
+
+/**
+ * Finish a workout in one atomic request (`complete_workout_session`, migration
+ * 007). Sets, session status and every profile counter commit together or not
+ * at all, and the profile row is locked so two devices finishing at once
+ * cannot overwrite each other's XP. A retry after a lost response is a no-op.
+ *
+ * The streak, rotation and XP rules run server-side but mirror
+ * `sessionComplete.ts` / `progression.ts`; `test-database` checks they agree.
+ */
+export async function completeSession(
+  params: CompleteSessionParams
+): Promise<WorkoutCompletionResult> {
   const rows = buildCompletedSetRows(params.sessionId, params.exercises);
 
   if (!rows.length) {
     throw new Error('Log at least one set before finishing.');
   }
 
-  const { error: setsError } = await supabase.from('session_sets').insert(rows);
-  if (setsError) throw setsError;
-
-  const { error } = await supabase
-    .from('workout_sessions')
-    .update({
-      status: 'completed',
-      completed_at: new Date().toISOString(),
-    })
-    .eq('id', params.sessionId);
-
+  const { data, error } = await supabase.rpc('complete_workout_session', {
+    p_session_id: params.sessionId,
+    p_sets: rows.map((row) => ({
+      plan_exercise_id: row.plan_exercise_id,
+      exercise_id: row.exercise_id,
+      exercise_name: row.exercise_name,
+      set_number: row.set_number,
+      target_reps: row.target_reps,
+      reps: row.reps,
+      weight: row.weight,
+    })),
+    p_today: localDateString(),
+  });
+  if (isMissingFunction(error)) return completeSessionLegacy(params, rows);
   if (error) throw error;
+
+  const result = data as CompletionRpcResult;
+  const before = normalizeStats(result.before);
+  const after = normalizeStats(result.after);
+  const levelBefore = levelFromXp(before.totalXp);
+  const levelAfter = levelFromXp(after.totalXp);
+
+  return {
+    setsCompleted: result.setsCompleted,
+    volume: Number(result.volume),
+    streak: result.streak,
+    xp: result.xp,
+    before,
+    after,
+    levelBefore,
+    levelAfter,
+    leveledUp: levelAfter.level > levelBefore.level,
+    newAchievements: result.counted ? newlyEarned(before, after) : [],
+    progressionStored: true,
+  };
+}
+
+/**
+ * Pre-007 path. Kept because migrations are applied by hand and a Play build
+ * can reach users before the SQL does.
+ *
+ * Replaces set rows so a retry after a partial insert cannot trip
+ * `unique (session_id, plan_exercise_id, set_number)`. A retry after the
+ * session was already marked completed does not write the sets again, and
+ * only bumps the profile when `workouts_completed` is still behind the
+ * completed-session count. A failed profile read aborts instead of saving
+ * the workout as the user's first session.
+ */
+async function completeSessionLegacy(
+  params: CompleteSessionParams,
+  rows: ReturnType<typeof buildCompletedSetRows>
+): Promise<WorkoutCompletionResult> {
+  const { data: existingSession, error: existingError } = await supabase
+    .from('workout_sessions')
+    .select('status')
+    .eq('id', params.sessionId)
+    .single();
+  if (existingError) throw existingError;
+
+  const alreadyCompleted = existingSession.status === 'completed';
+
+  if (!alreadyCompleted) {
+    const { error: clearError } = await supabase
+      .from('session_sets')
+      .delete()
+      .eq('session_id', params.sessionId);
+    if (clearError) throw clearError;
+
+    const { error: setsError } = await supabase.from('session_sets').insert(rows);
+    if (setsError) throw setsError;
+
+    const { error } = await supabase
+      .from('workout_sessions')
+      .update({
+        status: 'completed',
+        completed_at: new Date().toISOString(),
+      })
+      .eq('id', params.sessionId);
+    if (error) throw error;
+  }
 
   const today = localDateString();
 
-  let { data: profile, error: readError } = await supabase
+  const read = await supabase
     .from('profiles')
     .select(PROGRESS_COLUMNS)
     .eq('id', params.userId)
     .maybeSingle();
 
-  if (isMissingProgressionColumn(readError)) {
-    ({ data: profile } = await supabase
+  if (isFatalProfileRead(read.error)) throw read.error;
+
+  let profile: Partial<ProfileRow> | null = read.data as Partial<ProfileRow> | null;
+  if (isMissingProgressionColumn(read.error)) {
+    const legacy = await supabase
       .from('profiles')
       .select(LEGACY_PROGRESS_COLUMNS)
       .eq('id', params.userId)
-      .maybeSingle());
+      .maybeSingle();
+    if (legacy.error) throw legacy.error;
+    profile = legacy.data as Partial<ProfileRow> | null;
   }
 
-  const before = toProgressStats(profile as Partial<ProfileRow> | null);
+  if (!profile) throw new Error('Profile not found');
+
+  const typedProfile = profile;
+  const before = toProgressStats(typedProfile);
+
+  // The common path (first finish) always bumps, so the count query is only
+  // needed to tell a lost profile write apart from a full-success retry.
+  let needsBump = true;
+  if (alreadyCompleted) {
+    const { count: completedCount, error: countError } = await supabase
+      .from('workout_sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', params.userId)
+      .eq('status', 'completed');
+    if (countError) throw countError;
+    needsBump = profileNeedsProgressBump({
+      alreadyCompleted,
+      workoutsCompleted: before.workoutsCompleted,
+      completedSessionCount: completedCount ?? 0,
+    });
+  }
 
   const streak = nextStreak({
-    lastWorkoutDate: (profile as Partial<ProfileRow> | null)?.last_workout_date,
+    lastWorkoutDate: typedProfile.last_workout_date,
     currentStreak: before.currentStreak,
     today,
     daysPerWeek: params.dayCount,
@@ -264,53 +402,58 @@ export async function completeSession(params: {
 
   const nextDay = nextRotationIndex({
     finishedDayIndex: params.finishedDayIndex,
-    rotationIndex: (profile as Partial<ProfileRow> | null)?.current_day_index ?? 0,
+    rotationIndex: typedProfile.current_day_index ?? 0,
     dayCount: params.dayCount,
   });
 
   const volume = sessionVolume(rows);
   const xp = xpForSession({ setsCompleted: rows.length, streak });
 
-  const after: ProgressStats = {
-    workoutsCompleted: before.workoutsCompleted + 1,
-    currentStreak: streak,
-    longestStreak: Math.max(before.longestStreak, streak),
-    totalSets: before.totalSets + rows.length,
-    totalVolume: before.totalVolume + volume,
-    totalXp: before.totalXp + xp.total,
-  };
-
-  // Rotation and streak predate the gamification columns, so they are written
-  // separately: if 004 has not run, the program still advances and only the XP
-  // half is skipped.
-  const rotationUpdate = {
-    current_day_index: nextDay,
-    workouts_completed: after.workoutsCompleted,
-    current_streak: after.currentStreak,
-    last_workout_date: today,
-  };
+  const after: ProgressStats = needsBump
+    ? {
+        workoutsCompleted: before.workoutsCompleted + 1,
+        currentStreak: streak,
+        longestStreak: Math.max(before.longestStreak, streak),
+        totalSets: before.totalSets + rows.length,
+        totalVolume: before.totalVolume + volume,
+        totalXp: before.totalXp + xp.total,
+      }
+    : before;
 
   let progressionStored = true;
-  let { error: profileError } = await supabase
-    .from('profiles')
-    .update({
-      ...rotationUpdate,
-      longest_streak: after.longestStreak,
-      total_xp: after.totalXp,
-      total_sets: after.totalSets,
-      total_volume: after.totalVolume,
-    })
-    .eq('id', params.userId);
 
-  if (isMissingProgressionColumn(profileError)) {
-    progressionStored = false;
-    ({ error: profileError } = await supabase
+  if (needsBump) {
+    // Rotation and streak predate the gamification columns, so they are written
+    // separately: if 004 has not run, the program still advances and only the XP
+    // half is skipped.
+    const rotationUpdate = {
+      current_day_index: nextDay,
+      workouts_completed: after.workoutsCompleted,
+      current_streak: after.currentStreak,
+      last_workout_date: today,
+    };
+
+    let { error: profileError } = await supabase
       .from('profiles')
-      .update(rotationUpdate)
-      .eq('id', params.userId));
-  }
+      .update({
+        ...rotationUpdate,
+        longest_streak: after.longestStreak,
+        total_xp: after.totalXp,
+        total_sets: after.totalSets,
+        total_volume: after.totalVolume,
+      })
+      .eq('id', params.userId);
 
-  if (profileError) throw profileError;
+    if (isMissingProgressionColumn(profileError)) {
+      progressionStored = false;
+      ({ error: profileError } = await supabase
+        .from('profiles')
+        .update(rotationUpdate)
+        .eq('id', params.userId));
+    }
+
+    if (profileError) throw profileError;
+  }
 
   const levelBefore = levelFromXp(before.totalXp);
   const levelAfter = levelFromXp(after.totalXp);
@@ -318,14 +461,14 @@ export async function completeSession(params: {
   return {
     setsCompleted: rows.length,
     volume,
-    streak,
+    streak: after.currentStreak,
     xp,
     before,
     after,
     levelBefore,
     levelAfter,
     leveledUp: levelAfter.level > levelBefore.level,
-    newAchievements: progressionStored ? newlyEarned(before, after) : [],
+    newAchievements: progressionStored && needsBump ? newlyEarned(before, after) : [],
     progressionStored,
   };
 }

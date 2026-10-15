@@ -94,6 +94,7 @@ export default function WorkoutPlayerScreen() {
   const pendingSession = useRef<Promise<string> | null>(null);
   const savedRef = useRef(false);
   const bootedForDay = useRef<string | null>(null);
+  const bootGeneration = useRef(0);
 
   /**
    * The session row is created on the first completed set rather than on mount:
@@ -125,6 +126,7 @@ export default function WorkoutPlayerScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    const generation = ++bootGeneration.current;
     async function boot() {
       // Wait for the plan query rather than reporting failure: `day` is only
       // resolvable once it lands.
@@ -133,27 +135,31 @@ export default function WorkoutPlayerScreen() {
         setBooting(false);
         return;
       }
-      // Load the day exactly once. Re-running would replace `exercises` with a
-      // blank slate and discard every set logged so far.
+      // A finished boot for this day must not run again: replacing `exercises`
+      // would discard sets already logged. The guard is set only after the
+      // load commits, so a cancelled in-flight boot (Strict Mode remount, or
+      // a dependency change mid-fetch) does not leave the player empty.
       if (bootedForDay.current === day.id) {
         setBooting(false);
         return;
       }
-      bootedForDay.current = day.id;
 
       setBooting(true);
+      const stillCurrent = () => !cancelled && bootGeneration.current === generation;
       try {
         const base = buildLiveExercises(day);
         const enriched = await enrichWithHistory(user.id, base);
-        if (cancelled) return;
+        if (!stillCurrent()) return;
+        bootedForDay.current = day.id;
         setExercises(enriched);
       } catch {
-        if (cancelled) return;
+        if (!stillCurrent()) return;
         // History is a convenience — fall back to the plan targets rather than
         // blocking the workout on it.
+        bootedForDay.current = day.id;
         setExercises(buildLiveExercises(day));
       } finally {
-        if (!cancelled) {
+        if (stillCurrent()) {
           sessionStartedAt.current = Date.now();
           setElapsedSeconds(0);
           setBooting(false);
@@ -169,8 +175,22 @@ export default function WorkoutPlayerScreen() {
   /** Release the row if the user walks away without finishing. */
   useEffect(() => {
     return () => {
+      if (savedRef.current) return;
       const id = sessionIdRef.current;
-      if (id && !savedRef.current) void abandonSession(id);
+      if (id) {
+        void abandonSession(id).catch(() => {});
+        return;
+      }
+      // Session create may still be in flight (first set just logged). Abandon
+      // it once it resolves so we do not leave an orphaned in_progress row.
+      const pending = pendingSession.current;
+      if (pending) {
+        void pending
+          .then((createdId) => {
+            if (!savedRef.current) return abandonSession(createdId);
+          })
+          .catch(() => {});
+      }
     };
   }, []);
 
