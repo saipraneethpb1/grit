@@ -13,5 +13,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run validate
-      - run: npx expo install --check
+      - run: npm run test:expo
       - run: npm run export:web

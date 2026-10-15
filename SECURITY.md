@@ -47,7 +47,9 @@ build tooling. The remaining findings mean this is not a clean security audit.
 ## Verification and remaining limits
 
 `npm run validate` checks TypeScript and training-domain regressions. CI also checks
-Expo dependency alignment and exports the web app. The local PostgreSQL regression suite verifies migration execution, rollback,
+that installed Expo modules match the ranges shipped with the locked Expo SDK, then
+exports the web app. That check does not call Expo's version service, so a newly
+published patch does not fail the build until this repository bumps Expo. The local PostgreSQL regression suite verifies migration execution, rollback,
 owner isolation, cross-account session rejection, and anonymous RPC rejection.
 Native storage still requires device testing; live Supabase deployment is untested.
 
