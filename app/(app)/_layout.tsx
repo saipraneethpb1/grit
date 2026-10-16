@@ -32,6 +32,7 @@ export default function AppLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="history" options={{ title: 'Log' }} />
       <Stack.Screen name="splits/index" options={{ title: 'New program' }} />
+      <Stack.Screen name="splits/describe" options={{ title: 'Describe your week' }} />
       <Stack.Screen name="splits/custom" options={{ headerShown: false, gestureEnabled: false }} />
       <Stack.Screen name="splits/preview" options={{ title: 'Preview' }} />
       <Stack.Screen name="plan/[id]" options={{ title: 'Program' }} />
