@@ -1,6 +1,8 @@
 import {
   buildCompletedSetRows,
   daysBetweenLocalDates,
+  isFatalProfileRead,
+  isMissingProgressionColumn,
   localDateString,
   nextRotationIndex,
   nextStreak,
@@ -230,6 +232,19 @@ function makeExercise(partial?: {
     }),
     'full success retry does not double-count'
   );
+}
+
+// --- a failed profile read must not be treated as an empty profile ---
+{
+  assert(isMissingProgressionColumn({ code: '42703' }), 'unknown column is the pre-004 signal');
+  assert(isMissingProgressionColumn({ code: 'PGRST204' }), 'PostgREST schema-cache miss is the same signal');
+  assert(!isMissingProgressionColumn({ code: '42501' }), 'a permission error is not a missing column');
+  assert(!isMissingProgressionColumn(null), 'a successful read is not a missing column');
+  assert(isFatalProfileRead({ code: '42501' }), 'permission errors abort the finish');
+  assert(isFatalProfileRead({ code: 'PGRST301' }), 'expired-session errors abort the finish');
+  assert(isFatalProfileRead({}), 'errors without a code abort the finish');
+  assert(!isFatalProfileRead({ code: '42703' }), 'a missing column takes the legacy read instead');
+  assert(!isFatalProfileRead(null), 'a successful read does not abort');
 }
 
 if (failed) {

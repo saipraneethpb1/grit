@@ -124,12 +124,14 @@ export default function WorkoutPlayerScreen() {
         return;
       }
       // Load the day exactly once. Re-running would replace `exercises` with a
-      // blank slate and discard every set logged so far.
+      // blank slate and discard every set logged so far. The guard is set only
+      // once a load has committed: a run cancelled mid-fetch (a remount, or a
+      // dependency change) must leave the next run free to load, not an empty
+      // player.
       if (bootedForDay.current === day.id) {
         setBooting(false);
         return;
       }
-      bootedForDay.current = day.id;
 
       setBooting(true);
       try {
@@ -137,11 +139,13 @@ export default function WorkoutPlayerScreen() {
         const enriched = await enrichWithHistory(user.id, base);
         if (cancelled) return;
         dispatch({ type: 'load', exercises: enriched });
+        bootedForDay.current = day.id;
       } catch {
         if (cancelled) return;
         // History is a convenience — fall back to the plan targets rather than
         // blocking the workout on it.
         dispatch({ type: 'load', exercises: buildLiveExercises(day) });
+        bootedForDay.current = day.id;
       } finally {
         if (!cancelled) {
           sessionStartedAt.current = Date.now();

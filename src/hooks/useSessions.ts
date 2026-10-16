@@ -19,6 +19,8 @@ import {
   localDateString,
   nextRotationIndex,
   nextStreak,
+  isFatalProfileRead,
+  isMissingProgressionColumn,
   profileNeedsProgressBump,
 } from '@/src/domain/sessionComplete';
 import type {
@@ -186,18 +188,6 @@ export async function abandonSession(sessionId: string): Promise<void> {
     .eq('status', 'in_progress');
 }
 
-/**
- * True when a write failed only because migration 004 has not been applied.
- *
- * Postgres reports an unknown column as 42703; PostgREST rejects it earlier,
- * from its own schema cache, as PGRST204. The app ships through the Play Store
- * while migrations are run by hand, so a build can reach a user before the SQL
- * does — and a finished workout must never be lost to that ordering.
- */
-function isMissingProgressionColumn(error: { code?: string } | null): boolean {
-  return error?.code === '42703' || error?.code === 'PGRST204';
-}
-
 /** Shape of the profile row the progression rules read and write. */
 export type ProfileRow = {
   id: string;
@@ -357,12 +347,16 @@ async function completeSessionLegacy(
     .maybeSingle();
 
   if (isMissingProgressionColumn(readError)) {
-    ({ data: profile } = await supabase
+    ({ data: profile, error: readError } = await supabase
       .from('profiles')
       .select(LEGACY_PROGRESS_COLUMNS)
       .eq('id', params.userId)
       .maybeSingle());
   }
+  // The profile write below sets absolute totals, so reading a failure as an
+  // empty profile would reset XP, streaks and volume to this one session.
+  if (isFatalProfileRead(readError)) throw readError;
+  if (!profile) throw new Error('Your profile could not be loaded. Your sets are still on this screen.');
 
   const before = toProgressStats(profile as Partial<ProfileRow> | null);
   const typedProfile = profile as Partial<ProfileRow> | null;

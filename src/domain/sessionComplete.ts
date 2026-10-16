@@ -107,6 +107,28 @@ export function nextStreak(params: {
  * leaves `workouts_completed` behind the completed-session count. Retries must
  * still apply the bump; a second finish after a full success must not.
  */
+/**
+ * True when a profiles read or write failed only because migration 004 has not
+ * been applied.
+ *
+ * Postgres reports an unknown column as 42703; PostgREST rejects it earlier,
+ * from its own schema cache, as PGRST204. The app ships through the Play Store
+ * while migrations are run by hand, so a build can reach a user before the SQL
+ * does — and a finished workout must never be lost to that ordering.
+ */
+export function isMissingProgressionColumn(error: { code?: string } | null | undefined): boolean {
+  return error?.code === '42703' || error?.code === 'PGRST204';
+}
+
+/**
+ * Whether a profile read must abort the finish. Only the missing-column case
+ * has a fallback; any other error (network, permissions) leaves the counters
+ * unknown, and treating them as zero would overwrite real progression.
+ */
+export function isFatalProfileRead(error: { code?: string } | null | undefined): boolean {
+  return Boolean(error) && !isMissingProgressionColumn(error);
+}
+
 export function profileNeedsProgressBump(params: {
   alreadyCompleted: boolean;
   workoutsCompleted: number;
