@@ -20,7 +20,7 @@ Built with **Expo (React Native)**, **Expo Router**, **TypeScript**, and **Supab
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 22.13+
 - [Expo Go](https://expo.dev/go) on a phone, or an iOS/Android simulator
 - A free [Supabase](https://supabase.com) project
 
@@ -180,7 +180,6 @@ See **Profile → Sources & attribution** in the app.
 ## Roadmap
 
 - Progressive overload suggestions
-- Custom user-defined splits
 - Push notifications for rest timers
 - Persist chosen methodology on saved plans
 

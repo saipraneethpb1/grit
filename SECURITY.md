@@ -43,10 +43,14 @@ build tooling. The remaining findings mean this is not a clean security audit.
 
 `npm run validate` checks TypeScript and training-domain regressions. CI also checks
 Expo dependency alignment and exports the web app. The local PostgreSQL regression suite verifies migration execution, rollback,
-owner isolation, cross-account session rejection, and anonymous RPC rejection.
+owner isolation, cross-account session rejection, and anonymous RPC rejection, plus
+migration 007's atomic session start/finish, retry idempotence, and SQL/TypeScript
+parity of the streak, rotation, and XP rules.
 Native storage still requires device testing; live Supabase deployment is untested.
 
-Workout completion still uses multiple client writes for sets, session status, and
-profile progression. Interrupted completion can leave inconsistent progression;
-profile totals remain client-writable under owner RLS. Do not use those totals for
-trusted rankings or rewards without moving completion into a server transaction.
+With migration 007 applied, workout completion is one server transaction
+(`complete_workout_session`) that locks the profile row, so an interrupted or
+concurrent finish cannot leave progression half-written. Until 007 is applied the
+client falls back to the older multi-write flow, where an interrupted completion can
+still leave inconsistent progression. Either way, profile totals remain
+client-writable under owner RLS: do not use them for trusted rankings or rewards.
