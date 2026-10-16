@@ -2,6 +2,7 @@ import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
 import { AchievementBadge } from '@/src/components/AchievementBadge';
+import { GlassSurface } from '@/src/components/GlassSurface';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { XpBar } from '@/src/components/XpBar';
 import { formatCount, type WorkoutCompletionResult } from '@/src/domain/progression';
@@ -44,7 +45,7 @@ export function WorkoutCompleteSheet({ visible, result, elapsedLabel, onDismiss 
       onRequestClose={onDismiss}
     >
       <View style={styles.backdrop}>
-        <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, theme.space.lg) }]}>
+        <GlassSurface style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, theme.space.lg) }]}>
           <ScrollView
             contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}
@@ -104,7 +105,7 @@ export function WorkoutCompleteSheet({ visible, result, elapsedLabel, onDismiss 
           </ScrollView>
 
           <PrimaryButton title="Done" variant="filled" onPress={onDismiss} />
-        </View>
+        </GlassSurface>
       </View>
     </Modal>
   );

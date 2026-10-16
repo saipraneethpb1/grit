@@ -1,5 +1,6 @@
 import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
+import { GlassSurface } from './GlassSurface';
 import { PrimaryButton } from './PrimaryButton';
 
 export type WorkoutDialogState = {
@@ -18,7 +19,7 @@ export function WorkoutDialog({ dialog, onClose }: {
   return (
     <Modal visible={Boolean(dialog)} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        <View style={styles.card} accessibilityViewIsModal>
+        <GlassSurface style={styles.card} accessibilityViewIsModal>
           <ScrollView keyboardShouldPersistTaps="handled">
             <Text accessibilityRole="header" style={styles.title}>{dialog?.title}</Text>
             <Text style={styles.message}>{dialog?.message}</Text>
@@ -41,7 +42,7 @@ export function WorkoutDialog({ dialog, onClose }: {
               />
             </View>
           </ScrollView>
-        </View>
+        </GlassSurface>
       </View>
     </Modal>
   );

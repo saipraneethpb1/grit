@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
+import { GlassSurface } from './GlassSurface';
 import { PrimaryButton } from './PrimaryButton';
 
 const PRESETS = [60, 90, 120, 180];
@@ -41,7 +42,7 @@ export function RestTimer({ visible, seconds, nextLabel, onClose, onChangeDurati
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        <View style={styles.sheet}>
+        <GlassSurface style={styles.sheet}>
           <Text style={styles.kicker}>{done ? 'Ready' : 'Rest'}</Text>
           <Text style={[styles.time, done && styles.timeDone]}>
             {mm}:{ss}
@@ -67,7 +68,7 @@ export function RestTimer({ visible, seconds, nextLabel, onClose, onChangeDurati
           </View>
 
           <PrimaryButton title={done ? 'Next set' : 'Skip rest'} onPress={onClose} />
-        </View>
+        </GlassSurface>
       </View>
     </Modal>
   );
