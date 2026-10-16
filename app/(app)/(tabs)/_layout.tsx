@@ -45,6 +45,10 @@ export default function TabLayout() {
         options={{ title: 'Library', tabBarIcon: tabIcon('barbell', 'barbell-outline') }}
       />
       <Tabs.Screen
+        name="progress"
+        options={{ title: 'Progress', tabBarIcon: tabIcon('stats-chart', 'stats-chart-outline') }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{ title: 'You', tabBarIcon: tabIcon('person', 'person-outline') }}
       />
