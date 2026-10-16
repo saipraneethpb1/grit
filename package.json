@@ -55,6 +55,7 @@
     "test:analytics": "npx tsx scripts/test-analytics.ts",
     "test:progression": "npx tsx scripts/test-progression.ts",
     "validate": "npm run typecheck && npm test",
+    "check:expo": "node scripts/check-expo-compat.mjs",
     "audit:security": "npm audit",
     "test:database": "node --import tsx scripts/test-database.mjs",
     "test:guides": "node scripts/test-exercise-guides.mjs",

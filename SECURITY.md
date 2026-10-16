@@ -42,7 +42,9 @@ build tooling. The remaining findings mean this is not a clean security audit.
 ## Verification and remaining limits
 
 `npm run validate` checks TypeScript and training-domain regressions. CI also checks
-Expo dependency alignment and exports the web app. The local PostgreSQL regression suite verifies migration execution, rollback,
+that installed Expo packages match the ranges bundled with the locked Expo SDK
+(`npm run check:expo`, offline, so a newly published Expo patch cannot fail the build)
+and exports the web app. The local PostgreSQL regression suite verifies migration execution, rollback,
 owner isolation, cross-account session rejection, and anonymous RPC rejection, plus
 migration 007's atomic session start/finish, retry idempotence, and SQL/TypeScript
 parity of the streak, rotation, and XP rules.
