@@ -27,12 +27,18 @@ requests bypassing the UI are also checked. Enable email confirmation and config
 production SMTP, rate limits, and compromised-password protection as appropriate.
 These hosted settings are not changed by this repository update.
 
-## Dependency audit (2026-09-11)
+## Dependency audit (2026-10-17)
 
-Compatible updates reduced npm audit findings from 26 (10 high, 16 moderate) to
-18 (4 high, 14 moderate). Remaining dependency chains involve image-size/Metro,
-decode-uri-component/query-string/Expo Router, and uuid/xcode/Expo tooling.
-Counts include dependent packages, not just distinct vulnerabilities.
+After the Expo 57.0.30 patch alignment and the compatible `npm audit fix`, npm
+audit reports 30 findings (19 high, 11 moderate, no critical; the critical
+`shell-quote` advisory was fixed). The high findings trace to three chains in
+build tooling rather than app runtime code: braces/micromatch under Metro's file
+map, image-size under Metro, and node-forge under Expo's code-signing tooling.
+Counts include every dependent package, so `expo`, `react-native` and Metro are
+listed because they depend on those chains, not because of their own advisories.
+The moderate findings come from decode-uri-component (via query-string in Expo
+Router, which does run in the app to parse URLs) and uuid (via Expo's xcode
+tooling).
 
 Do not use `npm audit fix --force` blindly: its current suggestions include Expo
 and Router downgrades incompatible with SDK 57. Recheck `npm run audit:security`
