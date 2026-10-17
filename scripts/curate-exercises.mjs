@@ -24,6 +24,7 @@ function uuidFromKey(key) {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
+const guideOverrides = JSON.parse(fs.readFileSync(path.join(root, 'data/exercise-guide-overrides.json'), 'utf8'));
 const input = process.argv[2] || '/tmp/free-exercises.json';
 
 if (!fs.existsSync(input)) {
@@ -142,7 +143,7 @@ for (const ex of raw) {
 
   const pat = pattern(ex.force, ex.mechanic, ex.name, primary);
   const d = defaults(ex.level, ex.mechanic, pat);
-  const notes = (ex.instructions || []).slice(0, 2).join(' ') || null;
+  const notes = (guideOverrides[ex.id]?.instructions ?? ex.instructions ?? []).slice(0, 2).join(' ') || null;
   // free-exercise-db ids are strings like "Barbell_Bench_Press" — hash to real UUIDs
   const id = uuidFromKey(String(ex.id));
 

@@ -1,0 +1,14 @@
+{
+  "Band_Hip_Adductions": {
+    "reason": "The upstream instructions describe hip abduction and attach the band to the far ankle. Correct the setup and movement to match hip adduction.",
+    "reference": "https://www.acefitness.org/resources/everyone/exercise-library/104/standing-hip-adduction/",
+    "instructions": [
+      "Secure a resistance band to a solid anchor at ankle height.",
+      "Stand with your left side nearest the anchor, loop the band around your left ankle, and step away until the band is taut.",
+      "Balance on your right leg with a slight knee bend. Keep your torso upright and hold a stable support if needed.",
+      "Keeping your left leg nearly straight and your hips still, pull your left foot inward across the front of your right leg.",
+      "Slowly return the left leg toward the anchor under control. Repeat for your target reps.",
+      "Turn around and repeat with your right ankle nearest the anchor."
+    ]
+  }
+}

@@ -3472,7 +3472,7 @@ export const EXERCISES: Exercise[] = [
     "default_sets": 3,
     "default_reps_min": 8,
     "default_reps_max": 12,
-    "notes": "Anchor a band around a solid post or other object. Stand with your left side to the post, and put your right foot through the band, getting it around the ankle."
+    "notes": "Secure a resistance band to a solid anchor at ankle height. Stand with your left side nearest the anchor, loop the band around your left ankle, and step away until the band is taut."
   },
   {
     "id": "09ec620e-f068-4fc6-a0d7-8e88b2be4285",

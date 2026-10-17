@@ -2,6 +2,7 @@
 // Imports guidance only; never changes curated exercise IDs or training targets.
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 const root = new URL('../', import.meta.url);
+const overrides = JSON.parse(readFileSync(new URL('data/exercise-guide-overrides.json', root)));
 const curated = JSON.parse(readFileSync(new URL('data/exercises.curated.json', root))).exercises;
 const source = new Map(JSON.parse(readFileSync(process.argv[2])).map(ex => [ex.id, ex]));
 const guides = {};
@@ -11,7 +12,7 @@ for (const exercise of curated) {
   if (!original?.instructions?.length || original.images?.length !== 2) {
     throw new Error(`Missing guidance: ${exercise.name}`);
   }
-  const instructions = original.instructions.filter(step => typeof step === 'string').map(step => step.trim()).filter(Boolean);
+  const instructions = (overrides[original.id]?.instructions ?? original.instructions).filter(step => typeof step === 'string').map(step => step.trim()).filter(Boolean);
   if (!instructions.length) throw new Error(`Empty instructions: ${exercise.name}`);
   guides[exercise.id] = { sourceId: original.id, instructions };
   original.images.forEach((path, index) => {

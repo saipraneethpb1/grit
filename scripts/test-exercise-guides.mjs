@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 const root = new URL('../', import.meta.url);
 const curated = JSON.parse(readFileSync(new URL('data/exercises.curated.json', root))).exercises;
 const guides = JSON.parse(readFileSync(new URL('data/exercise-guides.json', root)));
+const overrides = JSON.parse(readFileSync(new URL('data/exercise-guide-overrides.json', root)));
 const manifest = readFileSync(new URL('src/domain/exerciseGuideImages.ts', root), 'utf8');
 assert.equal(Object.keys(guides).length, curated.length);
 for (const exercise of curated) {
@@ -11,6 +12,10 @@ for (const exercise of curated) {
   assert.equal(guide.sourceId, exercise.source_id, `Incorrect demonstration mapping: ${exercise.name}`);
   assert.ok(guide.instructions.length >= 1);
   assert.ok(guide.instructions.every(step => typeof step === 'string' && step.trim().length > 0));
+  if (overrides[guide.sourceId]) {
+    assert.deepEqual(guide.instructions, overrides[guide.sourceId].instructions, `Content correction lost: ${exercise.name}`);
+    assert.equal(exercise.notes, guide.instructions.slice(0, 2).join(' '), `Setup correction lost: ${exercise.name}`);
+  }
   for (let frame = 0; frame < 2; frame++) {
     const path = `assets/exercises/${exercise.id}-${frame}.jpg`;
     assert.ok(manifest.includes(`require('../../${path}')`), `Missing Metro asset: ${path}`);
