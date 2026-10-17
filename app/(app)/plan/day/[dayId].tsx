@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
+import { useGoBack } from '@/src/hooks/useGoBack';
+import { countLabel } from '@/src/domain/progression';
 import { DayWorkoutList } from '@/src/components/DayWorkoutList';
 import { FadeRule } from '@/src/components/FadeRule';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
@@ -24,6 +26,7 @@ export default function PlanDayScreen() {
   const { dayId, planId } = useLocalSearchParams<{ dayId: string; planId: string }>();
   const { data: plan, isLoading, error } = usePlan(planId);
   const router = useRouter();
+  const goBack = useGoBack('/(app)/(tabs)/program');
   const insets = useSafeAreaInsets();
 
   const day = useMemo(
@@ -50,7 +53,7 @@ export default function PlanDayScreen() {
         <Text style={styles.errorText}>
           {error instanceof Error ? error.message : 'Day not found'}
         </Text>
-        <PrimaryButton title="Go back" variant="ghost" onPress={() => router.back()} style={styles.errorBtn} />
+        <PrimaryButton title="Go back" variant="ghost" onPress={goBack} style={styles.errorBtn} />
       </View>
     );
   }
@@ -69,7 +72,7 @@ export default function PlanDayScreen() {
       showsVerticalScrollIndicator={false}
     >
       <Pressable
-        onPress={() => router.back()}
+        onPress={goBack}
         accessibilityRole="button"
         accessibilityLabel="Back"
         hitSlop={10}
@@ -82,7 +85,7 @@ export default function PlanDayScreen() {
       <Text style={styles.kicker}>Day {day.day_index + 1} · {programName}</Text>
       <Text style={styles.title}>{day.name}</Text>
       <Text style={styles.meta}>
-        {formatMuscles(day.focus_muscles)}. {day.plan_exercises.length} exercises, {audit.totalSets} sets, about {audit.estimatedMinutes} minutes.
+        {formatMuscles(day.focus_muscles)}. {countLabel(day.plan_exercises.length, 'exercise')}, {countLabel(audit.totalSets, 'set')}, about {audit.estimatedMinutes} minutes.
       </Text>
 
       <FadeRule style={styles.rule} />

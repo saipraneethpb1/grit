@@ -225,6 +225,16 @@ export function formatCount(n: number): string {
   return `${(value / 1_000_000).toFixed(1)}M`;
 }
 
+/** "set" or "sets" for a count; anything but exactly 1 (0, 0.5, 2) is plural. */
+export function pluralWord(count: number, one: string, many = `${one}s`): string {
+  return count === 1 ? one : many;
+}
+
+/** "1 set", "2 sets", "0 exercises". */
+export function countLabel(count: number, one: string, many = `${one}s`): string {
+  return `${count} ${pluralWord(count, one, many)}`;
+}
+
 /**
  * Everything the completion screen needs to celebrate a finished session.
  *

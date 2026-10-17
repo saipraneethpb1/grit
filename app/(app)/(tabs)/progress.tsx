@@ -19,7 +19,7 @@ import {
 } from '@/src/domain/analytics';
 import { getExerciseById } from '@/src/domain/catalog';
 import { anatomyLabel, MUSCLE_GROUPS, MUSCLE_LABELS } from '@/src/domain/muscles';
-import { formatCount } from '@/src/domain/progression';
+import { formatCount, pluralWord } from '@/src/domain/progression';
 import type { MuscleGroup } from '@/src/domain/types';
 import { useTrainingHistory } from '@/src/hooks/useAnalytics';
 
@@ -151,7 +151,7 @@ export default function ProgressScreen() {
         {muscle ? (
           <View style={styles.detail}>
             <Text style={styles.detailName}>
-              {MUSCLE_LABELS[muscle]} · {formatSets(weekly[muscle])} sets/week
+              {MUSCLE_LABELS[muscle]} · {formatSets(weekly[muscle])} {pluralWord(weekly[muscle], 'set')}/week
             </Text>
             <Text style={styles.detailSub}>{anatomyLabel(muscle)}</Text>
           </View>
@@ -168,7 +168,7 @@ export default function ProgressScreen() {
               key={m}
               onPress={() => setMuscle(m === muscle ? null : m)}
               accessibilityRole="button"
-              accessibilityLabel={`${MUSCLE_LABELS[m]}, ${formatSets(value)} sets per week`}
+              accessibilityLabel={`${MUSCLE_LABELS[m]}, ${formatSets(value)} ${pluralWord(value, 'set')} per week`}
               style={styles.muscleRow}
             >
               <Text style={[styles.muscleName, m === muscle && styles.muscleNameOn]}>{MUSCLE_LABELS[m]}</Text>

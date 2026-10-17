@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { BackHandler, FlatList, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
+import { useGoBack } from '@/src/hooks/useGoBack';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { buildCustomProgram, moveItem, newCustomDay, type CustomDraft, type CustomLift } from '@/src/domain/customProgram';
 import { getExerciseById } from '@/src/domain/catalog';
@@ -11,6 +12,7 @@ import { useSavePlan } from '@/src/hooks/usePlans';
 
 export default function CustomProgramScreen() {
   const router = useRouter();
+  const goBack = useGoBack('/(app)/(tabs)/program');
   const navigation = useNavigation();
   const allowExit = useRef(false);
   const pendingExit = useRef<(() => void) | null>(null);
@@ -142,7 +144,7 @@ export default function CustomProgramScreen() {
         <View style={styles.overlay}><View style={styles.dialog}>
           <Text style={styles.title}>Discard this draft?</Text><Text style={styles.body}>Your program has not been saved.</Text>
           <PrimaryButton title="Keep editing" onPress={() => setExitOpen(false)} />
-          <PrimaryButton title="Discard draft" variant="danger" onPress={() => { allowExit.current = true; setExitOpen(false); if (pendingExit.current) pendingExit.current(); else router.back(); }} />
+          <PrimaryButton title="Discard draft" variant="danger" onPress={() => { allowExit.current = true; setExitOpen(false); if (pendingExit.current && router.canGoBack()) pendingExit.current(); else goBack(); }} />
         </View></View>
       </Modal>
     </KeyboardAvoidingView>

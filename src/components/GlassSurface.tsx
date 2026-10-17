@@ -44,7 +44,7 @@ export function GlassSurface({ style, children, ...rest }: ViewProps) {
     );
   }
   const { backgroundColor: _bg, shadowColor: _sc, shadowOpacity: _so, shadowRadius: _sr,
-    shadowOffset: _sf, elevation: _el, ...shape } = StyleSheet.flatten(style) ?? {};
+    shadowOffset: _sf, elevation: _el, boxShadow: _bs, ...shape } = StyleSheet.flatten(style) ?? {};
   return (
     <GlassView style={shape} glassEffectStyle="regular" colorScheme="dark" {...rest}>
       {children}

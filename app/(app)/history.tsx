@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { theme } from '@/constants/theme';
+import { countLabel } from '@/src/domain/progression';
 import { EmptyState } from '@/src/components/EmptyState';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import type { SessionSet, WorkoutSessionWithSets } from '@/src/domain/types';
@@ -61,7 +62,7 @@ function SessionCard({ session }: { session: SessionSummary }) {
         <Text style={styles.when}>{session.when}</Text>
       </View>
       <Text style={styles.meta}>
-        {session.setCount} sets{session.volume > 0 ? ` · ${session.volume} kg moved` : ''}
+        {countLabel(session.setCount, 'set')}{session.volume > 0 ? ` · ${session.volume} kg moved` : ''}
       </Text>
 
       {session.exercises.map((ex) => (

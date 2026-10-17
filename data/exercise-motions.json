@@ -1,0 +1,1232 @@
+{
+  "e349c696-171e-4719-a491-b588b2c8512f": {
+    "sourceId": "Barbell_Guillotine_Bench_Press",
+    "family": "bench_press",
+    "variant": "standard"
+  },
+  "ed47dee6-ad4a-42b9-a223-f0c0e466ac97": {
+    "sourceId": "Bench_Press_-_Powerlifting",
+    "family": "bench_press",
+    "variant": "standard"
+  },
+  "25fcf325-ff67-4c7a-a3c7-a857f9c6cd54": {
+    "sourceId": "Dumbbell_Squat_To_A_Bench",
+    "family": "squat",
+    "variant": "dumbbell_bench_squat"
+  },
+  "250dc7f0-29dc-4e89-abf4-0e386d96d0d7": {
+    "sourceId": "Jerk_Dip_Squat",
+    "family": "squat",
+    "variant": "jerk_dip"
+  },
+  "e094d92c-a0b9-4f41-a0ea-0df1d2226eef": {
+    "sourceId": "Narrow_Stance_Squats",
+    "family": "squat",
+    "variant": "standard",
+    "options": {
+      "cue": "Narrow stance"
+    }
+  },
+  "42e38de4-b031-45bc-a502-d287f18a3d8b": {
+    "sourceId": "Reverse_Band_Bench_Press",
+    "family": "bench_press",
+    "variant": "standard",
+    "options": {
+      "resistance": "band",
+      "resistanceHigh": true
+    }
+  },
+  "37b1e1a9-e2b4-44d5-a510-786a34fe7f08": {
+    "sourceId": "Reverse_Triceps_Bench_Press",
+    "family": "bench_press",
+    "variant": "standard"
+  },
+  "a46e9dc3-c47b-47b3-af18-adc989dfe61a": {
+    "sourceId": "Wide-Grip_Barbell_Bench_Press",
+    "family": "bench_press",
+    "variant": "standard",
+    "options": {
+      "cue": "Wide grip"
+    }
+  },
+  "e5bf6afc-08a4-40f5-ab0f-c184da786eb9": {
+    "sourceId": "Wide-Grip_Decline_Barbell_Bench_Press",
+    "family": "decline_press",
+    "variant": "standard",
+    "options": {
+      "cue": "Wide grip"
+    }
+  },
+  "a282e62f-a73e-4cb6-a028-433bd8ad8d56": {
+    "sourceId": "Arnold_Dumbbell_Press",
+    "family": "overhead_press",
+    "variant": "arnold_press"
+  },
+  "324b3b5e-1f4f-407d-a7a8-6a35b1c689b5": {
+    "sourceId": "Barbell_Bench_Press_-_Medium_Grip",
+    "family": "bench_press",
+    "variant": "standard"
+  },
+  "04388382-5ef8-46ff-a6a2-7aa669db1cce": {
+    "sourceId": "Barbell_Deadlift",
+    "family": "hinge",
+    "variant": "standard"
+  },
+  "36fdb1f8-7c2c-4262-a0be-932f8265cc94": {
+    "sourceId": "Barbell_Full_Squat",
+    "family": "squat",
+    "variant": "standard"
+  },
+  "3aeb8def-5c4e-4c7a-acbc-0f91e8b6179d": {
+    "sourceId": "Barbell_Hack_Squat",
+    "family": "squat",
+    "variant": "hack_squat"
+  },
+  "09ba7790-a21f-4c93-a6a9-ccedc19a07e4": {
+    "sourceId": "Barbell_Hip_Thrust",
+    "family": "hip_thrust",
+    "variant": "standard"
+  },
+  "82bd87de-2c2e-488b-a86a-1321cccb99e2": {
+    "sourceId": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+    "family": "incline_press",
+    "variant": "standard"
+  },
+  "a9ed2ee6-4cf4-401f-a6f8-6960dc424a12": {
+    "sourceId": "Barbell_Lunge",
+    "family": "lunge",
+    "variant": "back_lunge"
+  },
+  "84a5e4de-3ad2-41d6-a98a-6bd4e5eb3ea9": {
+    "sourceId": "Barbell_Rollout_from_Bench",
+    "family": "rollout",
+    "variant": "bench_rollout"
+  },
+  "14b0cf7f-1d31-469e-a8a8-ff5e21a663ea": {
+    "sourceId": "Barbell_Shoulder_Press",
+    "family": "overhead_press",
+    "variant": "seated_press"
+  },
+  "19ac14ab-ea05-49bd-a9f4-720db7c28cbb": {
+    "sourceId": "Barbell_Squat_To_A_Bench",
+    "family": "squat",
+    "variant": "bench_squat"
+  },
+  "5a1afca8-7c55-4106-a889-8b9fba625770": {
+    "sourceId": "Bench_Press_with_Chains",
+    "family": "bench_press",
+    "variant": "standard",
+    "options": {
+      "resistance": "chain"
+    }
+  },
+  "e444cb63-a75b-4bd6-af83-302786b68dfc": {
+    "sourceId": "Bent_Over_Two-Arm_Long_Bar_Row",
+    "family": "row",
+    "variant": "standard",
+    "options": {
+      "pivot": {
+        "x": 175,
+        "y": 176
+      }
+    }
+  },
+  "7ef189b0-6979-437e-abbf-a1037a7ba136": {
+    "sourceId": "Board_Press",
+    "family": "bench_press",
+    "variant": "board_press"
+  },
+  "dbfb1df0-e2c9-4656-a5d1-865527d96774": {
+    "sourceId": "Box_Squat",
+    "family": "squat",
+    "variant": "bench_squat"
+  },
+  "fd2eeb78-e299-4659-a284-0358f2e0d351": {
+    "sourceId": "Clean_and_Press",
+    "family": "overhead_press",
+    "variant": "clean_press"
+  },
+  "d5c3cc78-4822-441f-a16b-d0ec5ce46866": {
+    "sourceId": "Close-Grip_Barbell_Bench_Press",
+    "family": "bench_press",
+    "variant": "standard",
+    "options": {
+      "cue": "Close grip"
+    }
+  },
+  "6ffa90f0-b3cc-4186-aa5f-959418009ae4": {
+    "sourceId": "Cuban_Press",
+    "family": "overhead_press",
+    "variant": "cuban_press"
+  },
+  "b9927f0e-f1ce-41d0-a33c-8892430d99c6": {
+    "sourceId": "Decline_Barbell_Bench_Press",
+    "family": "decline_press",
+    "variant": "standard"
+  },
+  "a418216e-1d42-4ce3-abfe-e4c36ef1d452": {
+    "sourceId": "Decline_Close-Grip_Bench_To_Skull_Crusher",
+    "family": "skull_crusher",
+    "variant": "decline_combo",
+    "options": {
+      "cue": "Close grip"
+    }
+  },
+  "4110ec24-b445-4280-a752-828254b1625b": {
+    "sourceId": "Decline_Dumbbell_Bench_Press",
+    "family": "decline_press",
+    "variant": "standard"
+  },
+  "feb15434-f513-4278-aaf7-557b12015884": {
+    "sourceId": "Deficit_Deadlift",
+    "family": "hinge",
+    "variant": "deficit"
+  },
+  "d97a0312-626e-4b21-ab0a-3d9f02b60943": {
+    "sourceId": "Drag_Curl",
+    "family": "curl",
+    "variant": "drag_curl"
+  },
+  "24de271d-f021-4afe-af49-d03e36d8d850": {
+    "sourceId": "Dumbbell_Bench_Press",
+    "family": "bench_press",
+    "variant": "standard"
+  },
+  "3710f136-36d9-4570-ac07-df17ab2f9b8b": {
+    "sourceId": "Dumbbell_Bench_Press_with_Neutral_Grip",
+    "family": "bench_press",
+    "variant": "standard",
+    "options": {
+      "grip": "neutral",
+      "cue": "Neutral grip"
+    }
+  },
+  "73f5364c-3dce-4034-adcf-7f27f45bf47a": {
+    "sourceId": "Dumbbell_Floor_Press",
+    "family": "bench_press",
+    "variant": "floor_press"
+  },
+  "9a462685-da45-468f-adf4-ccbcc4fda50b": {
+    "sourceId": "Dumbbell_One-Arm_Shoulder_Press",
+    "family": "overhead_press",
+    "variant": "standard",
+    "options": {
+      "oneArm": true
+    }
+  },
+  "0cda8550-1a84-4013-a867-ed95c2dc0b06": {
+    "sourceId": "Dumbbell_One-Arm_Upright_Row",
+    "family": "upright_row",
+    "variant": "standard",
+    "options": {
+      "oneArm": true
+    }
+  },
+  "3f0687b0-c5d5-4cd9-aa9b-e11aaac6001e": {
+    "sourceId": "Dumbbell_Rear_Lunge",
+    "family": "lunge",
+    "variant": "standard"
+  },
+  "46fcc8a9-2cf2-49bb-abfc-a7465b2de278": {
+    "sourceId": "Dumbbell_Shoulder_Press",
+    "family": "overhead_press",
+    "variant": "seated_press"
+  },
+  "14ce8304-c02e-4e34-aeeb-ec8d160ac08a": {
+    "sourceId": "Elevated_Back_Lunge",
+    "family": "lunge",
+    "variant": "elevated_lunge"
+  },
+  "a1e5438b-d8a2-4d71-a589-c22d50edb62c": {
+    "sourceId": "Elevated_Cable_Rows",
+    "family": "seated_row",
+    "variant": "elevated_row"
+  },
+  "56792608-cbda-4cfc-a330-1aee389c56d1": {
+    "sourceId": "Floor_Press",
+    "family": "bench_press",
+    "variant": "floor_press"
+  },
+  "2b46f61d-208a-45a3-a805-2b02ac311bca": {
+    "sourceId": "Floor_Press_with_Chains",
+    "family": "bench_press",
+    "variant": "floor_press",
+    "options": {
+      "resistance": "chain"
+    }
+  },
+  "5c3cb5b3-e74c-41b6-a6b8-a3cd39cd1aff": {
+    "sourceId": "Frankenstein_Squat",
+    "family": "squat",
+    "variant": "frankenstein"
+  },
+  "412d4451-b565-4c62-a9f1-25c05a1f3950": {
+    "sourceId": "Front_Barbell_Squat_To_A_Bench",
+    "family": "squat",
+    "variant": "bench_squat",
+    "options": {
+      "frontRack": true
+    }
+  },
+  "7833f229-c642-4e1e-adf9-e632648e716c": {
+    "sourceId": "Front_Squat_Clean_Grip",
+    "family": "squat",
+    "variant": "standard",
+    "options": {
+      "frontRack": true
+    }
+  },
+  "c6a58872-9bf1-4ac3-a635-dff8fdd8d514": {
+    "sourceId": "Full_Range-Of-Motion_Lat_Pulldown",
+    "family": "pulldown",
+    "variant": "full_pulldown"
+  },
+  "cb1d1c52-5ae8-4bd7-a970-c74cb1da9959": {
+    "sourceId": "Hammer_Grip_Incline_DB_Bench_Press",
+    "family": "incline_press",
+    "variant": "standard",
+    "options": {
+      "grip": "neutral"
+    }
+  },
+  "594a5d72-15a5-42a8-a070-423b97221465": {
+    "sourceId": "High_Cable_Curls",
+    "family": "curl",
+    "variant": "high_curl",
+    "options": {
+      "pulley": {
+        "x": 100,
+        "y": 176
+      }
+    }
+  },
+  "d3865656-046c-4bc5-a491-e83de78d3420": {
+    "sourceId": "Jefferson_Squats",
+    "family": "squat",
+    "variant": "jefferson"
+  },
+  "19d5a3f8-d24a-4f91-a251-5af84af85566": {
+    "sourceId": "Kneeling_Squat",
+    "family": "squat",
+    "variant": "kneeling_squat"
+  },
+  "89fcddb4-a605-4039-a453-5296e95d2acd": {
+    "sourceId": "Narrow_Stance_Hack_Squats",
+    "family": "squat",
+    "variant": "machine_hack",
+    "options": {
+      "cue": "Narrow stance"
+    }
+  },
+  "cc2428dc-2e08-4bda-a737-4fc6dfba0748": {
+    "sourceId": "Narrow_Stance_Leg_Press",
+    "family": "leg_press",
+    "variant": "standard",
+    "options": {
+      "cue": "Narrow stance"
+    }
+  },
+  "2a8573e3-e117-4412-ad20-0ccac91ff3d9": {
+    "sourceId": "Neck_Press",
+    "family": "bench_press",
+    "variant": "standard"
+  },
+  "54d2523f-a60d-4ee8-af2f-be66fd4b36aa": {
+    "sourceId": "One_Arm_Dumbbell_Bench_Press",
+    "family": "bench_press",
+    "variant": "standard",
+    "options": {
+      "oneArm": true
+    }
+  },
+  "f7e26f60-f0a8-4dee-a538-9962cb8e4495": {
+    "sourceId": "One_Arm_Floor_Press",
+    "family": "bench_press",
+    "variant": "floor_press",
+    "options": {
+      "oneArm": true
+    }
+  },
+  "bb29d629-a43e-4a17-a716-2b449de06ffa": {
+    "sourceId": "Pin_Presses",
+    "family": "bench_press",
+    "variant": "pin_press"
+  },
+  "f469b679-c9ba-4054-a1b3-73c91c6bc55c": {
+    "sourceId": "Push_Press_-_Behind_the_Neck",
+    "family": "overhead_press",
+    "variant": "standard",
+    "options": {
+      "behindNeck": true
+    }
+  },
+  "75c21a66-6082-43a7-a846-296b97eca94d": {
+    "sourceId": "Reverse_Grip_Bent-Over_Rows",
+    "family": "row",
+    "variant": "standard",
+    "options": {
+      "cue": "Palms down"
+    }
+  },
+  "31a9ac9b-06c9-4247-a83f-ffed648a7aa0": {
+    "sourceId": "Romanian_Deadlift",
+    "family": "hinge",
+    "variant": "romanian"
+  },
+  "a36e1e06-cb18-4494-ace7-0fdd850e04f7": {
+    "sourceId": "Romanian_Deadlift_from_Deficit",
+    "family": "hinge",
+    "variant": "deficit"
+  },
+  "f29a9830-36cd-4820-ad9b-a85d7189bed2": {
+    "sourceId": "Seated_Barbell_Military_Press",
+    "family": "seated_press",
+    "variant": "standard"
+  },
+  "1f56fdab-1222-4ab8-af4a-7edc4fb3c934": {
+    "sourceId": "Seated_One-arm_Cable_Pulley_Rows",
+    "family": "seated_row",
+    "variant": "standard",
+    "options": {
+      "oneArm": true
+    }
+  },
+  "7cdb8b3c-9a01-48dd-aa83-051888ea3621": {
+    "sourceId": "See-Saw_Press_Alternating_Side_Press",
+    "family": "overhead_press",
+    "variant": "see_saw",
+    "options": {}
+  },
+  "bc89e694-fb39-4c77-a1f3-aef25953d8bf": {
+    "sourceId": "Snatch_Deadlift",
+    "family": "hinge",
+    "variant": "standard"
+  },
+  "40fcdbfb-6cca-45bb-aa2e-765e3f5b7bac": {
+    "sourceId": "Snatch_Shrug",
+    "family": "shrug",
+    "variant": "standard"
+  },
+  "e95be3b8-75b8-469c-a684-6fb2a5df3f59": {
+    "sourceId": "Standing_Barbell_Press_Behind_Neck",
+    "family": "overhead_press",
+    "variant": "standard",
+    "options": {
+      "behindNeck": true
+    }
+  },
+  "251e3155-7dd4-4d87-aaf7-9c914ca9ae06": {
+    "sourceId": "Standing_Palms-In_Dumbbell_Press",
+    "family": "overhead_press",
+    "variant": "standard",
+    "options": {
+      "grip": "neutral",
+      "cue": "Neutral grip"
+    }
+  },
+  "95f61b35-28d3-424f-a982-ae72d5d6541b": {
+    "sourceId": "Stiff-Legged_Barbell_Deadlift",
+    "family": "hinge",
+    "variant": "stiff_leg"
+  },
+  "425f0ff9-3432-48af-a027-8795f87a533c": {
+    "sourceId": "Straight_Bar_Bench_Mid_Rows",
+    "family": "row",
+    "variant": "bench_row"
+  },
+  "1420aefd-a65f-41a7-a32b-9a270e2dc13f": {
+    "sourceId": "Sumo_Deadlift",
+    "family": "hinge",
+    "variant": "sumo"
+  },
+  "120cc9d3-e4c2-45c8-aa96-b8d131cd0713": {
+    "sourceId": "Sumo_Deadlift_with_Bands",
+    "family": "hinge",
+    "variant": "sumo",
+    "options": {
+      "resistance": "band"
+    }
+  },
+  "d17a2ffd-15e7-4181-a6f9-7d8bb2c67ddc": {
+    "sourceId": "Sumo_Deadlift_with_Chains",
+    "family": "hinge",
+    "variant": "sumo",
+    "options": {
+      "resistance": "chain"
+    }
+  },
+  "29900d8f-8846-4dad-af9f-d0a7584a27ae": {
+    "sourceId": "Upright_Cable_Row",
+    "family": "upright_row",
+    "variant": "upright_cable",
+    "options": {
+      "pulley": {
+        "x": 100,
+        "y": 176
+      }
+    }
+  },
+  "a4e4faad-339c-4a1e-a728-0676dbd18015": {
+    "sourceId": "V-Bar_Pulldown",
+    "family": "pulldown",
+    "variant": "standard"
+  },
+  "8309b5e8-5ea1-4343-a242-ab760e0e378a": {
+    "sourceId": "Wide-Grip_Pulldown_Behind_The_Neck",
+    "family": "pulldown",
+    "variant": "standard",
+    "options": {
+      "behindNeck": true,
+      "cue": "Wide grip"
+    }
+  },
+  "ac1e0323-09f2-4f7a-a6c9-b9fc726a2f12": {
+    "sourceId": "Hyperextensions_With_No_Hyperextension_Bench",
+    "family": "hinge",
+    "variant": "hyperextension"
+  },
+  "8932330d-0322-429e-a3ca-15bedc3c1751": {
+    "sourceId": "Alternating_Cable_Shoulder_Press",
+    "family": "overhead_press",
+    "variant": "standard",
+    "options": {
+      "alternating": true,
+      "pulley": {
+        "x": 100,
+        "y": 176
+      }
+    }
+  },
+  "29e5ae3b-2831-4d46-a26d-0aa72940bc70": {
+    "sourceId": "Anti-Gravity_Press",
+    "family": "overhead_press",
+    "variant": "anti_gravity"
+  },
+  "e2f91100-084e-4e30-a48d-4a1d05874013": {
+    "sourceId": "Around_The_Worlds",
+    "family": "fly",
+    "variant": "around_world"
+  },
+  "61387c5b-9e8a-46fb-a909-05a59303f86f": {
+    "sourceId": "Barbell_Ab_Rollout",
+    "family": "rollout",
+    "variant": "plank_rollout"
+  },
+  "0262bf3d-89b5-4521-a130-a54b2ec5de0c": {
+    "sourceId": "Barbell_Glute_Bridge",
+    "family": "bridge",
+    "variant": "standard"
+  },
+  "f9917872-dba8-41ce-a510-d48aafea0082": {
+    "sourceId": "Barbell_Incline_Shoulder_Raise",
+    "family": "incline_press",
+    "variant": "incline_shoulder_raise"
+  },
+  "a9a06570-14f8-467b-af6e-5169eee44940": {
+    "sourceId": "Barbell_Rear_Delt_Row",
+    "family": "row",
+    "variant": "standard"
+  },
+  "cdc9848b-fd42-4ec9-a53c-ad4258391c15": {
+    "sourceId": "Bent-Arm_Barbell_Pullover",
+    "family": "pullover",
+    "variant": "standard"
+  },
+  "8ed5c5fa-dccc-4c0f-a215-37c1855fe147": {
+    "sourceId": "Bent-Arm_Dumbbell_Pullover",
+    "family": "pullover",
+    "variant": "dumbbell_pullover"
+  },
+  "868b49c3-fe0f-4bf5-a347-1e7163181b7e": {
+    "sourceId": "Bent_Over_Barbell_Row",
+    "family": "row",
+    "variant": "standard"
+  },
+  "b67e579e-43ab-4773-ae9a-416d0b751c05": {
+    "sourceId": "Bent_Over_One-Arm_Long_Bar_Row",
+    "family": "row",
+    "variant": "standard",
+    "options": {
+      "oneArm": true,
+      "pivot": {
+        "x": 175,
+        "y": 176
+      }
+    }
+  },
+  "a93fd1c0-75d2-413d-a743-6f4a418eb683": {
+    "sourceId": "Bent_Over_Two-Dumbbell_Row",
+    "family": "row",
+    "variant": "standard"
+  },
+  "14bd2018-e326-4cf5-a179-2705d9ef2ebe": {
+    "sourceId": "Bent_Over_Two-Dumbbell_Row_With_Palms_In",
+    "family": "row",
+    "variant": "standard"
+  },
+  "871a1f9f-a078-493f-a6bc-d1e758bcfcfa": {
+    "sourceId": "Cable_Chest_Press",
+    "family": "chest_press_standing",
+    "variant": "seated_chest_press"
+  },
+  "97c615b0-76fb-43ee-a8cc-ae24f8c8f5e4": {
+    "sourceId": "Clean",
+    "family": "clean",
+    "variant": "standard"
+  },
+  "acda82a5-1e80-484a-a3d6-a60835091b23": {
+    "sourceId": "Clean_Deadlift",
+    "family": "hinge",
+    "variant": "standard"
+  },
+  "66a2d467-bc0a-4e5a-a3ff-fed41a85f410": {
+    "sourceId": "Clean_Shrug",
+    "family": "shrug",
+    "variant": "standard"
+  },
+  "5115a2f8-7c39-4d00-a83b-d6384bca78a9": {
+    "sourceId": "Close-Grip_Dumbbell_Press",
+    "family": "bench_press",
+    "variant": "cross_bench_press",
+    "options": {
+      "cue": "Close grip"
+    }
+  },
+  "2989515b-160d-4cdf-a0dd-db51fe2cecbd": {
+    "sourceId": "Decline_Dumbbell_Flyes",
+    "family": "fly",
+    "variant": "fly_lying"
+  },
+  "f618724a-82cb-4fe5-a496-64297495592b": {
+    "sourceId": "Dumbbell_Clean",
+    "family": "clean",
+    "variant": "standard"
+  },
+  "49c5d394-4bdf-4709-ac41-3599a69d1f5b": {
+    "sourceId": "Glute_Ham_Raise",
+    "family": "leg_curl",
+    "variant": "glute_ham"
+  },
+  "5ec8f13a-6b50-4e4b-a7fe-657ae7cb0080": {
+    "sourceId": "Good_Morning",
+    "family": "hinge",
+    "variant": "good_morning"
+  },
+  "3da1f498-a0c1-431e-a912-286d02494b0a": {
+    "sourceId": "Good_Morning_off_Pins",
+    "family": "hinge",
+    "variant": "good_morning",
+    "options": {
+      "cue": "Start from the rack pins"
+    }
+  },
+  "9b25dff7-cbdd-4b35-a1a8-bcefd66d93ab": {
+    "sourceId": "Hanging_Bar_Good_Morning",
+    "family": "hinge",
+    "variant": "good_morning",
+    "options": {
+      "resistance": "chain",
+      "resistanceHigh": true
+    }
+  },
+  "27479a5b-b05e-4658-a0cd-9099ba35b61c": {
+    "sourceId": "JM_Press",
+    "family": "bench_press",
+    "variant": "standard"
+  },
+  "aa173a50-95ad-4263-a427-50a93af5b976": {
+    "sourceId": "Kneeling_Jump_Squat",
+    "family": "squat",
+    "variant": "kneeling_jump"
+  },
+  "1371939f-c8e0-4dd2-afcc-ee297f7e7744": {
+    "sourceId": "Muscle_Snatch",
+    "family": "snatch",
+    "variant": "standard"
+  },
+  "474ebafc-40e9-46de-a5c2-f4fb730ec64c": {
+    "sourceId": "Pallof_Press_With_Rotation",
+    "family": "rotation",
+    "variant": "pallof"
+  },
+  "933fd0d4-a585-42c7-aa5e-5a72eb15089a": {
+    "sourceId": "Power_Clean",
+    "family": "clean",
+    "variant": "standard"
+  },
+  "abf5232a-b8ad-4ccb-ae26-ed2812683167": {
+    "sourceId": "Press_Sit-Up",
+    "family": "crunch",
+    "variant": "press_sit_up"
+  },
+  "52dd188a-97eb-4b9a-aca2-85aa873247e3": {
+    "sourceId": "Smith_Machine_Close-Grip_Bench_Press",
+    "family": "bench_press",
+    "variant": "smith_press",
+    "options": {
+      "machineBar": true,
+      "cue": "Close grip"
+    }
+  },
+  "57c365a4-883e-4e3a-a285-3d45f49884d8": {
+    "sourceId": "Standing_Dumbbell_Upright_Row",
+    "family": "upright_row",
+    "variant": "standard"
+  },
+  "ec79350c-8b8d-47f6-a117-ab19ecbb652a": {
+    "sourceId": "Bench_Dips",
+    "family": "dip",
+    "variant": "bench_dip"
+  },
+  "55b577d4-d794-4e87-a853-a1d482d7e233": {
+    "sourceId": "Lying_High_Bench_Barbell_Curl",
+    "family": "seated_curl",
+    "variant": "prone_high_curl"
+  },
+  "3aafaa86-ccbe-4427-a806-dc87cd61facf": {
+    "sourceId": "Barbell_Ab_Rollout_-_On_Knees",
+    "family": "rollout",
+    "variant": "standard"
+  },
+  "f873ff66-d583-41d5-abb8-27586056e2da": {
+    "sourceId": "Cable_Judo_Flip",
+    "family": "rotation",
+    "variant": "rotation",
+    "options": {
+      "pulley": {
+        "x": 15,
+        "y": 176
+      }
+    }
+  },
+  "3034b029-deb3-463f-ad2e-796e8abb9bc3": {
+    "sourceId": "Cable_Russian_Twists",
+    "family": "rotation",
+    "variant": "russian_twist"
+  },
+  "804d03a7-6882-431c-a246-527dc8e7f1b8": {
+    "sourceId": "Landmine_180s",
+    "family": "rotation",
+    "variant": "landmine"
+  },
+  "1135fbc2-0114-4957-ae5e-84892f29685f": {
+    "sourceId": "Pull_Through",
+    "family": "hinge",
+    "variant": "standard",
+    "options": {
+      "pulley": {
+        "x": 15,
+        "y": 176
+      }
+    }
+  },
+  "bb3eadeb-33dd-4931-a8fb-40749b947c7c": {
+    "sourceId": "Smith_Machine_Upright_Row",
+    "family": "upright_row",
+    "variant": "standard",
+    "options": {
+      "machineBar": true
+    }
+  },
+  "c34e7708-3384-4713-acb1-79b9b9c02239": {
+    "sourceId": "Spell_Caster",
+    "family": "rotation",
+    "variant": "rotation"
+  },
+  "a5a3b371-0a02-40e8-aa05-341d1cb50172": {
+    "sourceId": "Standing_Cable_Lift",
+    "family": "rotation",
+    "variant": "cable_lift"
+  },
+  "6d179b4f-519b-429c-a7c6-b607967f8386": {
+    "sourceId": "Standing_Cable_Wood_Chop",
+    "family": "rotation",
+    "variant": "wood_chop"
+  },
+  "54d7ee83-a8b5-4d1e-aff2-4c8ba9d8df65": {
+    "sourceId": "Bent-Knee_Hip_Raise",
+    "family": "leg_raise",
+    "variant": "hip_raise"
+  },
+  "0fd8a738-69a6-4c81-a3f0-a3a2a9bff7d0": {
+    "sourceId": "Bent_Press",
+    "family": "rotation",
+    "variant": "bent_press"
+  },
+  "73a4ee37-ea7a-4624-a63a-9452c80743f1": {
+    "sourceId": "Bottoms-Up_Clean_From_The_Hang_Position",
+    "family": "clean",
+    "variant": "hanging_clean"
+  },
+  "aaf500da-0b06-493b-a615-f8f106c706db": {
+    "sourceId": "Calf_Raise_On_A_Dumbbell",
+    "family": "calf_raise",
+    "variant": "calf_on_dumbbell"
+  },
+  "87fd555f-a4be-43a2-a373-c3d24831342c": {
+    "sourceId": "Double_Kettlebell_Windmill",
+    "family": "rotation",
+    "variant": "windmill"
+  },
+  "8ffb03e6-3dbd-4211-a961-b6aab3e5aa31": {
+    "sourceId": "Dumbbell_Prone_Incline_Curl",
+    "family": "seated_curl",
+    "variant": "prone_curl"
+  },
+  "905a50ba-117c-4900-aeea-e4f03f5cd0cf": {
+    "sourceId": "Flat_Bench_Leg_Pull-In",
+    "family": "leg_raise",
+    "variant": "knee_pull_in"
+  },
+  "c2007dde-e860-4d98-a647-b29c049ed1f8": {
+    "sourceId": "Gorilla_Chin_Crunch",
+    "family": "hanging_leg_raise",
+    "variant": "gorilla"
+  },
+  "76d65dcb-4aa6-40b9-a1ed-313822c4a09a": {
+    "sourceId": "Hip_Extension_with_Bands",
+    "family": "glute_kickback",
+    "variant": "standing_kickback",
+    "options": {
+      "resistance": "band"
+    }
+  },
+  "b94a7170-5675-4198-abfb-4fdc6d1a2813": {
+    "sourceId": "Kettlebell_Sumo_High_Pull",
+    "family": "upright_row",
+    "variant": "high_pull"
+  },
+  "d5a9ab89-527d-4116-adfe-b251cf8c9068": {
+    "sourceId": "Lying_Cable_Curl",
+    "family": "seated_curl",
+    "variant": "lying_curl",
+    "options": {
+      "pulley": {
+        "x": 100,
+        "y": 176
+      }
+    }
+  },
+  "4b8d0e62-06ff-436a-a32e-4a17cf91a13f": {
+    "sourceId": "Overhead_Cable_Curl",
+    "family": "curl",
+    "variant": "high_curl",
+    "options": {
+      "pulley": {
+        "x": 100,
+        "y": 176
+      }
+    }
+  },
+  "dd9bbab8-b680-434e-acc7-21d850f3dc6f": {
+    "sourceId": "Palms-Down_Dumbbell_Wrist_Curl_Over_A_Bench",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "grip": "overhand",
+      "cue": "Palms down"
+    }
+  },
+  "f0e82230-a584-4a96-ac4b-5ef8a5b9a2ed": {
+    "sourceId": "Palms-Down_Wrist_Curl_Over_A_Bench",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "grip": "overhand",
+      "cue": "Palms down"
+    }
+  },
+  "f70f22ee-bbd6-4265-a71d-00ec0ac484f8": {
+    "sourceId": "Palms-Up_Barbell_Wrist_Curl_Over_A_Bench",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "cue": "Palms up"
+    }
+  },
+  "936269fb-2a06-45aa-a805-428841f7da6f": {
+    "sourceId": "Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "cue": "Palms up"
+    }
+  },
+  "37f68d40-f637-46c7-a0af-2782f80621c2": {
+    "sourceId": "Seated_Close-Grip_Concentration_Barbell_Curl",
+    "family": "seated_curl",
+    "variant": "concentration",
+    "options": {
+      "cue": "Close grip"
+    }
+  },
+  "eab02967-03b4-474c-a8e0-ddcc93375e48": {
+    "sourceId": "Seated_One-Arm_Dumbbell_Palms-Down_Wrist_Curl",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "oneArm": true,
+      "grip": "overhand",
+      "cue": "Palms down"
+    }
+  },
+  "1eb6783a-78d9-47c3-aa1b-5283698594fa": {
+    "sourceId": "Standing_Dumbbell_Calf_Raise",
+    "family": "calf_raise",
+    "variant": "standard"
+  },
+  "9a0b7a89-a9ad-4c6d-a8a9-26e4eea0ad6d": {
+    "sourceId": "Standing_Dumbbell_Reverse_Curl",
+    "family": "curl",
+    "variant": "standard",
+    "options": {
+      "grip": "overhand"
+    }
+  },
+  "c54bf9ce-4063-40e4-a597-40ed35e5f806": {
+    "sourceId": "Standing_Inner-Biceps_Curl",
+    "family": "curl",
+    "variant": "standard"
+  },
+  "62a87aac-d169-461a-ad38-c6056a201d68": {
+    "sourceId": "Standing_One-Arm_Cable_Curl",
+    "family": "curl",
+    "variant": "standard",
+    "options": {
+      "oneArm": true,
+      "pulley": {
+        "x": 100,
+        "y": 176
+      }
+    }
+  },
+  "288ac5b8-854b-489d-a305-2cd5623462b6": {
+    "sourceId": "Standing_One-Arm_Dumbbell_Curl_Over_Incline_Bench",
+    "family": "curl",
+    "variant": "preacher",
+    "options": {
+      "oneArm": true
+    }
+  },
+  "f8128d21-0134-42c1-a87d-44b9be0f5196": {
+    "sourceId": "Step-up_with_Knee_Raise",
+    "family": "lunge",
+    "variant": "step_up"
+  },
+  "f70d78e5-6623-47ff-a72d-d963488150bb": {
+    "sourceId": "Upright_Row_-_With_Bands",
+    "family": "upright_row",
+    "variant": "standard",
+    "options": {
+      "resistance": "band"
+    }
+  },
+  "3889b768-88fc-4244-a2a4-e3f29a896630": {
+    "sourceId": "Zottman_Curl",
+    "family": "curl",
+    "variant": "zottman",
+    "options": {
+      "grip": "rotating"
+    }
+  },
+  "526c16e0-a31e-4c0c-a691-055b0c23f8a0": {
+    "sourceId": "Zottman_Preacher_Curl",
+    "family": "seated_curl",
+    "variant": "zottman_preacher",
+    "options": {
+      "grip": "rotating"
+    }
+  },
+  "ea57e75d-417e-47f6-ab61-e4b9ef3f81bf": {
+    "sourceId": "Alternate_Hammer_Curl",
+    "family": "curl",
+    "variant": "standard",
+    "options": {
+      "alternating": true,
+      "grip": "neutral"
+    }
+  },
+  "875dc8dd-a683-4e6e-af86-d8b880235364": {
+    "sourceId": "Alternate_Incline_Dumbbell_Curl",
+    "family": "curl",
+    "variant": "incline_curl",
+    "options": {
+      "alternating": true
+    }
+  },
+  "a6972ca7-1926-4ef1-a463-51e898ebc759": {
+    "sourceId": "Barbell_Curl",
+    "family": "curl",
+    "variant": "standard"
+  },
+  "a51e4651-7e9d-4825-a6d3-6d699cd76d41": {
+    "sourceId": "Barbell_Seated_Calf_Raise",
+    "family": "calf_raise",
+    "variant": "seated_calf"
+  },
+  "1235e70c-6db2-4c69-ac18-72d9d6063e3d": {
+    "sourceId": "Barbell_Shrug",
+    "family": "shrug",
+    "variant": "standard"
+  },
+  "4dcad7ae-9175-4625-af45-a86287f2c0d5": {
+    "sourceId": "Barbell_Shrug_Behind_The_Back",
+    "family": "shrug",
+    "variant": "standard",
+    "options": {
+      "loadBehind": true
+    }
+  },
+  "c9b7f2c8-4fa5-4f68-aecc-97e9646e6b1c": {
+    "sourceId": "Cable_Shrugs",
+    "family": "shrug",
+    "variant": "standard",
+    "options": {
+      "pulley": {
+        "x": 100,
+        "y": 176
+      }
+    }
+  },
+  "beb064eb-c3a3-417a-a014-e7c25c28580c": {
+    "sourceId": "Cable_Wrist_Curl",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "pulley": {
+        "x": 100,
+        "y": 176
+      }
+    }
+  },
+  "8725f028-441e-4ada-a3f4-c6adcd1d8bec": {
+    "sourceId": "Dumbbell_Lying_Pronation",
+    "family": "wrist_curl",
+    "variant": "wrist_rotation"
+  },
+  "844be332-58c4-4094-a955-20e82c8d2b91": {
+    "sourceId": "Dumbbell_Lying_Supination",
+    "family": "wrist_curl",
+    "variant": "supination"
+  },
+  "3423c221-778b-4d65-a64c-209400cc8a5d": {
+    "sourceId": "Dumbbell_Seated_One-Leg_Calf_Raise",
+    "family": "calf_raise",
+    "variant": "seated_calf",
+    "options": {
+      "oneArm": true
+    }
+  },
+  "b91d6aea-840f-45e3-a140-dbba5048d20f": {
+    "sourceId": "Dumbbell_Shrug",
+    "family": "shrug",
+    "variant": "standard"
+  },
+  "867bb1a0-615d-4ff1-aca6-a9a4d3616d49": {
+    "sourceId": "Finger_Curls",
+    "family": "wrist_curl",
+    "variant": "finger_curl"
+  },
+  "7960c6eb-290e-4f96-a662-6e460b8a9f76": {
+    "sourceId": "Flutter_Kicks",
+    "family": "leg_raise",
+    "variant": "flutter"
+  },
+  "ffbbe46b-f6df-4715-a2b0-1b8e48e30527": {
+    "sourceId": "Glute_Kickback",
+    "family": "glute_kickback",
+    "variant": "quadruped_kickback"
+  },
+  "ae320836-afa8-4a9c-a16c-2ea9f8ac209a": {
+    "sourceId": "Hip_Lift_with_Band",
+    "family": "bridge",
+    "variant": "standard",
+    "options": {
+      "resistance": "band"
+    }
+  },
+  "4fbbe7b4-47d8-4563-a938-702b12e53c2e": {
+    "sourceId": "Monster_Walk",
+    "family": "hip_abduction",
+    "variant": "monster_walk"
+  },
+  "e3f62c2f-9c0e-492e-a1e3-bde3d7c78b0b": {
+    "sourceId": "One-Legged_Cable_Kickback",
+    "family": "glute_kickback",
+    "variant": "standing_kickback",
+    "options": {
+      "oneArm": true
+    }
+  },
+  "5b75b148-a57d-4009-aaf0-5834e977ea98": {
+    "sourceId": "Rocking_Standing_Calf_Raise",
+    "family": "calf_raise",
+    "variant": "rocking_calf",
+    "options": {
+      "load": "shoulders"
+    }
+  },
+  "fd0324d3-d35b-4d58-ab29-1c70b7d8eaff": {
+    "sourceId": "Seated_Dumbbell_Palms-Down_Wrist_Curl",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "grip": "overhand",
+      "cue": "Palms down"
+    }
+  },
+  "cb358008-1149-496a-a0c1-c6d4220f98ae": {
+    "sourceId": "Seated_Dumbbell_Palms-Up_Wrist_Curl",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "cue": "Palms up"
+    }
+  },
+  "714e2d97-5bfd-426d-accf-030f259e5820": {
+    "sourceId": "Seated_One-Arm_Dumbbell_Palms-Up_Wrist_Curl",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "oneArm": true,
+      "cue": "Palms up"
+    }
+  },
+  "5b5fa9b0-e9fe-4378-ac64-3ade3a6d65ac": {
+    "sourceId": "Seated_Palm-Up_Barbell_Wrist_Curl",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "cue": "Palms up"
+    }
+  },
+  "ffda6d52-30e9-470a-ae54-aa8bbcc7200f": {
+    "sourceId": "Seated_Palms-Down_Barbell_Wrist_Curl",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "grip": "overhand",
+      "cue": "Palms down"
+    }
+  },
+  "69975b22-0bf5-43fd-a14f-72b4ebe77f55": {
+    "sourceId": "Seated_Two-Arm_Palms-Up_Low-Pulley_Wrist_Curl",
+    "family": "wrist_curl",
+    "variant": "supported_wrist",
+    "options": {
+      "pulley": {
+        "x": 100,
+        "y": 176
+      },
+      "cue": "Palms up"
+    }
+  },
+  "6f128ad3-ddf1-4581-a984-12538a7f9a9f": {
+    "sourceId": "Standing_Barbell_Calf_Raise",
+    "family": "calf_raise",
+    "variant": "standard",
+    "options": {
+      "load": "shoulders"
+    }
+  },
+  "9a4e7f16-965e-4d12-a4c5-0a7a71b8b2a6": {
+    "sourceId": "Calf-Machine_Shoulder_Shrug",
+    "family": "shrug",
+    "variant": "machine_shrug"
+  },
+  "dec39ee2-47bc-4dc8-a324-70f072e8cf7d": {
+    "sourceId": "Calf_Press",
+    "family": "calf_raise",
+    "variant": "calf_press"
+  },
+  "6e4678e7-dd68-4e11-a52e-0e811069ad4f": {
+    "sourceId": "Calf_Press_On_The_Leg_Press_Machine",
+    "family": "calf_raise",
+    "variant": "calf_press"
+  },
+  "a45f73dd-863b-4a6e-a9f8-b996565f84df": {
+    "sourceId": "Leverage_Shrug",
+    "family": "shrug",
+    "variant": "standard"
+  },
+  "49bc882b-6dec-46b9-a309-58c420a31ade": {
+    "sourceId": "Seated_Calf_Raise",
+    "family": "calf_raise",
+    "variant": "seated_calf"
+  },
+  "9b2dd84e-4506-4068-ad14-52b6060bf5e4": {
+    "sourceId": "Smith_Machine_Behind_the_Back_Shrug",
+    "family": "shrug",
+    "variant": "standard",
+    "options": {
+      "loadBehind": true,
+      "machineBar": true
+    }
+  },
+  "3c753489-ebc7-40f1-a871-bc1fe13faf5d": {
+    "sourceId": "Smith_Machine_Calf_Raise",
+    "family": "calf_raise",
+    "variant": "standard",
+    "options": {
+      "load": "shoulders",
+      "machineBar": true
+    }
+  },
+  "20a42423-1107-4090-adcf-6f0105719ea5": {
+    "sourceId": "Smith_Machine_Reverse_Calf_Raises",
+    "family": "calf_raise",
+    "variant": "reverse_calf",
+    "options": {
+      "machineBar": true
+    }
+  },
+  "4ee41542-b125-46d9-ae88-121a572403c0": {
+    "sourceId": "Standing_Calf_Raises",
+    "family": "calf_raise",
+    "variant": "standard",
+    "options": {
+      "load": "shoulders"
+    }
+  },
+  "445f1adc-85c8-4d3e-ad4f-8146e16d4848": {
+    "sourceId": "Calf_Raises_-_With_Bands",
+    "family": "calf_raise",
+    "variant": "band_calf",
+    "options": {
+      "resistance": "band"
+    }
+  },
+  "d2634733-f34d-4c70-a18b-241fb7ad748c": {
+    "sourceId": "Thigh_Abductor",
+    "family": "hip_abduction",
+    "variant": "seated_abductor"
+  },
+  "ce798832-b97e-49d3-a1f1-5420d13c19b0": {
+    "sourceId": "Thigh_Adductor",
+    "family": "hip_adduction",
+    "variant": "seated_adductor"
+  },
+  "8ab19fb6-51af-44e4-a06d-2bdd9af2f948": {
+    "sourceId": "Band_Hip_Adductions",
+    "family": "hip_adduction",
+    "variant": "band_adduction",
+    "options": {
+      "resistance": "band"
+    }
+  },
+  "09ec620e-f068-4fc6-a0d7-8e88b2be4285": {
+    "sourceId": "Butt_Lift_Bridge",
+    "family": "bridge",
+    "variant": "standard"
+  },
+  "c377cb1f-aabe-4b51-a701-1fdc37bedb2f": {
+    "sourceId": "Isometric_Neck_Exercise_-_Front_And_Back",
+    "family": "neck",
+    "variant": "neck_front_back"
+  },
+  "da001ac9-d08c-4bb0-a539-b8bc76896b0e": {
+    "sourceId": "Isometric_Neck_Exercise_-_Sides",
+    "family": "neck",
+    "variant": "neck_sides"
+  }
+}

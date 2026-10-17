@@ -11,7 +11,10 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '@/constants/theme';
+import { countLabel } from '@/src/domain/progression';
+import { GradientBar } from '@/src/components/GradientBar';
 import { formatTarget } from '@/src/components/DayWorkoutList';
 import { EmptyState } from '@/src/components/EmptyState';
 import { FadeRule } from '@/src/components/FadeRule';
@@ -246,6 +249,13 @@ export default function HomeScreen() {
       ) : null}
 
       <View style={styles.todayCard}>
+        {/* Ember wash from the top-left corner; content sits above it. */}
+        <LinearGradient
+          colors={[theme.colors.accentGlow, 'transparent']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0.9, y: 0.7 }}
+          style={styles.todayGlow}
+        />
         <View style={styles.cardKickerRow}>
           <Ionicons name="barbell-outline" size={12} color={theme.colors.accent} />
           <Text style={styles.cardKicker} numberOfLines={1}>
@@ -255,7 +265,7 @@ export default function HomeScreen() {
         <Text style={styles.sessionLabel}>TODAY’S SESSION</Text>
         <Text style={styles.dayName}>{today.name}</Text>
         <Text style={styles.dayMeta}>
-          {today.plan_exercises.length} exercises · {audit.totalSets} sets · ~{audit.estimatedMinutes} min
+          {countLabel(today.plan_exercises.length, 'exercise')} · {countLabel(audit.totalSets, 'set')} · ~{audit.estimatedMinutes} min
         </Text>
 
         {emphasis.length ? (
@@ -264,7 +274,7 @@ export default function HomeScreen() {
               <View key={m.muscle} style={styles.emphasisRow}>
                 <Text style={styles.emphasisLabel} numberOfLines={1}>{MUSCLE_LABELS[m.muscle]}</Text>
                 <View style={styles.emphasisTrack}>
-                  <View style={[styles.emphasisFill, { width: `${m.pct}%` }]} />
+                  <GradientBar style={[styles.emphasisFill, { width: `${m.pct}%` }]} />
                 </View>
                 <Text style={styles.emphasisPct}>{m.pct}%</Text>
               </View>
@@ -334,7 +344,7 @@ export default function HomeScreen() {
             >
               <Text style={styles.sessionName} numberOfLines={1}>{s.day_name}</Text>
               <Text style={styles.sessionMeta}>
-                {formatSessionDate(s.completed_at)} · {s.session_sets.filter((x) => x.completed).length} sets
+                {formatSessionDate(s.completed_at)} · {countLabel(s.session_sets.filter((x) => x.completed).length, 'set')}
               </Text>
             </Pressable>
           ))}
@@ -376,7 +386,8 @@ const styles = StyleSheet.create({
 
   week: { marginBottom: 18 },
 
-  todayCard: { ...theme.card, backgroundColor: theme.colors.surfaceTint, padding: 22, marginBottom: 20, borderColor: theme.colors.borderTint },
+  todayCard: { ...theme.card, backgroundColor: theme.colors.surfaceTint, padding: 22, marginBottom: 20, borderColor: theme.colors.borderTint, overflow: 'hidden' },
+  todayGlow: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, pointerEvents: 'none' },
   cardKickerRow: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 11 },
   cardKicker: { ...theme.font.kicker, color: theme.colors.accentDeep, flex: 1 },
   sessionLabel: { ...theme.font.small, color: theme.colors.textMuted, marginBottom: 6 },

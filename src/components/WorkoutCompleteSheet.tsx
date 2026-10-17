@@ -5,7 +5,7 @@ import { AchievementBadge } from '@/src/components/AchievementBadge';
 import { GlassSurface } from '@/src/components/GlassSurface';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { XpBar } from '@/src/components/XpBar';
-import { formatCount, type WorkoutCompletionResult } from '@/src/domain/progression';
+import { countLabel, formatCount, type WorkoutCompletionResult } from '@/src/domain/progression';
 
 type Props = {
   visible: boolean;
@@ -66,7 +66,7 @@ export function WorkoutCompleteSheet({ visible, result, elapsedLabel, onDismiss 
               <>
                 <View style={styles.card}>
                   <XpRow label="Session" value={xp.workout} />
-                  <XpRow label={`${result.setsCompleted} sets logged`} value={xp.sets} />
+                  <XpRow label={`${countLabel(result.setsCompleted, 'set')} logged`} value={xp.sets} />
                   <XpRow label={`${result.streak}-session streak`} value={xp.streak} />
                 </View>
 

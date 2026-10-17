@@ -1,5 +1,5 @@
 import { Platform, type TextStyle, type ViewStyle } from 'react-native';
-import { colors } from './Colors';
+import { accentGradient, colors } from './Colors';
 
 /** Shared typography, spacing, and surfaces for the Grit training experience. */
 
@@ -53,34 +53,47 @@ const font = {
   tab: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 10, lineHeight: 12, letterSpacing: 0.2 },
 };
 
+/** "#ff6b3d" at 0.35 → "rgba(255, 107, 61, 0.35)", for web box shadows. */
+function rgba(hex: string, alpha: number): string {
+  const h = hex.replace('#', '');
+  const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+/**
+ * One shadow, expressed per platform. React Native Web deprecates the
+ * `shadow*` props in favour of `boxShadow`; iOS and Android keep the props
+ * they have always rendered, so native appearance is unchanged.
+ */
+function shadowStyle(color: string, opacity: number, radius: number, y: number, elevation?: number): ViewStyle {
+  if (Platform.OS === 'web') {
+    return { boxShadow: `0px ${y}px ${radius}px ${rgba(color, opacity)}` };
+  }
+  return {
+    shadowColor: color,
+    shadowOpacity: opacity,
+    shadowRadius: radius,
+    shadowOffset: { width: 0, height: y },
+    ...(elevation == null ? null : { elevation }),
+  };
+}
+
 const shadow = {
   /** Raised card. */
-  md: {
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 3,
-  } as ViewStyle,
+  md: shadowStyle('#000000', 0.18, 18, 6, 3),
   /** Sheet or dialog. */
-  lg: {
-    shadowColor: '#000',
-    shadowOpacity: 0.65,
-    shadowRadius: 40,
-    shadowOffset: { width: 0, height: 16 },
-    elevation: 16,
-  } as ViewStyle,
-  /** Accent glow behind a filled bar. iOS only; Android ignores coloured shadows. */
-  glow: {
-    shadowColor: colors.accent,
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
-  } as ViewStyle,
+  lg: shadowStyle('#000000', 0.65, 40, 16, 16),
+  /** Accent glow behind a filled bar. iOS and web; Android ignores coloured shadows. */
+  glow: shadowStyle(colors.accent, 0.2, 8, 0),
+  /** Glow under a gradient button. */
+  button: shadowStyle(colors.accent, 0.35, 16, 6),
 };
 
 export const theme = {
   colors,
+  /** Coral → amber; pass to `<LinearGradient colors={...}>`. */
+  gradient: accentGradient,
   fontFamily: { ...inter, mono },
 
   space: {

@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
+import { countLabel } from '@/src/domain/progression';
 import type { SplitTemplate } from '@/src/domain/types';
 
 type Props = {
@@ -27,7 +28,7 @@ export function SplitCard({ split, onPress, selected, badge }: Props) {
         {badge ? <Text style={styles.badge}>{badge}</Text> : null}
         <View style={styles.header}>
           <Text style={styles.title}>{split.name}</Text>
-          <Text style={styles.days}>{split.days_per_week} days</Text>
+          <Text style={styles.days}>{countLabel(split.days_per_week, 'day')}</Text>
         </View>
         <Text style={styles.desc} numberOfLines={3}>
           {split.description}

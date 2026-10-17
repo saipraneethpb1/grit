@@ -1,28 +1,44 @@
 import { Fragment, type ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Ellipse, G, Path, Rect } from 'react-native-svg';
 import { theme } from '@/constants/theme';
 import { muscleBand, type MuscleBand } from '@/src/domain/analytics';
 import type { MuscleGroup } from '@/src/domain/types';
 
 /**
- * Sequential lime ramp for weekly sets, validated against the card surface
+ * Sequential ember ramp for weekly sets, validated against the card surface
  * (one hue, monotone lightness, every step clears the surface). Untrained
  * muscles sit outside the ramp in the neutral track grey.
  */
 export const BAND_COLORS: Record<MuscleBand, string> = {
   none: theme.colors.track,
-  low: '#4a6330',
-  building: '#86ad4f',
-  target: theme.colors.accent,
+  low: '#8c3c22',
+  building: '#d05c34',
+  target: '#ff9468',
 };
 
-const SILHOUETTE = '#242c26';
+const SILHOUETTE = '#26201d';
 const VIEW_W = 120;
 const VIEW_H = 250;
 
 type Shape = { muscle: MuscleGroup; node: (props: ShapeProps) => ReactNode };
-type ShapeProps = { fill: string; stroke: string; strokeWidth: number; onPress: () => void };
+type ShapeProps = { fill: string; stroke: string; strokeWidth: number; id?: string; onPress?: () => void };
+
+/**
+ * Web cannot take a press handler per shape. react-native-svg's web adapter
+ * turns `onPress` into responder props that React DOM rejects (plus the
+ * deprecated TouchableMixin), and it overwrites any `onClick` with `onPress`
+ * even when that is undefined. So on web each muscle carries an id, and one
+ * click handler on the wrapping View reads the muscle back from the target.
+ * Native keeps a plain `onPress` per shape.
+ */
+const WEB = Platform.OS === 'web';
+const ID_PREFIX = 'grit-muscle';
+const muscleFromTarget = (target: unknown): MuscleGroup | null => {
+  const id = (target as { id?: unknown } | null)?.id;
+  if (typeof id !== 'string' || !id.startsWith(`${ID_PREFIX}-`)) return null;
+  return id.split('-')[2] as MuscleGroup;
+};
 
 const ellipse = (cx: number, cy: number, rx: number, ry: number) => (p: ShapeProps) => (
   <Ellipse cx={cx} cy={cy} rx={rx} ry={ry} {...p} />
@@ -93,13 +109,15 @@ function Silhouette() {
 type Props = {
   /** Average weekly sets per muscle. */
   weeklySets: Record<MuscleGroup, number>;
-  selected: MuscleGroup | null;
-  onSelect: (muscle: MuscleGroup) => void;
+  selected?: MuscleGroup | null;
+  /** Omit for a display-only map (exercise guides). */
+  onSelect?: (muscle: MuscleGroup) => void;
 };
 
 function Figure({ view, label, ...props }: Props & { view: typeof FRONT; label: string }) {
   const draw = (shape: Shape, key: string) => {
     const on = props.selected === shape.muscle;
+    const { onSelect } = props;
     return (
       <Fragment key={key}>
         {shape.node({
@@ -107,14 +125,28 @@ function Figure({ view, label, ...props }: Props & { view: typeof FRONT; label: 
           // A surface-coloured outline keeps neighbouring muscles distinct.
           stroke: on ? theme.colors.text : theme.colors.surface,
           strokeWidth: on ? 1.6 : 1.2,
-          onPress: () => props.onSelect(shape.muscle),
+          ...(onSelect
+            ? WEB
+              ? { id: `${ID_PREFIX}-${shape.muscle}-${label}-${key}` }
+              : { onPress: () => onSelect(shape.muscle) }
+            : null),
         })}
       </Fragment>
     );
   };
   return (
     <View style={styles.figure}>
-      <View style={styles.svgBox}>
+      <View
+        style={styles.svgBox}
+        {...(WEB && props.onSelect
+          ? {
+              onClick: (e: { target: unknown }) => {
+                const muscle = muscleFromTarget(e.target);
+                if (muscle) props.onSelect?.(muscle);
+              },
+            }
+          : null)}
+      >
       <Svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} width="100%" height="100%">
         <Silhouette />
         {view.paired.map((s, i) => draw(s, `l${i}`))}

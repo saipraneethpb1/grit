@@ -6,7 +6,9 @@ import {
   XP_PER_STREAK_SESSION,
   XP_PER_WORKOUT,
   earnedAchievements,
+  countLabel,
   formatCount,
+  pluralWord,
   isEarned,
   levelFromXp,
   newlyEarned,
@@ -152,6 +154,11 @@ eq('small counts print plainly', formatCount(999), '999');
 eq('round thousands drop the decimal', formatCount(2000), '2k');
 eq('thousands keep one decimal', formatCount(1250), '1.3k');
 eq('millions switch unit', formatCount(2_400_000), '2.4M');
+eq('one set is singular', countLabel(1, 'set'), '1 set');
+eq('two sets are plural', countLabel(2, 'set'), '2 sets');
+eq('zero is plural', countLabel(0, 'exercise'), '0 exercises');
+eq('a fraction is plural', pluralWord(0.5, 'set'), 'sets');
+eq('irregular plurals', countLabel(3, 'day', 'days'), '3 days');
 
 if (failed > 0) {
   console.error(`\n${failed} progression test(s) failed`);

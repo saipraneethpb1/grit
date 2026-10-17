@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
+import { countLabel } from '@/src/domain/progression';
 import { ExerciseRow } from '@/src/components/ExerciseRow';
 import { MuscleChip } from '@/src/components/MuscleChip';
 import { EXERCISE_SOURCE_META } from '@/src/domain/catalog';
@@ -91,7 +92,7 @@ export default function ExercisesScreen() {
         removeClippedSubviews
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <Text style={styles.count}>{exercises.length} movements</Text>
+          <Text style={styles.count}>{countLabel(exercises.length, 'movement')}</Text>
         }
         ListEmptyComponent={
           <Text style={styles.empty}>No exercises match your filters.</Text>

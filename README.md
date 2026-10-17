@@ -197,19 +197,28 @@ remaining dependency advisories, and release verification requirements.
 ## Exercise demonstrations
 
 Tap **How to perform** under the active exercise in a workout, or on an exercise's
-library detail page. The modal preserves your logged sets and contains a looping
-two-position photo demonstration, pause/step controls, and complete numbered
-instructions. Reduced-motion settings disable automatic playback. These are
-position demonstrations, not full-motion videos.
+library detail page. The modal preserves your logged sets and shows an articulated
+exercise animation, playback/pose-step controls, and complete numbered instructions.
+All 189 catalog exercises have an explicit exercise/source ID mapping in
+`data/exercise-motions.json`. The rig supports supported and seated variants,
+alternating limbs, torso rotation, finger/forearm rotation, and staged compound lifts.
+Reduced-motion settings hold a pose and retain manual stepping. Isometric neck
+exercises keep the head still against resistance. Overhead views are labeled.
 
-All 189 guides and 378 JPEG frames are bundled for offline access (approximately
-25 MB of source images); no video service, tracking embed, or API key is required.
+`src/domain/exerciseMotions.ts` builds the exercise-specific poses from that mapping.
+The library, details, and workout guides use the same figure. Reference photos are
+retained as source material; they are not substituted for the animations.
+
+All 189 guides and the figure animations work offline. The repository also retains
+378 JPEG source frames (approximately 25 MB); the demonstration UI does not import
+them. No video service, tracking embed, or API key is required.
 Photos and instructions come from the existing [free-exercise-db source](https://github.com/yuhonas/free-exercise-db)
 under its [Unlicense](assets/exercises/LICENSE.md), matched using exact source IDs.
 
 To refresh guidance, download that repository's `dist/exercises.json`, then run
 `node scripts/import-exercise-guides.mjs /path/to/exercises.json`.
-The importer preserves curated IDs and training targets. Run `npm run test:guides`
+The importer preserves curated IDs and training targets. Reviewed instruction corrections
+in `data/exercise-guide-overrides.json` are applied during guide imports and catalog curation. Run `npm run test:guides`
 to verify coverage, source mappings, and bundled images.
 
 ## Custom programs

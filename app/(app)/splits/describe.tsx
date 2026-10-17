@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MAX_DESCRIPTION_LENGTH } from '@/supabase/functions/_shared/planIntentQuestions';
 import { theme } from '@/constants/theme';
+import { countLabel } from '@/src/domain/progression';
 import { FadeRule } from '@/src/components/FadeRule';
 import { LevelBadge } from '@/src/components/LevelBadge';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
@@ -247,7 +248,7 @@ export default function DescribeWeekScreen() {
                       onPress={() => setDraft({ ...draft, daysPerWeek: d })}
                       accessibilityRole="button"
                       accessibilityState={{ selected: on }}
-                      accessibilityLabel={`${d} days a week`}
+                      accessibilityLabel={`${countLabel(d, 'day')} a week`}
                       style={[styles.pill, on && styles.pillOn]}
                     >
                       <Text style={[styles.pillText, on && styles.pillTextOn]}>{d}</Text>
@@ -256,7 +257,7 @@ export default function DescribeWeekScreen() {
                 })}
               </View>
               <Text style={styles.splitNote}>
-                {split.name} · {split.days_per_week} days
+                {split.name} · {countLabel(split.days_per_week, 'day')}
               </Text>
             </View>
 

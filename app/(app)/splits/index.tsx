@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
+import { countLabel } from '@/src/domain/progression';
 import { LevelBadge } from '@/src/components/LevelBadge';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { SplitCard } from '@/src/components/SplitCard';
@@ -33,8 +34,8 @@ function previewHref(templateId: string, methodologyId: string) {
 /** "3 days / week · up to 6 exercises" — the real commitment, before you commit. */
 function methodologyCommitment(m: Methodology): string {
   const split = getSplitTemplate(m.defaultSplitId);
-  const days = split ? `${split.days_per_week} days / week` : 'Flexible schedule';
-  return `${days} · up to ${m.maxExercisesPerDay} exercises a session`;
+  const days = split ? `${countLabel(split.days_per_week, 'day')} / week` : 'Flexible schedule';
+  return `${days} · up to ${countLabel(m.maxExercisesPerDay, 'exercise')} a session`;
 }
 
 /** Thin step bars, the onboarding progress mark. */

@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 import { theme } from '@/constants/theme';
@@ -8,8 +9,8 @@ type Props = {
   loading?: boolean;
   disabled?: boolean;
   /**
-   * primary: solid accent for the main action.
-   * filled: solid accent for the action that closes a flow.
+   * primary: accent gradient for the main action.
+   * filled: accent gradient for the action that closes a flow.
    * ghost: outlined neutral. danger: outlined red. link: bare text.
    */
   variant?: 'primary' | 'filled' | 'ghost' | 'danger' | 'link';
@@ -18,8 +19,8 @@ type Props = {
 };
 
 const VARIANTS = {
-  primary: { fg: theme.colors.onAccent, border: theme.colors.accent, bg: theme.colors.accent, pressed: theme.colors.accentBright },
-  filled: { fg: theme.colors.onAccent, border: theme.colors.accent, bg: theme.colors.accent, pressed: theme.colors.accentBright },
+  primary: { fg: theme.colors.onAccent, border: 'transparent', bg: theme.colors.accent, pressed: theme.colors.accentBright },
+  filled: { fg: theme.colors.onAccent, border: 'transparent', bg: theme.colors.accent, pressed: theme.colors.accentBright },
   ghost: { fg: theme.colors.textMuted, border: theme.colors.border, bg: 'transparent', pressed: theme.colors.surface },
   danger: { fg: theme.colors.danger, border: theme.colors.danger, bg: 'transparent', pressed: theme.colors.dangerSoft },
   link: { fg: theme.colors.textDim, border: 'transparent', bg: 'transparent', pressed: 'transparent' },
@@ -35,6 +36,7 @@ export function PrimaryButton({
   style,
 }: Props) {
   const tone = VARIANTS[variant];
+  const gradient = variant === 'primary' || variant === 'filled';
 
   return (
     <Pressable
@@ -46,8 +48,10 @@ export function PrimaryButton({
       style={({ pressed }) => [
         styles.btn,
         variant === 'link' && styles.link,
+        gradient && styles.glow,
         {
-          backgroundColor: pressed ? tone.pressed : tone.bg,
+          // The gradient paints the fill itself.
+          backgroundColor: gradient ? 'transparent' : pressed ? tone.pressed : tone.bg,
           borderColor: tone.border,
           opacity: disabled ? 0.45 : 1,
           transform: [{ scale: pressed ? 0.98 : 1 }],
@@ -55,12 +59,24 @@ export function PrimaryButton({
         style,
       ]}
     >
-      {loading ? (
-        <ActivityIndicator color={tone.fg} />
-      ) : (
+      {({ pressed }) => (
         <>
-          {icon}
-          <Text style={[styles.text, variant === 'link' && styles.linkText, { color: tone.fg }]}>{title}</Text>
+          {gradient ? (
+            <LinearGradient
+              colors={theme.gradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.fill, { opacity: pressed ? 0.86 : 1 }]}
+            />
+          ) : null}
+          {loading ? (
+            <ActivityIndicator color={tone.fg} />
+          ) : (
+            <>
+              {icon}
+              <Text style={[styles.text, variant === 'link' && styles.linkText, { color: tone.fg }]}>{title}</Text>
+            </>
+          )}
         </>
       )}
     </Pressable>
@@ -79,6 +95,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     borderWidth: theme.hairline,
   },
+  /**
+   * Rounded here rather than clipping the button with `overflow: 'hidden'`,
+   * which on iOS would also clip the glow.
+   */
+  fill: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, borderRadius: theme.radius.md },
+  /** iOS and web; Android ignores coloured shadows. */
+  glow: theme.shadow.button,
   text: { ...theme.font.cta },
   link: { minHeight: 44, paddingVertical: 8 },
   linkText: { ...theme.font.caption },

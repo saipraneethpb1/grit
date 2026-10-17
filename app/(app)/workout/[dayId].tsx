@@ -15,6 +15,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
+import { useGoBack } from '@/src/hooks/useGoBack';
+import { GradientBar } from '@/src/components/GradientBar';
 import { formatTarget } from '@/src/components/DayWorkoutList';
 import { ExerciseGuide } from '@/src/components/ExerciseGuide';
 import { FadeRule } from '@/src/components/FadeRule';
@@ -56,6 +58,7 @@ export default function WorkoutPlayerScreen() {
   const { user } = useAuth();
   const complete = useCompleteWorkout();
   const router = useRouter();
+  const goBack = useGoBack('/(app)/(tabs)');
   const insets = useSafeAreaInsets();
   const { padding: keyboardPadding, visible: keyboardVisible } = useKeyboardInset();
   const scrollRef = useRef<ScrollView>(null);
@@ -280,12 +283,12 @@ export default function WorkoutPlayerScreen() {
         message: `${doneSets} logged set${doneSets === 1 ? '' : 's'} will be lost. Use Finish and save to keep them.`,
         confirmLabel: 'Leave workout',
         destructive: true,
-        onConfirm: () => router.back(),
+        onConfirm: goBack,
       });
       return;
     }
-    router.back();
-  }, [doneSets, router]);
+    goBack();
+  }, [doneSets, goBack]);
 
   /**
    * Android's back gesture would otherwise pop the player straight off the stack
@@ -315,7 +318,7 @@ export default function WorkoutPlayerScreen() {
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>Workout not found.</Text>
-        <PrimaryButton title="Go back" variant="ghost" onPress={() => router.back()} style={styles.errorBtn} />
+        <PrimaryButton title="Go back" variant="ghost" onPress={goBack} style={styles.errorBtn} />
       </View>
     );
   }
@@ -324,7 +327,7 @@ export default function WorkoutPlayerScreen() {
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>This day has no exercises yet.</Text>
-        <PrimaryButton title="Go back" variant="ghost" onPress={() => router.back()} style={styles.errorBtn} />
+        <PrimaryButton title="Go back" variant="ghost" onPress={goBack} style={styles.errorBtn} />
       </View>
     );
   }
@@ -353,7 +356,7 @@ export default function WorkoutPlayerScreen() {
           <Text style={styles.setsMeta}>{doneSets}/{totalSets} sets</Text>
         </View>
         <View style={styles.barTrack}>
-          <View style={[styles.barFill, { width: `${Math.round(progress * 100)}%` }]} />
+          <GradientBar style={[styles.barFill, { width: `${Math.round(progress * 100)}%` }]} />
         </View>
       </View>
 

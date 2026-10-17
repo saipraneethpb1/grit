@@ -1,9 +1,11 @@
 import { useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ExerciseDemonstration } from '@/src/components/ExerciseDemonstration';
 import { ExerciseGuide } from '@/src/components/ExerciseGuide';
+import { MuscleFocus } from '@/src/components/MuscleFocus';
 import { FadeRule } from '@/src/components/FadeRule';
 import { theme } from '@/constants/theme';
-import { anatomyLabel, MUSCLE_LABELS } from '@/src/domain/muscles';
+import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import { useExercise } from '@/src/hooks/useExercises';
 
 function humanize(value: string): string {
@@ -28,19 +30,20 @@ export default function ExerciseDetailScreen() {
     <ScrollView style={styles.root} contentContainerStyle={styles.content}>
       <Text style={styles.kicker}>{primary}</Text>
       <Text style={styles.title}>{exercise.name}</Text>
+
+      <View style={styles.stage}>
+        <ExerciseDemonstration key={exercise.id} exercise={exercise} style={styles.figure} />
+      </View>
+
+      <Text style={styles.section}>Muscles worked</Text>
+      <View style={styles.card}>
+        <MuscleFocus primary={exercise.primary_muscles} secondary={exercise.secondary_muscles} />
+      </View>
+
       <ExerciseGuide key={exercise.id} exerciseId={exercise.id} name={exercise.name} notes={exercise.notes} />
 
       <FadeRule style={styles.rule} />
 
-      <Row label="Anatomy" value={exercise.primary_muscles.map((m) => anatomyLabel(m)).join(' · ')} />
-      <Row
-        label="Secondary"
-        value={
-          exercise.secondary_muscles.length
-            ? exercise.secondary_muscles.map((m) => MUSCLE_LABELS[m]).join(', ')
-            : '—'
-        }
-      />
       <Row label="Equipment" value={exercise.equipment.map(humanize).join(', ')} />
       <Row label="Pattern" value={humanize(exercise.movement_pattern)} />
       <Row
@@ -69,6 +72,10 @@ const styles = StyleSheet.create({
   kicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 7 },
   title: { ...theme.font.display, color: theme.colors.text },
   rule: { marginTop: 18, marginBottom: 4 },
+  stage: { ...theme.card, aspectRatio: 200 / 190, padding: 10, marginTop: 16 },
+  figure: { flex: 1 },
+  section: { ...theme.font.kicker, color: theme.colors.textDim, marginTop: 22, marginBottom: 10 },
+  card: { ...theme.card, padding: 18 },
   row: {
     paddingVertical: 12,
     borderBottomWidth: theme.hairline,

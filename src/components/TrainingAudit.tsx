@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
+import { countLabel } from '@/src/domain/progression';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import { analyzeTrainingPlan } from '@/src/domain/trainingAnalysis';
 import type { GeneratedPlan, WorkoutPlanWithDays } from '@/src/domain/types';
@@ -17,7 +18,7 @@ export function TrainingAudit({ plan }: { plan: GeneratedPlan | WorkoutPlanWithD
     <View style={styles.card}>
       <Text style={styles.kicker}>Coverage · {audit.coveragePercent}%</Text>
       <Text style={styles.metrics}>
-        {dayCount} {dayCount === 1 ? 'day' : 'days'} a week · {audit.totalSets} sets · ~{perSession} min a session
+        {countLabel(dayCount, 'day')} a week · {countLabel(audit.totalSets, 'set')} · ~{perSession} min a session
       </Text>
       <Text style={[styles.status, !complete && styles.warn]}>
         {complete

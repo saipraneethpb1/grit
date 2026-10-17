@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
+import { GradientBar } from '@/src/components/GradientBar';
 import { levelFromXp } from '@/src/domain/progression';
 
 type Props = {
@@ -34,7 +35,7 @@ export function XpBar({ totalXp, compact }: Props) {
       >
         {/* Percentage width rather than onLayout maths: the bar is the only
             thing in its row, so it can size itself off the parent. */}
-        <View style={[styles.fill, { width: `${Math.round(level.progress * 100)}%` }]} />
+        <GradientBar style={[styles.fill, { width: `${Math.round(level.progress * 100)}%` }]} />
       </View>
 
       {!compact ? (

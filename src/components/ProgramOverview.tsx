@@ -1,6 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
+import { countLabel } from '@/src/domain/progression';
+import { GradientBar } from '@/src/components/GradientBar';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import { analyzeTrainingDay, analyzeTrainingPlan } from '@/src/domain/trainingAnalysis';
 import type { MuscleGroup, WorkoutPlanWithDays } from '@/src/domain/types';
@@ -30,9 +32,9 @@ export function VolumeByRegion({ plan }: { plan: WorkoutPlanWithDays }) {
           <View key={r.muscle} style={styles.barRow}>
             <Text style={styles.barLabel} numberOfLines={1}>{MUSCLE_LABELS[r.muscle]}</Text>
             <View style={styles.track}>
-              <View style={[styles.fill, { width: `${Math.round((r.sets / max) * 100)}%` }]} />
+              <GradientBar style={[styles.fill, { width: `${Math.round((r.sets / max) * 100)}%` }]} />
             </View>
-            <Text style={styles.barValue}>{r.sets} sets</Text>
+            <Text style={styles.barValue}>{countLabel(r.sets, 'set')}</Text>
           </View>
         ))}
       </View>
@@ -70,7 +72,7 @@ export function ProgramDayList({ plan, completedUpToIndex = 0, completedTodayDay
             <View style={styles.dayBody}>
               <Text style={styles.dayName} numberOfLines={1}>{day.name}</Text>
               <Text style={styles.dayMeta}>
-                {day.plan_exercises.length} exercises · {audit.totalSets} sets
+                {countLabel(day.plan_exercises.length, 'exercise')} · {countLabel(audit.totalSets, 'set')}
               </Text>
             </View>
             {done ? (
