@@ -6,8 +6,10 @@
 // Deploy:  supabase functions deploy plan-intent
 // Secret:  supabase secrets set TYPESAFE_API_KEY=...
 //
-// Supabase verifies the caller's JWT before this runs (verify_jwt defaults to
-// true), so only signed-in users can spend the key.
+// Supabase verifies the JWT's signature before this runs (verify_jwt defaults
+// to true), but the public anon key bundled in the app is itself a valid JWT.
+// `isSignedInUser` asks Auth whether the bearer is a real user session, so only
+// signed-in users can spend the key.
 
 import {
   buildPlanIntentRequest,
@@ -29,6 +31,25 @@ function json(body: unknown, status = 200): Response {
     status,
     headers: { ...CORS, 'Content-Type': 'application/json' },
   });
+}
+
+/** True only for a live user session — not the anon key, not an expired token. */
+async function isSignedInUser(req: Request): Promise<boolean> {
+  const authorization = req.headers.get('Authorization');
+  const url = Deno.env.get('SUPABASE_URL');
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  if (!authorization?.startsWith('Bearer ') || !url || !anonKey) return false;
+  try {
+    const res = await fetch(`${url}/auth/v1/user`, {
+      headers: { Authorization: authorization, apikey: anonKey },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (!res.ok) return false;
+    const user = await res.json();
+    return typeof user?.id === 'string' && user.id.length > 0;
+  } catch {
+    return false;
+  }
 }
 
 async function callTypeSafe(apiKey: string, payload: unknown): Promise<Response> {
@@ -53,6 +74,7 @@ async function callTypeSafe(apiKey: string, payload: unknown): Promise<Response>
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+  if (!(await isSignedInUser(req))) return json({ error: 'unauthorized' }, 401);
 
   const apiKey = Deno.env.get('TYPESAFE_API_KEY');
   if (!apiKey) return json({ error: 'not_configured' }, 503);

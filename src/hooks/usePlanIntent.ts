@@ -5,6 +5,7 @@ import { isSupabaseConfigured, supabase } from '@/src/lib/supabase';
 
 const MESSAGES: Record<string, string> = {
   not_configured: 'This feature is not switched on yet.',
+  unauthorized: 'Your session has expired. Sign out and back in, then try again.',
   rate_limited: 'Too many requests right now. Try again in a minute.',
   description_too_long: 'That description is too long. Keep it under 500 characters.',
   empty_description: 'Write a sentence or two about how you train first.',
