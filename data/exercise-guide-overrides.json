@@ -10,5 +10,41 @@
       "Slowly return the left leg toward the anchor under control. Repeat for your target reps.",
       "Turn around and repeat with your right ankle nearest the anchor."
     ]
+  },
+  "Dumbbell_Lying_Pronation": {
+    "reason": "Upstream prose describes shoulder rotation; correct it to the named forearm rotation shown in the photos.",
+    "reference": "https://www.acefitness.org/resources/everyone/exercise-library/31/wrist-supination-and-pronation/",
+    "instructions": [
+      "Lie face down on a flat bench and rest your head on your free hand.",
+      "Support your working upper arm and elbow on the bench; bend the elbow about 90 degrees.",
+      "Let the forearm extend past the bench edge, holding a light lever dumbbell with a thumb-up grip.",
+      "Keep the elbow and shoulder still and the wrist straight; rotate the forearm until the palm faces down.",
+      "Return slowly to the thumb-up position without curling the wrist or lifting the upper arm.",
+      "Repeat under control, then switch arms."
+    ]
+  },
+  "Dumbbell_Lying_Supination": {
+    "reason": "Upstream prose describes shoulder rotation; correct it to the named forearm rotation shown in the photos.",
+    "reference": "https://www.acefitness.org/resources/everyone/exercise-library/31/wrist-supination-and-pronation/",
+    "instructions": [
+      "Lie on your side on a flat bench and support your head with your free arm.",
+      "Support the working upper arm and elbow; keep the elbow bent about 90 degrees.",
+      "Extend the forearm past the bench edge and hold a light lever dumbbell with the palm facing down.",
+      "Keep the elbow and shoulder still and the wrist straight; rotate the forearm until the palm faces up.",
+      "Return slowly without bending the wrist or swinging the upper arm.",
+      "Repeat under control, then switch arms."
+    ]
+  },
+  "Smith_Machine_Reverse_Calf_Raises": {
+    "reason": "Forefoot elevation is dorsiflexion: emphasize the anterior shin muscles rather than calf plantar flexors.",
+    "reference": "https://www.acefitness.org/academy/AcademyElitePDFs/ESS-AES_Download_Final.pdf",
+    "instructions": [
+      "Adjust the barbell on the smith machine to fit your height and align a raised platform right under the bar.",
+      "Stand on the platform with the heels of your feet secured on top of it with the balls of your feet extending off it. Position your toes facing forward with a shoulder width stance.",
+      "Now, place your shoulders under the barbell while maintaining the foot positioning described and push the barbell up by extending your hips and knees until your torso is standing erect. The knees should be kept with a slight bend; never locked. This will be your starting position. Tip: The barbell on your back is only for balance purposes.",
+      "Raise the balls of your feet as you breathe out by extending your toes as high as possible and contracting the muscles along the front of your shins. Ensure that the knee is kept stationary at all times. There should be no bending at any time. Hold the contracted position for a second before you start to go back down.",
+      "Slowly go back down to the starting position as you breathe in by lowering the balls of your feet and toes.",
+      "Repeat for the recommended amount of repetitions."
+    ]
   }
 }

@@ -2977,7 +2977,7 @@ export const EXERCISES: Exercise[] = [
     "default_sets": 3,
     "default_reps_min": 8,
     "default_reps_max": 12,
-    "notes": "Lie on a flat bench face down with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it. Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm."
+    "notes": "Lie face down on a flat bench and rest your head on your free hand. Support your working upper arm and elbow on the bench; bend the elbow about 90 degrees."
   },
   {
     "id": "844be332-58c4-4094-a955-20e82c8d2b91",
@@ -2993,7 +2993,7 @@ export const EXERCISES: Exercise[] = [
     "default_sets": 3,
     "default_reps_min": 8,
     "default_reps_max": 12,
-    "notes": "Lie sideways on a flat bench with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it. Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm."
+    "notes": "Lie on your side on a flat bench and support your head with your free arm. Support the working upper arm and elbow; keep the elbow bent about 90 degrees."
   },
   {
     "id": "3423c221-778b-4d65-a64c-209400cc8a5d",
