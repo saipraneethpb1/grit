@@ -1,190 +1,190 @@
-exercise,assigned_template,original_verdict,priority,finding,display_after_fix,motion_variant
-Barbell Guillotine Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Bench Press - Powerlifting,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Dumbbell Squat To A Bench,squat,confirmed mismatch,P2,Bench absent and dumbbells held near shoulders instead of hanging at sides.,articulated animation,dumbbell_bench_squat
-Jerk Dip Squat,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,jerk_dip
-Narrow Stance Squats,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Reverse Band Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Reverse Triceps Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Wide-Grip Barbell Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Wide-Grip Decline Barbell Bench Press,decline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Arnold Dumbbell Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,arnold_press
-Barbell Bench Press - Medium Grip,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Barbell Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Barbell Full Squat,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Barbell Hack Squat,squat,confirmed mismatch,P2,Bar drawn at shoulder rather than hanging behind body or straddled between legs.,articulated animation,hack_squat
-Barbell Hip Thrust,hip_thrust,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Barbell Incline Bench Press - Medium Grip,incline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Barbell Lunge,lunge,confirmed mismatch,P2,Load held at side rather than upper back; elevated version also lacks platform.,articulated animation,back_lunge
-Barbell Rollout from Bench,rollout,confirmed mismatch,P2,Both use floor-kneeling rollout; source requires push-up-position hip rollout or knees on bench respectively.,articulated animation,bench_rollout
-Barbell Shoulder Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,seated_press
-Barbell Squat To A Bench,squat,confirmed mismatch,P2,No bench/box contact shown.,articulated animation,bench_squat
-Bench Press with Chains,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Bent Over Two-Arm Long Bar Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Board Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,board_press
-Box Squat,squat,confirmed mismatch,P2,No bench/box contact shown.,articulated animation,bench_squat
-Clean and Press,overhead_press,confirmed mismatch,P2,Shows only press; clean phase absent.,articulated animation,clean_press
-Close-Grip Barbell Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Cuban Press,overhead_press,confirmed mismatch,P2,Shows only overhead press; external-rotation sequence absent.,articulated animation,cuban_press
-Decline Barbell Bench Press,decline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Decline Close-Grip Bench To Skull Crusher,skull_crusher,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,decline_combo
-Decline Dumbbell Bench Press,decline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Deficit Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,deficit
-Drag Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,drag_curl
-Dumbbell Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Dumbbell Bench Press with Neutral Grip,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Dumbbell Floor Press,bench_press,confirmed mismatch,P2,Shows bench-supported press instead of floor support and floor-limited range.,articulated animation,floor_press
-Dumbbell One-Arm Shoulder Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Dumbbell One-Arm Upright Row,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Dumbbell Rear Lunge,lunge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Dumbbell Shoulder Press,overhead_press,confirmed mismatch,P2,Bundled instructions specify seated back-supported press; template is standing.,articulated animation,seated_press
-Elevated Back Lunge,lunge,confirmed mismatch,P2,Load held at side rather than upper back; elevated version also lacks platform.,articulated animation,elevated_lunge
-Elevated Cable Rows,seated_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,elevated_row
-Floor Press,bench_press,confirmed mismatch,P2,Shows bench-supported press instead of floor support and floor-limited range.,articulated animation,floor_press
-Floor Press with Chains,bench_press,confirmed mismatch,P2,Shows bench-supported press instead of floor support and floor-limited range.,articulated animation,floor_press
-Frankenstein Squat,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,frankenstein
-Front Barbell Squat To A Bench,squat,confirmed mismatch,P2,No bench/box contact shown.,articulated animation,bench_squat
-Front Squat (Clean Grip),squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Full Range-Of-Motion Lat Pulldown,pulldown,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,full_pulldown
-Hammer Grip Incline DB Bench Press,incline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-High Cable Curls,curl,confirmed mismatch,P2,Arms remain at sides rather than elevated sideways at shoulder height.,articulated animation,high_curl
-Jefferson Squats,squat,confirmed mismatch,P2,Bar drawn at shoulder rather than hanging behind body or straddled between legs.,articulated animation,jefferson
-Kneeling Squat,squat,confirmed mismatch,P2,"Shows foot-supported squat, not kneeling setup or jump transition.",articulated animation,kneeling_squat
-Narrow Stance Hack Squats,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,machine_hack
-Narrow Stance Leg Press,leg_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Neck Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-One Arm Dumbbell Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-One Arm Floor Press,bench_press,confirmed mismatch,P2,Shows bench-supported press instead of floor support and floor-limited range.,articulated animation,floor_press
-Pin Presses,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,pin_press
-Push Press - Behind the Neck,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Reverse Grip Bent-Over Rows,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Romanian Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,romanian
-Romanian Deadlift from Deficit,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,deficit
-Seated Barbell Military Press,seated_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Seated One-arm Cable Pulley Rows,seated_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-See-Saw Press (Alternating Side Press),overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,see_saw
-Snatch Deadlift,snatch,confirmed mismatch,P1,Shows overhead snatch finish instead of deadlift lockout.,articulated animation,standard
-Snatch Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Standing Barbell Press Behind Neck,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Standing Palms-In Dumbbell Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Stiff-Legged Barbell Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,stiff_leg
-Straight Bar Bench Mid Rows,row,confirmed mismatch,P2,Source requires standing on the bench behind the bar; animation has feet on the floor and no bench.,articulated animation,bench_row
-Sumo Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,sumo
-Sumo Deadlift with Bands,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,sumo
-Sumo Deadlift with Chains,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,sumo
-Upright Cable Row,seated_row,confirmed mismatch,P1,Shows seated horizontal row instead of standing upright pull.,articulated animation,upright_cable
-V-Bar Pulldown,pulldown,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Wide-Grip Pulldown Behind The Neck,pulldown,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Hyperextensions With No Hyperextension Bench,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,hyperextension
-Alternating Cable Shoulder Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Anti-Gravity Press,overhead_press,confirmed mismatch,P1,Shows standing overhead press instead of face-down incline bench press-out.,articulated animation,anti_gravity
-Around The Worlds,fly,confirmed mismatch,P2,Shows standing front-view arm sweep instead of lying flat semicircle or decline fly.,articulated animation,around_world
-Barbell Ab Rollout,rollout,confirmed mismatch,P2,Both use floor-kneeling rollout; source requires push-up-position hip rollout or knees on bench respectively.,articulated animation,plank_rollout
-Barbell Glute Bridge,bridge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Barbell Incline Shoulder Raise,incline_press,confirmed mismatch,P1,Bends elbows as an incline press instead of straight-arm shoulder-blade protraction.,articulated animation,incline_shoulder_raise
-Barbell Rear Delt Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Bent-Arm Barbell Pullover,pullover,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Bent-Arm Dumbbell Pullover,pullover,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,dumbbell_pullover
-Bent Over Barbell Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Bent Over One-Arm Long Bar Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Bent Over Two-Dumbbell Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Bent Over Two-Dumbbell Row With Palms In,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Cable Chest Press,chest_press_standing,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,seated_chest_press
-Clean,clean,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Clean Deadlift,clean,confirmed mismatch,P1,Shows clean to shoulders instead of deadlift lockout.,articulated animation,standard
-Clean Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Close-Grip Dumbbell Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,cross_bench_press
-Decline Dumbbell Flyes,fly,confirmed mismatch,P2,Shows standing front-view arm sweep instead of lying flat semicircle or decline fly.,articulated animation,fly_lying
-Dumbbell Clean,clean,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Glute Ham Raise,leg_curl,confirmed mismatch,P1,Shows prone leg curl with stationary trunk instead of trunk rising over fixed lower legs.,articulated animation,glute_ham
-Good Morning,hinge,confirmed mismatch,P2,Shares hands-down deadlift hinge instead of bar on upper back; rack/pin support omitted.,articulated animation,good_morning
-Good Morning off Pins,hinge,confirmed mismatch,P2,Shares hands-down deadlift hinge instead of bar on upper back; rack/pin support omitted.,articulated animation,good_morning
-Hanging Bar Good Morning,hinge,confirmed mismatch,P2,Shares hands-down deadlift hinge instead of bar on upper back; rack/pin support omitted.,articulated animation,good_morning
-JM Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Kneeling Jump Squat,squat,confirmed mismatch,P2,"Shows foot-supported squat, not kneeling setup or jump transition.",articulated animation,kneeling_jump
-Muscle Snatch,snatch,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Pallof Press With Rotation,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,pallof
-Power Clean,clean,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Press Sit-Up,crunch,confirmed mismatch,P1,Shows floor crunch with no load or press instead of bench sit-up plus barbell press.,articulated animation,press_sit_up
-Smith Machine Close-Grip Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,smith_press
-Standing Dumbbell Upright Row,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Bench Dips,dip,confirmed mismatch,P1,Shows suspended dip on bar instead of hands behind body on bench and feet supported.,articulated animation,bench_dip
-Lying High Bench Barbell Curl,seated_curl,confirmed mismatch,P2,Shows upright seated curl instead of specified lying/prone setup.,articulated animation,prone_high_curl
-Barbell Ab Rollout - On Knees,rollout,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Cable Judo Flip,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,rotation
-Cable Russian Twists,rotation,confirmed mismatch,P2,Shows standing diagonal sweep instead of torso rotation supported on stability ball.,articulated animation,russian_twist
-Landmine 180's,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,landmine
-Pull Through,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Smith Machine Upright Row,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Spell Caster,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,rotation
-Standing Cable Lift,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,cable_lift
-Standing Cable Wood Chop,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,wood_chop
-Bent-Knee Hip Raise,leg_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,hip_raise
-Bent Press,rotation,confirmed mismatch,P1,Shows two-arm diagonal sweep with stationary trunk instead of the named side-bending/overhead movement.,articulated animation,bent_press
-Bottoms-Up Clean From The Hang Position,clean,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,hanging_clean
-Calf Raise On A Dumbbell,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,calf_on_dumbbell
-Double Kettlebell Windmill,rotation,confirmed mismatch,P1,Shows two-arm diagonal sweep with stationary trunk instead of the named side-bending/overhead movement.,articulated animation,windmill
-Dumbbell Prone Incline Curl,seated_curl,confirmed mismatch,P2,Shows upright seated curl instead of specified lying/prone setup.,articulated animation,prone_curl
-Flat Bench Leg Pull-In,leg_raise,confirmed mismatch,P2,Shows straight-leg raise instead of bending the knees and drawing them into the chest; source allows bench or mat.,articulated animation,knee_pull_in
-Gorilla Chin/Crunch,hanging_leg_raise,confirmed mismatch,P2,"Shows hanging leg raise with straight elbows, omitting simultaneous chin-up.",articulated animation,gorilla
-Hip Extension with Bands,glute_kickback,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standing_kickback
-Kettlebell Sumo High Pull,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,high_pull
-Lying Cable Curl,seated_curl,confirmed mismatch,P2,Shows upright seated curl instead of specified lying/prone setup.,articulated animation,lying_curl
-Overhead Cable Curl,curl,confirmed mismatch,P2,Arms remain at sides rather than elevated sideways at shoulder height.,articulated animation,high_curl
-Palms-Down Dumbbell Wrist Curl Over A Bench,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Palms-Down Wrist Curl Over A Bench,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Palms-Up Barbell Wrist Curl Over A Bench,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Palms-Up Dumbbell Wrist Curl Over A Bench,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Seated Close-Grip Concentration Barbell Curl,seated_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,concentration
-Seated One-Arm Dumbbell Palms-Down Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Standing Dumbbell Calf Raise,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Standing Dumbbell Reverse Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Standing Inner-Biceps Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Standing One-Arm Cable Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Standing One-Arm Dumbbell Curl Over Incline Bench,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,preacher
-Step-up with Knee Raise,lunge,confirmed mismatch,P2,"Shows floor lunge with no box, step-up, or raised free knee.",articulated animation,step_up
-Upright Row - With Bands,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Zottman Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,zottman
-Zottman Preacher Curl,seated_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,zottman_preacher
-Alternate Hammer Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Alternate Incline Dumbbell Curl,curl,confirmed mismatch,P2,Shows standing curl instead of reclined incline and alternating sides.,articulated animation,incline_curl
-Barbell Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Barbell Seated Calf Raise,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of seated knee-bent variant; thigh-loaded resistance absent.,articulated animation,seated_calf
-Barbell Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Barbell Shrug Behind The Back,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Cable Shrugs,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Cable Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Dumbbell Lying Pronation,wrist_curl,confirmed mismatch,P2,Shows seated wrist flexion/extension instead of the bundled lying rotational movement.,articulated animation,wrist_rotation
-Dumbbell Lying Supination,wrist_curl,confirmed mismatch,P2,Shows seated wrist flexion/extension instead of the bundled lying rotational movement.,articulated animation,supination
-Dumbbell Seated One-Leg Calf Raise,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of seated knee-bent variant; thigh-loaded resistance absent.,articulated animation,seated_calf
-Dumbbell Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Finger Curls,wrist_curl,confirmed mismatch,P2,"Shows wrist bending, with no finger opening/closing or bar roll.",articulated animation,finger_curl
-Flutter Kicks,leg_raise,confirmed mismatch,P2,Shows legs moving together rather than alternating flutter.,articulated animation,flutter
-Glute Kickback,glute_kickback,confirmed mismatch,P1,Shows standing kickback instead of quadruped bent-knee hip extension.,articulated animation,quadruped_kickback
-Hip Lift with Band,bridge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Monster Walk,hip_abduction,confirmed mismatch,P2,Shows both legs spreading in place rather than alternating band-resisted walking.,articulated animation,monster_walk
-One-Legged Cable Kickback,glute_kickback,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standing_kickback
-Rocking Standing Calf Raise,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,rocking_calf
-Seated Dumbbell Palms-Down Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Seated Dumbbell Palms-Up Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Seated One-Arm Dumbbell Palms-Up Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Seated Palm-Up Barbell Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Seated Palms-Down Barbell Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Seated Two-Arm Palms-Up Low-Pulley Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,supported_wrist
-Standing Barbell Calf Raise,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Calf-Machine Shoulder Shrug,calf_raise,confirmed mismatch,P1,Shows ankle/calf raise instead of shoulder elevation.,articulated animation,machine_shrug
-Calf Press,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of machine calf press setup.,articulated animation,calf_press
-Calf Press On The Leg Press Machine,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of machine calf press setup.,articulated animation,calf_press
-Leverage Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Seated Calf Raise,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of seated knee-bent variant; thigh-loaded resistance absent.,articulated animation,seated_calf
-Smith Machine Behind the Back Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Smith Machine Calf Raise,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Smith Machine Reverse Calf Raises,calf_raise,confirmed mismatch,P2,Shows rising onto toes rather than lifting forefeet with heels supported.,articulated animation,reverse_calf
-Standing Calf Raises,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Calf Raises - With Bands,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,band_calf
-Thigh Abductor,hip_abduction,confirmed mismatch,P2,Shows standing straight-legged opening/closing instead of seated machine with bent knees.,articulated animation,seated_abductor
-Thigh Adductor,hip_adduction,confirmed mismatch,P2,Shows standing straight-legged opening/closing instead of seated machine with bent knees.,articulated animation,seated_adductor
-Band Hip Adductions,hip_adduction,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,band_adduction
-Butt Lift (Bridge),bridge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,articulated animation,standard
-Isometric Neck Exercise - Front And Back,neck,confirmed mismatch,P1,Shows repeated lateral head tilt instead of resisting head movement; front/back also uses wrong direction.,articulated animation,neck_front_back
-Isometric Neck Exercise - Sides,neck,confirmed mismatch,P1,Shows repeated lateral head tilt instead of resisting head movement; front/back also uses wrong direction.,articulated animation,neck_sides
+exercise,assigned_template,original_verdict,priority,finding,display_after_fix,motion_variant,anatomy_status,anatomy_review_notes
+Barbell Guillotine Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,generated,Rejected in third full review: camera hides the bar or makes it read wrongly. Rig shown until redrawn.
+Bench Press - Powerlifting,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Redrawn and accepted: bar end-on or drawn as a stub, so the full barbell and both plates are not visible — fixed."
+Dumbbell Squat To A Bench,squat,confirmed mismatch,P2,Bench absent and dumbbells held near shoulders instead of hanging at sides.,anatomical position sequence,dumbbell_bench_squat,reviewed,
+Jerk Dip Squat,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,jerk_dip,reviewed,
+Narrow Stance Squats,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Reverse Band Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Reverse Triceps Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Wide-Grip Barbell Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Wide-Grip Decline Barbell Bench Press,decline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Arnold Dumbbell Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,arnold_press,reviewed,
+Barbell Bench Press - Medium Grip,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Barbell Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Barbell Full Squat,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Barbell Hack Squat,squat,confirmed mismatch,P2,Bar drawn at shoulder rather than hanging behind body or straddled between legs.,anatomical position sequence,hack_squat,reviewed,
+Barbell Hip Thrust,hip_thrust,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Barbell Incline Bench Press - Medium Grip,incline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Barbell Lunge,lunge,confirmed mismatch,P2,Load held at side rather than upper back; elevated version also lacks platform.,anatomical position sequence,back_lunge,reviewed,
+Barbell Rollout from Bench,rollout,confirmed mismatch,P2,Both use floor-kneeling rollout; source requires push-up-position hip rollout or knees on bench respectively.,anatomical position sequence,bench_rollout,reviewed,
+Barbell Shoulder Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,seated_press,reviewed,
+Barbell Squat To A Bench,squat,confirmed mismatch,P2,No bench/box contact shown.,anatomical position sequence,bench_squat,reviewed,
+Bench Press with Chains,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Redrawn and accepted: bar end-on or drawn as a stub, so the full barbell and both plates are not visible — fixed."
+Bent Over Two-Arm Long Bar Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Board Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,board_press,reviewed,"Redrawn and accepted: bar end-on or drawn as a stub, so the full barbell and both plates are not visible — fixed."
+Box Squat,squat,confirmed mismatch,P2,No bench/box contact shown.,anatomical position sequence,bench_squat,generated,Rejected in third full review: camera hides the bar or makes it read wrongly. Rig shown until redrawn.
+Clean and Press,overhead_press,confirmed mismatch,P2,Shows only press; clean phase absent.,anatomical position sequence,clean_press,reviewed,
+Close-Grip Barbell Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Cuban Press,overhead_press,confirmed mismatch,P2,Shows only overhead press; external-rotation sequence absent.,anatomical position sequence,cuban_press,reviewed,
+Decline Barbell Bench Press,decline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Decline Close-Grip Bench To Skull Crusher,skull_crusher,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,decline_combo,reviewed,"Redrawn and accepted: bar end-on or drawn as a stub, so the full barbell and both plates are not visible — fixed."
+Decline Dumbbell Bench Press,decline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Deficit Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,deficit,reviewed,
+Drag Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,drag_curl,reviewed,
+Dumbbell Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Dumbbell Bench Press with Neutral Grip,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Dumbbell Floor Press,bench_press,confirmed mismatch,P2,Shows bench-supported press instead of floor support and floor-limited range.,anatomical position sequence,floor_press,reviewed,
+Dumbbell One-Arm Shoulder Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Dumbbell One-Arm Upright Row,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Dumbbell Rear Lunge,lunge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Dumbbell Shoulder Press,overhead_press,confirmed mismatch,P2,Bundled instructions specify seated back-supported press; template is standing.,anatomical position sequence,seated_press,reviewed,
+Elevated Back Lunge,lunge,confirmed mismatch,P2,Load held at side rather than upper back; elevated version also lacks platform.,anatomical position sequence,elevated_lunge,reviewed,
+Elevated Cable Rows,seated_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,elevated_row,reviewed,
+Floor Press,bench_press,confirmed mismatch,P2,Shows bench-supported press instead of floor support and floor-limited range.,anatomical position sequence,floor_press,reviewed,"Redrawn and accepted: bar end-on or drawn as a stub, so the full barbell and both plates are not visible — fixed."
+Floor Press with Chains,bench_press,confirmed mismatch,P2,Shows bench-supported press instead of floor support and floor-limited range.,anatomical position sequence,floor_press,reviewed,"Redrawn and accepted: bar end-on or drawn as a stub, so the full barbell and both plates are not visible — fixed."
+Frankenstein Squat,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,frankenstein,reviewed,
+Front Barbell Squat To A Bench,squat,confirmed mismatch,P2,No bench/box contact shown.,anatomical position sequence,bench_squat,reviewed,
+Front Squat (Clean Grip),squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Full Range-Of-Motion Lat Pulldown,pulldown,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,full_pulldown,reviewed,
+Hammer Grip Incline DB Bench Press,incline_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+High Cable Curls,curl,confirmed mismatch,P2,Arms remain at sides rather than elevated sideways at shoulder height.,anatomical position sequence,high_curl,reviewed,
+Jefferson Squats,squat,confirmed mismatch,P2,Bar drawn at shoulder rather than hanging behind body or straddled between legs.,anatomical position sequence,jefferson,reviewed,
+Kneeling Squat,squat,confirmed mismatch,P2,"Shows foot-supported squat, not kneeling setup or jump transition.",anatomical position sequence,kneeling_squat,reviewed,
+Narrow Stance Hack Squats,squat,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,machine_hack,reviewed,
+Narrow Stance Leg Press,leg_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Neck Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+One Arm Dumbbell Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+One Arm Floor Press,bench_press,confirmed mismatch,P2,Shows bench-supported press instead of floor support and floor-limited range.,anatomical position sequence,floor_press,reviewed,
+Pin Presses,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,pin_press,reviewed,
+Push Press - Behind the Neck,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Reverse Grip Bent-Over Rows,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Romanian Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,romanian,reviewed,
+Romanian Deadlift from Deficit,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,deficit,reviewed,
+Seated Barbell Military Press,seated_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Seated One-arm Cable Pulley Rows,seated_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+See-Saw Press (Alternating Side Press),overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,see_saw,reviewed,
+Snatch Deadlift,snatch,confirmed mismatch,P1,Shows overhead snatch finish instead of deadlift lockout.,anatomical position sequence,standard,reviewed,
+Snatch Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Standing Barbell Press Behind Neck,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Standing Palms-In Dumbbell Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Stiff-Legged Barbell Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,stiff_leg,reviewed,
+Straight Bar Bench Mid Rows,row,confirmed mismatch,P2,Source requires standing on the bench behind the bar; animation has feet on the floor and no bench.,anatomical position sequence,bench_row,reviewed,
+Sumo Deadlift,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,sumo,reviewed,
+Sumo Deadlift with Bands,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,sumo,reviewed,
+Sumo Deadlift with Chains,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,sumo,reviewed,
+Upright Cable Row,seated_row,confirmed mismatch,P1,Shows seated horizontal row instead of standing upright pull.,anatomical position sequence,upright_cable,reviewed,
+V-Bar Pulldown,pulldown,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Wide-Grip Pulldown Behind The Neck,pulldown,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Hyperextensions With No Hyperextension Bench,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,hyperextension,reviewed,Redrawn and accepted: the partner is a photographic clothed person — fixed.
+Alternating Cable Shoulder Press,overhead_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Anti-Gravity Press,overhead_press,confirmed mismatch,P1,Shows standing overhead press instead of face-down incline bench press-out.,anatomical position sequence,anti_gravity,reviewed,
+Around The Worlds,fly,confirmed mismatch,P2,Shows standing front-view arm sweep instead of lying flat semicircle or decline fly.,anatomical position sequence,around_world,reviewed,
+Barbell Ab Rollout,rollout,confirmed mismatch,P2,Both use floor-kneeling rollout; source requires push-up-position hip rollout or knees on bench respectively.,anatomical position sequence,plank_rollout,generated,Rejected in third full review: camera hides the bar or makes it read wrongly. Rig shown until redrawn.
+Barbell Glute Bridge,bridge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Barbell Incline Shoulder Raise,incline_press,confirmed mismatch,P1,Bends elbows as an incline press instead of straight-arm shoulder-blade protraction.,anatomical position sequence,incline_shoulder_raise,reviewed,
+Barbell Rear Delt Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Bent-Arm Barbell Pullover,pullover,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Redrawn and accepted: bar end-on or drawn as a stub, so the full barbell and both plates are not visible — fixed."
+Bent-Arm Dumbbell Pullover,pullover,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,dumbbell_pullover,reviewed,
+Bent Over Barbell Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Bent Over One-Arm Long Bar Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Bent Over Two-Dumbbell Row,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Bent Over Two-Dumbbell Row With Palms In,row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Cable Chest Press,chest_press_standing,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,seated_chest_press,reviewed,
+Clean,clean,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Clean Deadlift,clean,confirmed mismatch,P1,Shows clean to shoulders instead of deadlift lockout.,anatomical position sequence,standard,reviewed,
+Clean Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Close-Grip Dumbbell Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,cross_bench_press,reviewed,
+Decline Dumbbell Flyes,fly,confirmed mismatch,P2,Shows standing front-view arm sweep instead of lying flat semicircle or decline fly.,anatomical position sequence,fly_lying,reviewed,
+Dumbbell Clean,clean,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Glute Ham Raise,leg_curl,confirmed mismatch,P1,Shows prone leg curl with stationary trunk instead of trunk rising over fixed lower legs.,anatomical position sequence,glute_ham,reviewed,
+Good Morning,hinge,confirmed mismatch,P2,Shares hands-down deadlift hinge instead of bar on upper back; rack/pin support omitted.,anatomical position sequence,good_morning,reviewed,
+Good Morning off Pins,hinge,confirmed mismatch,P2,Shares hands-down deadlift hinge instead of bar on upper back; rack/pin support omitted.,anatomical position sequence,good_morning,reviewed,
+Hanging Bar Good Morning,hinge,confirmed mismatch,P2,Shares hands-down deadlift hinge instead of bar on upper back; rack/pin support omitted.,anatomical position sequence,good_morning,reviewed,
+JM Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Kneeling Jump Squat,squat,confirmed mismatch,P2,"Shows foot-supported squat, not kneeling setup or jump transition.",anatomical position sequence,kneeling_jump,generated,Rejected in third full review: camera hides the bar or makes it read wrongly. Rig shown until redrawn.
+Muscle Snatch,snatch,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Pallof Press With Rotation,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,pallof,reviewed,
+Power Clean,clean,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Press Sit-Up,crunch,confirmed mismatch,P1,Shows floor crunch with no load or press instead of bench sit-up plus barbell press.,anatomical position sequence,press_sit_up,reviewed,"Redrawn and accepted: bar end-on or drawn as a stub, so the full barbell and both plates are not visible — fixed."
+Smith Machine Close-Grip Bench Press,bench_press,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,smith_press,reviewed,
+Standing Dumbbell Upright Row,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Bench Dips,dip,confirmed mismatch,P1,Shows suspended dip on bar instead of hands behind body on bench and feet supported.,anatomical position sequence,bench_dip,reviewed,
+Lying High Bench Barbell Curl,seated_curl,confirmed mismatch,P2,Shows upright seated curl instead of specified lying/prone setup.,anatomical position sequence,prone_high_curl,reviewed,
+Barbell Ab Rollout - On Knees,rollout,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Cable Judo Flip,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,rotation,reviewed,
+Cable Russian Twists,rotation,confirmed mismatch,P2,Shows standing diagonal sweep instead of torso rotation supported on stability ball.,anatomical position sequence,russian_twist,reviewed,
+Landmine 180's,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,landmine,reviewed,
+Pull Through,hinge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Smith Machine Upright Row,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Spell Caster,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,rotation,reviewed,
+Standing Cable Lift,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,cable_lift,reviewed,
+Standing Cable Wood Chop,rotation,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,wood_chop,reviewed,
+Bent-Knee Hip Raise,leg_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,hip_raise,reviewed,
+Bent Press,rotation,confirmed mismatch,P1,Shows two-arm diagonal sweep with stationary trunk instead of the named side-bending/overhead movement.,anatomical position sequence,bent_press,reviewed,"All four cells checked: same loaded arm, contralateral torso lean and overhead kettlebell throughout bent press."
+Bottoms-Up Clean From The Hang Position,clean,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,hanging_clean,reviewed,
+Calf Raise On A Dumbbell,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,calf_on_dumbbell,reviewed,Redrawn and accepted: feet hover behind the dumbbell instead of standing on the handle — fixed.
+Double Kettlebell Windmill,rotation,confirmed mismatch,P1,Shows two-arm diagonal sweep with stationary trunk instead of the named side-bending/overhead movement.,anatomical position sequence,windmill,reviewed,"Revised sheet visually checked against exercise setup, working side, support, joint action, equipment and target muscles; featureless anatomical mannequin."
+Dumbbell Prone Incline Curl,seated_curl,confirmed mismatch,P2,Shows upright seated curl instead of specified lying/prone setup.,anatomical position sequence,prone_curl,reviewed,
+Flat Bench Leg Pull-In,leg_raise,confirmed mismatch,P2,Shows straight-leg raise instead of bending the knees and drawing them into the chest; source allows bench or mat.,anatomical position sequence,knee_pull_in,reviewed,
+Gorilla Chin/Crunch,hanging_leg_raise,confirmed mismatch,P2,"Shows hanging leg raise with straight elbows, omitting simultaneous chin-up.",anatomical position sequence,gorilla,reviewed,
+Hip Extension with Bands,glute_kickback,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standing_kickback,reviewed,
+Kettlebell Sumo High Pull,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,high_pull,reviewed,
+Lying Cable Curl,seated_curl,confirmed mismatch,P2,Shows upright seated curl instead of specified lying/prone setup.,anatomical position sequence,lying_curl,reviewed,
+Overhead Cable Curl,curl,confirmed mismatch,P2,Arms remain at sides rather than elevated sideways at shoulder height.,anatomical position sequence,high_curl,reviewed,
+Palms-Down Dumbbell Wrist Curl Over A Bench,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Palms-Down Wrist Curl Over A Bench,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Palms-Up Barbell Wrist Curl Over A Bench,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Side-view revision checked: full forearm and elbow support, wrist-only flexion/extension, fixed grip and equipment. No elbow curl."
+Palms-Up Dumbbell Wrist Curl Over A Bench,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Seated Close-Grip Concentration Barbell Curl,seated_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,concentration,reviewed,
+Seated One-Arm Dumbbell Palms-Down Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Side-view revision checked: full forearm and elbow support, wrist-only flexion/extension, fixed grip and equipment. No elbow curl."
+Standing Dumbbell Calf Raise,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Standing Dumbbell Reverse Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Standing Inner-Biceps Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Standing One-Arm Cable Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Standing One-Arm Dumbbell Curl Over Incline Bench,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,preacher,reviewed,
+Step-up with Knee Raise,lunge,confirmed mismatch,P2,"Shows floor lunge with no box, step-up, or raised free knee.",anatomical position sequence,step_up,reviewed,"Revised sheet visually checked: fixed working side, support, joint movement, coherent equipment and target emphasis."
+Upright Row - With Bands,upright_row,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Zottman Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,zottman,reviewed,
+Zottman Preacher Curl,seated_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,zottman_preacher,reviewed,
+Alternate Hammer Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Alternate Incline Dumbbell Curl,curl,confirmed mismatch,P2,Shows standing curl instead of reclined incline and alternating sides.,anatomical position sequence,incline_curl,reviewed,"Revised sheet visually checked against exercise setup, working side, support, joint action, equipment and target muscles; featureless anatomical mannequin."
+Barbell Curl,curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Barbell Seated Calf Raise,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of seated knee-bent variant; thigh-loaded resistance absent.,anatomical position sequence,seated_calf,reviewed,
+Barbell Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Barbell Shrug Behind The Back,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Cable Shrugs,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,
+Cable Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Dumbbell Lying Pronation,wrist_curl,confirmed mismatch,P2,Shows seated wrist flexion/extension instead of the bundled lying rotational movement.,anatomical position sequence,wrist_rotation,reviewed,"Revised sheet visually checked: fixed working side, support, joint movement, coherent equipment and target emphasis."
+Dumbbell Lying Supination,wrist_curl,confirmed mismatch,P2,Shows seated wrist flexion/extension instead of the bundled lying rotational movement.,anatomical position sequence,supination,reviewed,"Revised sheet visually checked against exercise setup, working side, support, joint action, equipment and target muscles; featureless anatomical mannequin."
+Dumbbell Seated One-Leg Calf Raise,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of seated knee-bent variant; thigh-loaded resistance absent.,anatomical position sequence,seated_calf,reviewed,
+Dumbbell Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Finger Curls,wrist_curl,confirmed mismatch,P2,"Shows wrist bending, with no finger opening/closing or bar roll.",anatomical position sequence,finger_curl,reviewed,
+Flutter Kicks,leg_raise,confirmed mismatch,P2,Shows legs moving together rather than alternating flutter.,anatomical position sequence,flutter,reviewed,Rear three-quarter side view checked: bench ends at hips; knees straight; far and near legs alternate hip extension with level transitions. Rejected bent-knee attempts were not enabled.
+Glute Kickback,glute_kickback,confirmed mismatch,P1,Shows standing kickback instead of quadruped bent-knee hip extension.,anatomical position sequence,quadruped_kickback,reviewed,
+Hip Lift with Band,bridge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Revised sheet visually checked: fixed working side, support, joint movement, coherent equipment and target emphasis."
+Monster Walk,hip_abduction,confirmed mismatch,P2,Shows both legs spreading in place rather than alternating band-resisted walking.,anatomical position sequence,monster_walk,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+One-Legged Cable Kickback,glute_kickback,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standing_kickback,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Rocking Standing Calf Raise,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,rocking_calf,generated,Rejected in third full review: camera hides the bar or makes it read wrongly. Rig shown until redrawn.
+Seated Dumbbell Palms-Down Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Side-view revision checked: full forearm and elbow support, wrist-only flexion/extension, fixed grip and equipment. No elbow curl."
+Seated Dumbbell Palms-Up Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Side-view revision checked: full forearm and elbow support, wrist-only flexion/extension, fixed grip and equipment. No elbow curl."
+Seated One-Arm Dumbbell Palms-Up Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Side-view revision checked: full forearm and elbow support, wrist-only flexion/extension, fixed grip and equipment. No elbow curl."
+Seated Palm-Up Barbell Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,Redrawn and accepted: drawn with an overhand (palms-down) grip — fixed.
+Seated Palms-Down Barbell Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Side-view revision checked: full forearm and elbow support, wrist-only flexion/extension, fixed grip and equipment. No elbow curl."
+Seated Two-Arm Palms-Up Low-Pulley Wrist Curl,wrist_curl,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,supported_wrist,reviewed,"Side-view revision checked: full forearm and elbow support, wrist-only flexion/extension, fixed grip and equipment. No elbow curl."
+Standing Barbell Calf Raise,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Calf-Machine Shoulder Shrug,calf_raise,confirmed mismatch,P1,Shows ankle/calf raise instead of shoulder elevation.,anatomical position sequence,machine_shrug,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Calf Press,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of machine calf press setup.,anatomical position sequence,calf_press,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Calf Press On The Leg Press Machine,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of machine calf press setup.,anatomical position sequence,calf_press,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Leverage Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Seated Calf Raise,calf_raise,confirmed mismatch,P2,Shows standing heel raise instead of seated knee-bent variant; thigh-loaded resistance absent.,anatomical position sequence,seated_calf,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Smith Machine Behind the Back Shrug,shrug,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Smith Machine Calf Raise,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Smith Machine Reverse Calf Raises,calf_raise,confirmed mismatch,P2,Shows rising onto toes rather than lifting forefeet with heels supported.,anatomical position sequence,reverse_calf,reviewed,"Revised sheet visually checked: fixed working side, support, joint movement, coherent equipment and target emphasis."
+Standing Calf Raises,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Calf Raises - With Bands,calf_raise,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,band_calf,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Thigh Abductor,hip_abduction,confirmed mismatch,P2,Shows standing straight-legged opening/closing instead of seated machine with bent knees.,anatomical position sequence,seated_abductor,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Thigh Adductor,hip_adduction,confirmed mismatch,P2,Shows standing straight-legged opening/closing instead of seated machine with bent knees.,anatomical position sequence,seated_adductor,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Band Hip Adductions,hip_adduction,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,band_adduction,reviewed,"Revised sheet visually checked against exercise setup, working side, support, joint action, equipment and target muscles; featureless anatomical mannequin."
+Butt Lift (Bridge),bridge,not individually cleared,,No individual exact-form approval; mapping and shared template inspected only.,anatomical position sequence,standard,reviewed,"Four cells visually checked against exercise instructions and pose references: equipment, working limb, joint action and muscle emphasis."
+Isometric Neck Exercise - Front And Back,neck,confirmed mismatch,P1,Shows repeated lateral head tilt instead of resisting head movement; front/back also uses wrong direction.,anatomical position sequence,neck_front_back,reviewed,Featureless mannequin; fixed-camera cells 0 and 2 show stationary forehead/back resistance holds. Sequence repeats each hold and excludes mirrored camera cells 1 and 3.
+Isometric Neck Exercise - Sides,neck,confirmed mismatch,P1,Shows repeated lateral head tilt instead of resisting head movement; front/back also uses wrong direction.,anatomical position sequence,neck_sides,reviewed,"Revised sheet visually checked against exercise setup, working side, support, joint action, equipment and target muscles; featureless anatomical mannequin."

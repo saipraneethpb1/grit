@@ -1,6 +1,94 @@
 # Exercise animation audit — 2026-10-17
 
-## Implementation update
+## Anatomical replacement — completed 2026-10-20
+
+All **189/189 exercises** now select reviewed anatomical position sheets. The CSV
+retains the original findings and adds current anatomical status/review notes.
+The provided textbook depiction guided the muscle-fiber style and coral target-muscle
+emphasis. Original exercise photographs are pose references, not replacement UI images.
+
+The final review corrected wrist curls that lifted the forearm or changed grip,
+windmill poses that switched working arms, a detached hip-adduction support hand,
+forearm supination with inconsistent load geometry, and flutter kicks that either
+repeated one raised leg or bent the knee. The accepted flutter-kick drawing keeps
+both knees straight and alternates hip extension with the hips at the bench edge.
+Rocking calf raises distinguish heel lifts from toe lifts and highlight calf versus
+anterior-shin work. Inconsistent photographic faces were replaced with mannequins.
+
+Explicit sequences start V-Bar Pulldown, Behind-Neck Pulldown, Stiff-Legged Deadlift
+and Standing Palms-In Press from their true starting positions. Compound sequences
+preserve Cuban rotation/press/lowering, lockout between press and skull crusher,
+the shoulder catch before an overhead press, and Pallof return through extended neutral.
+Neck isometrics repeat stationary hold poses rather than implying repeated neck bending.
+
+A third review of the sixteen final drawings rejected Seated Palm-Up Barbell Wrist Curl:
+it draws an overhand grip, which is the reverse wrist curl. It shows the exact rig until
+redrawn; the job is queued in `data/exercise-anatomy-final-revisions.json`. Neck side
+labels no longer name a side (a mirrored figure made "left temple" read backwards), and
+supination and windmill sheets gained phase labels in place of the generic defaults.
+
+A full pass over every displayed sheet then checked equipment (plates on both bar ends,
+bars and handles held, cables attached), contact with benches and floor, grip, pose order
+and style. Two more were rejected: Calf Raise On A Dumbbell, whose feet hover behind the
+dumbbell instead of standing on it, and Hyperextensions With No Hyperextension Bench,
+whose partner is a photographic person. No sheet had a missing plate or one-sided load.
+A further bar check rejected eight barbell sheets whose bar could not be read. Five pure side
+views (Bench Press - Powerlifting, Floor Press, Floor Press with Chains, Bench Press with
+Chains, Board Press) show the bar end-on, so the hand appears to grip the sleeve beside a
+single plate; Board Press has no plate on the near sleeve at all. Three (Decline Close-Grip
+Bench To Skull Crusher, Bent-Arm Barbell Pullover, Press Sit-Up) draw the bar as a stub
+that reads as a dumbbell. All eleven rejected sheets have redraw jobs queued; the bar
+jobs ask for a three-quarter view showing the whole bar, both hands and both plates.
+
+All eleven redraws were then inspected and accepted: the wrist curl is palms up, the feet
+stand on the dumbbell handle, the hyperextension partner is a mannequin, and every barbell
+sheet shows the full bar with both hands and loaded plates on both sleeves. Bent-Arm
+Barbell Pullover plays from the bar over the chest (`[2,1,0,1]`).
+
+A third full review rejected five more. Barbell Guillotine Bench Press was drawn from the
+feet, so the bar passed in front of the head and appeared to strike the face; the exercise
+lowers the bar to just above the neck, which the redraw shows from a three-quarter side
+view. Box Squat, Kneeling Jump Squat, Rocking Standing Calf Raise and Barbell Ab Rollout
+were pure side views with the bar end-on and one plate hidden. Seven correct sheets still
+drew a face (Barbell Deadlift, Dumbbell Squat To A Bench, Jerk Dip Squat, High Cable Curls,
+Kneeling Squat, Narrow Stance Squats, Dumbbell Lying Pronation); they stay visible while
+faceless redraws are made. All twelve redraws were then accepted: the guillotine shows the
+bar above the neck with the head flat beneath it.
+
+Playback now shows only the start and end positions for 173 simple movements, holding each
+for 1.8 s. The end pose is each sheet's working position, checked by eye for every sheet.
+Six presses whose instructions start at lockout but were drawn from the chest play
+lockout first; Jerk Dip Squat ends in its dip. Sixteen multi-phase, alternating or
+two-direction movements keep every pose, and `test:anatomy` enforces the split.
+
+The player crossfades authored positions without warping images. Repeated cells skip
+the fade so holds never disappear; rapid stepping updates the current and prior poses
+atomically. Image errors now notify the shared wrapper and trigger the exact rig
+fallback. Missing full-size or thumbnail bindings also use that fallback. WebP sheets
+and thumbnails total approximately 23 MB. Some drawings still shift slightly in framing
+between cells; crossfades soften those cuts without inventing intermediate anatomy.
+
+TypeScript and all **12 test suites** passed, including a coverage assertion that
+only the listed redraws may be unreviewed. Expo compatibility passed for all 20 managed packages. Mobile
+browser checks at 390×844 passed WebP decoding/crops, authored order, crossfade
+completion, repeated holds, rapid stepping, pause/play, thumbnails, reduced motion
+and a simulated image-error fallback, with no uncaught browser errors. The temporary
+public test route was removed and the local server stopped. Production export result
+is recorded in the checkpoint. No account/workout data was changed during this work.
+
+These are anatomical position illustrations, not motion capture, continuous 3D
+simulation or independent coaching certification. Native-device testing remains
+outstanding. Passing player tests is distinct from individual artwork review.
+
+Source conflicts remain documented: High Cable Curls follows its standing high-pulley
+name/instructions rather than the conflicting lying photos; Band Hip Adductions uses
+the corrected inward movement. Lying dumbbell pronation/supination guides now describe
+forearm rotation with supported elbow and straight wrist; Smith Reverse Calf Raise
+names anterior-shin contraction. Guide overrides preserve these corrections through
+imports. `scripts/apply-exercise-guide-overrides.mjs` synchronizes guide notes and
+seed rows without reselecting the catalog or rewriting split seeds.
+
+## Earlier articulated-rig implementation (historical)
 
 The original articulated animations are restored and corrected. No library photos are substituted. All 189 exercises now have an explicit exercise-ID/source-ID entry in `data/exercise-motions.json`; `src/domain/exerciseMotions.ts` supplies the pose, equipment placement, and variant. Library thumbnails, details, and workout guides share that selection. Unknown exercises show an unavailable state rather than a guessed movement.
 

@@ -6,6 +6,8 @@ import { getExerciseDemonstration } from '@/src/domain/exerciseDemonstration';
 import type { Exercise } from '@/src/domain/types';
 import { useMotionAllowed } from '@/src/hooks/useMotionAllowed';
 import { ExerciseAnimation } from './ExerciseAnimation';
+import { AnatomicalExerciseDemonstration } from './AnatomicalExerciseDemonstration';
+import { exerciseAnatomyAssets, exerciseAnatomyThumbnails } from '@/src/domain/exerciseAnatomyAssets';
 
 type Props = { exercise: Exercise; animate?: boolean; style?: StyleProp<ViewStyle> };
 
@@ -15,18 +17,26 @@ export function ExerciseDemonstration({ exercise, animate = true, style }: Props
   const allowed = useMotionAllowed();
   const [paused, setPaused] = useState(false);
   const [position, setPosition] = useState<number>();
-  if (demo.kind === 'unavailable') {
+  const [failedArtworkFor, setFailedArtworkFor] = useState<string>();
+  const artwork = (animate ? exerciseAnatomyAssets : exerciseAnatomyThumbnails)[exercise.id];
+  if (demo.kind === 'anatomical' && artwork && failedArtworkFor !== exercise.id) {
+    return <AnatomicalExerciseDemonstration key={exercise.id} exerciseId={exercise.id} demonstration={demo.anatomy} animate={animate} style={style}
+      onError={() => setFailedArtworkFor(exercise.id)} />;
+  }
+  // Missing artwork falls back to the exact rig rather than a blank panel.
+  const motion = demo.kind === 'unavailable' ? undefined : demo.motion;
+  if (!motion) {
     return <View style={[styles.unavailable, style]}><Text style={styles.caption}>Demonstration unavailable.</Text></View>;
   }
   return (
     <View style={style}>
       <View style={styles.visual}>
-        <ExerciseAnimation exercise={exercise} motion={demo.motion} animate={animate} paused={paused}
+        <ExerciseAnimation exercise={exercise} motion={motion} animate={animate} paused={paused}
           position={position} style={styles.figure} />
       </View>
       {animate ? (
         <View style={styles.controls}>
-          <Text style={styles.caption}>{demo.motion.isometric ? 'Hold against resistance' : demo.motion.camera === 'overhead' ? 'Overhead view' : demo.motion.cue ?? 'Illustrated movement'}</Text>
+          <Text style={styles.caption}>{motion.isometric ? 'Hold against resistance' : motion.camera === 'overhead' ? 'Overhead view' : motion.cue ?? 'Illustrated movement'}</Text>
           {allowed ? <Pressable accessibilityRole="button" accessibilityLabel={paused ? 'Play demonstration' : 'Pause demonstration'}
             onPress={() => { setPosition(undefined); setPaused(value => !value); }} style={styles.control}>
             <Ionicons name={paused ? 'play' : 'pause'} size={16} color={theme.colors.textSecondary} />

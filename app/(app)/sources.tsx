@@ -20,6 +20,15 @@ export default function SourcesScreen() {
         <Text style={styles.meta}>{EXERCISE_SOURCE_META.count} movements</Text>
       </View>
 
+      <View style={styles.block}>
+        <Text style={styles.blockTitle}>Exercise illustrations</Text>
+        <Text style={styles.body}>
+          Original anatomical illustrations show exercise positions and muscle emphasis.
+          Pose references come from the open exercise dataset, with corrections where
+          the source photos and instructions disagree.
+        </Text>
+      </View>
+
       <Text style={styles.section}>Resources</Text>
       {EXTERNAL_RESOURCES.map((r) => (
         <View key={r.id} style={styles.block}>

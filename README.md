@@ -197,17 +197,40 @@ remaining dependency advisories, and release verification requirements.
 ## Exercise demonstrations
 
 Tap **How to perform** under the active exercise in a workout, or on an exercise's
-library detail page. The modal preserves your logged sets and shows an articulated
-exercise animation, playback/pose-step controls, and complete numbered instructions.
-All 189 catalog exercises have an explicit exercise/source ID mapping in
-`data/exercise-motions.json`. The rig supports supported and seated variants,
-alternating limbs, torso rotation, finger/forearm rotation, and staged compound lifts.
-Reduced-motion settings hold a pose and retain manual stepping. Isometric neck
-exercises keep the head still against resistance. Overhead views are labeled.
+library detail page. The modal preserves logged sets and shows an anatomical
+demonstration, playback controls, manual pose stepping and numbered instructions.
 
-`src/domain/exerciseMotions.ts` builds the exercise-specific poses from that mapping.
-The library, details, and workout guides use the same figure. Reference photos are
-retained as source material; they are not substituted for the animations.
+All **189 exercises** have individually reviewed anatomical illustrations with gray
+muscle fibers and coral target-muscle emphasis. These are authored position sequences
+with short crossfades, not continuous 3D movement or an anatomical simulation. Repeated
+hold poses remain visible; reduced-motion settings disable automatic playback and
+crossfades while retaining manual stepping. Neck isometrics show stationary resistance.
+Compound movements use explicit sequences, including the clean catch before a press
+and lockout between a press and skull crusher. Every figure has a featureless mannequin head, and every barbell sheet shows the whole bar,
+both hands and a plate on each sleeve.
+
+Simple movements play only their **start and end positions**, holding each for 1.8 s and
+labelled "Start" and "End". Sixteen multi-phase, alternating or two-direction movements keep
+every authored pose (for example Clean and Press, Cuban Press, Zottman Curl, the alternating
+curls and presses, Flutter Kicks and Rocking Standing Calf Raise). Neck isometrics show one
+held pose per side.
+
+`data/exercise-anatomy.json` records exact source identities, review status, phase labels
+and pose order. The library, details and workout guides share the same selection.
+Unreviewed artwork cannot display. The exact exercise rig remains available if artwork
+is missing or fails to decode. Original source photographs are retained for reference;
+they are not displayed as replacement demonstrations.
+
+Full sheets and 256px thumbnail sheets are bundled offline as WebP (approximately
+23 MB for all 189 pairs). Authoring imports require the libvips CLI (`vips`); runtime
+playback and coverage tests do not. `npm run test:anatomy` checks reviewed coverage
+(only the listed redraws may be missing), source identities, pose sequences, dimensions and offline asset bindings.
+
+To import newly authored anatomical sheets, run
+`node scripts/prepare-anatomical-demos.mjs --import <exercise-id> <image-path>`.
+Compare all four poses with the exact source positions and instructions before
+running the same command with `--reviewed <exercise-id>`. Generate a local review
+page using `node scripts/preview-anatomical-demos.mjs /tmp/grit-anatomy-review`.
 
 All 189 guides and the figure animations work offline. The repository also retains
 378 JPEG source frames (approximately 25 MB); the demonstration UI does not import

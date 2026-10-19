@@ -136,13 +136,13 @@ for (const [id, t] of Object.entries(TEMPLATES)) {
   }
 }
 
-// --- every exercise remains an articulated animation, with an exact source mapping ---
+// --- exact demonstration identities and geometry of the retained articulated rig ---
 {
   assert(Object.keys(EXERCISE_MOTION_SPECS).length === EXERCISES.length, 'each catalog exercise has an explicit motion specification');
   for (const exercise of EXERCISES) {
     const demo = getExerciseDemonstration(exercise.id);
     const spec = EXERCISE_MOTION_SPECS[exercise.id];
-    assert(demo.kind === 'motion', `${exercise.name}: animated figure, never a photo substitution`);
+    assert(demo.kind === 'motion' || demo.kind === 'anatomical', `${exercise.name}: exact exercise demonstration`);
     assert(spec.sourceId === (guides as Record<string, { sourceId: string }>)[exercise.id].sourceId,
       `${exercise.name}: exact source identity`);
     const t = getExerciseMotion(exercise.id)!;
