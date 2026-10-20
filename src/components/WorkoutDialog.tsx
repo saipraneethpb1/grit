@@ -9,6 +9,8 @@ export type WorkoutDialogState = {
   confirmLabel?: string;
   onConfirm?: () => void;
   destructive?: boolean;
+  /** Only the confirm button: for outcomes that need acknowledging, not a choice. */
+  acknowledgeOnly?: boolean;
 };
 
 /** Native Alert is a no-op on web; all workout feedback uses this dialog. */
@@ -17,7 +19,7 @@ export function WorkoutDialog({ dialog, onClose }: {
   onClose: () => void;
 }) {
   return (
-    <Modal visible={Boolean(dialog)} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal visible={Boolean(dialog)} transparent animationType="fade" onRequestClose={dialog?.acknowledgeOnly ? () => { const c = dialog.onConfirm; onClose(); c?.(); } : onClose}>
       <View style={styles.backdrop}>
         <GlassSurface style={styles.card} accessibilityViewIsModal>
           <ScrollView keyboardShouldPersistTaps="handled">
@@ -35,11 +37,13 @@ export function WorkoutDialog({ dialog, onClose }: {
                   }}
                 />
               ) : null}
-              <PrimaryButton
-                title={dialog?.onConfirm ? 'Keep training' : 'Got it'}
-                variant="ghost"
-                onPress={onClose}
-              />
+              {dialog?.acknowledgeOnly ? null : (
+                <PrimaryButton
+                  title={dialog?.onConfirm ? 'Keep training' : 'Got it'}
+                  variant="ghost"
+                  onPress={onClose}
+                />
+              )}
             </View>
           </ScrollView>
         </GlassSurface>

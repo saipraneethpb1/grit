@@ -18,12 +18,18 @@ What we do not collect
 How data is stored
 Your data is stored in Supabase (hosted PostgreSQL) with row-level security so only your account can access your plans and logs. Data is transmitted over HTTPS.
 
+On your device
+• While a workout is open, its logged sets are saved on your phone so a crash or a closed app does not lose them. The saved copy is removed when the workout is saved to your account or when you leave it.
+• If you finish a workout with no connection, it stays on your phone until it can be sent, then it is removed.
+• Home-screen widgets, if you add them, keep a short summary (today's session name, streak, this week's training days) on your phone so they can display it.
+• Training recommendations (loads, reps, rest, volume) are calculated on your device from your own logged sets.
+
 How we use data
 • To provide the service: sync plans, log workouts, show history and streaks.
 • To authenticate your account and protect access to your data.
 
 Data deletion
-You can delete your account and all associated data from Profile → Delete account. This permanently removes your profile, plans, sessions, and logged sets.
+You can delete your account and all associated data from Profile → Delete account. This permanently removes your profile, plans, sessions, and logged sets. Uninstalling the app removes the copies kept on your phone.
 
 Third parties
 • Supabase provides authentication and database hosting under their privacy policy.

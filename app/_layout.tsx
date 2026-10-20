@@ -21,6 +21,7 @@ import 'react-native-reanimated';
 import { colors } from '@/constants/Colors';
 import { AuthProvider } from '@/src/hooks/useAuth';
 import { useWidgetSync } from '@/src/hooks/useWidgetSync';
+import { useOutboxSync } from '@/src/hooks/useWorkoutOutbox';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -95,6 +96,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   useWidgetSync();
+  useOutboxSync();
   const navTheme = {
     ...DarkTheme,
     colors: {

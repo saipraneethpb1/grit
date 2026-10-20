@@ -22,6 +22,8 @@ export type PlayerState = {
 
 export type PlayerAction =
   | { type: 'load'; exercises: LiveExercise[] }
+  /** Resume a saved draft exactly as it was, focus included. */
+  | { type: 'restore'; state: PlayerState }
   | { type: 'editWeight'; raw: string }
   | { type: 'editReps'; raw: string }
   | { type: 'stepWeight'; direction: 1 | -1 }
@@ -62,6 +64,9 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
   switch (action.type) {
     case 'load':
       return { exercises: action.exercises, exerciseIndex: 0, setIndex: 0 };
+
+    case 'restore':
+      return action.state;
 
     case 'editWeight':
       return patchCurrent(state, { weight: sanitizeWeightInput(action.raw) });

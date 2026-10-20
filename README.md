@@ -205,6 +205,22 @@ Use Node 22.13 or newer, then `npm ci` and `npm run validate`.
 See [SECURITY.md](SECURITY.md) for migration order, native session storage,
 remaining dependency advisories, and release verification requirements.
 
+## Offline-safe workouts and public policy pages
+
+The live workout is saved on the phone after every change (`src/domain/workoutDraft.ts`,
+`src/lib/workoutStore.ts`), so a crash, a killed app or a dead battery reopens it
+exactly where it was, even with no signal. A finish that cannot reach the server
+(an error, or no answer within 15 seconds) goes to an on-phone outbox and is sent
+by `useOutboxSync` on sign-in, on return to the app and every minute; Home shows
+what is waiting. Completion is idempotent on the server, so a retry never counts
+a workout twice. Covered by `test:draft`.
+
+The privacy policy and terms are published from `docs/` with GitHub Pages
+(Settings → Pages → branch `main`, folder `/docs`), at
+`https://saipraneethpb1.github.io/grit/privacy.html` and `/terms.html`. They are
+generated from `src/domain/legalContent.ts`, the same text the app shows; run
+`npm run build:legal` after editing it.
+
 ## The coach
 
 `src/domain/coach.ts` (covered by `test:coach`) makes the training decisions a

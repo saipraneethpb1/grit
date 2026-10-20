@@ -115,10 +115,18 @@ export function useActivePlan() {
 
 export function usePlan(planId: string | undefined) {
   const { user } = useAuth();
+  const qc = useQueryClient();
   return useQuery({
     queryKey: ['plan', user?.id, planId],
     queryFn: () => fetchPlanById(planId!),
     enabled: Boolean(user?.id && planId),
+    // Opening today's workout from home already has this plan loaded; using it
+    // means the player starts instantly and still opens with no signal.
+    initialData: () => {
+      const active = qc.getQueryData<WorkoutPlanWithDays | null>(['activePlan', user?.id]);
+      return active && active.id === planId ? active : undefined;
+    },
+    initialDataUpdatedAt: () => qc.getQueryState(['activePlan', user?.id])?.dataUpdatedAt,
   });
 }
 

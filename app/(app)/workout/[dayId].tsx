@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  AppState,
   BackHandler,
   Keyboard,
   Platform,
@@ -36,6 +37,17 @@ import { useKeyboardInset } from '@/src/hooks/useKeyboardInset';
 import { useTrainingHistory } from '@/src/hooks/useAnalytics';
 import { CoachCard } from '@/src/components/CoachCard';
 import { trainingAge, trainingReadiness } from '@/src/domain/coach';
+import {
+  DRAFT_VERSION,
+  isConnectivityError,
+  queueWorkout,
+  usableDraft,
+  withTimeout,
+  type WorkoutDraft,
+} from '@/src/domain/workoutDraft';
+import { clearDraft, enqueueWorkout, readDraft, writeDraft } from '@/src/lib/workoutStore';
+import { useQueryClient } from '@tanstack/react-query';
+import { OUTBOX_QUERY } from '@/src/hooks/useWorkoutOutbox';
 import { usePlan } from '@/src/hooks/usePlans';
 import {
   abandonSession,
@@ -56,6 +68,9 @@ function formatElapsed(totalSeconds: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
+/** Past this, a finish is treated as offline and queued on the phone. */
+const FINISH_TIMEOUT_MS = 15_000;
+
 export default function WorkoutPlayerScreen() {
   const { dayId, planId } = useLocalSearchParams<{ dayId: string; planId: string }>();
   const { data: plan, isLoading } = usePlan(planId);
@@ -73,6 +88,27 @@ export default function WorkoutPlayerScreen() {
     () => plan?.plan_days.find((d) => d.id === dayId),
     [plan, dayId]
   );
+  const qc = useQueryClient();
+
+  /**
+   * A saved draft for this day, read once on mount: undefined while reading,
+   * null when there is none. A draft carries everything the player needs, so a
+   * workout resumes and saves even when the plan cannot load (no signal).
+   */
+  const [draft, setDraft] = useState<WorkoutDraft | null | undefined>(undefined);
+  useEffect(() => {
+    if (!user?.id || !dayId) return;
+    let live = true;
+    readDraft(user.id).then((d) => { if (live) setDraft(usableDraft(d, { userId: user.id, dayId, now: Date.now() })); });
+    return () => { live = false; };
+  }, [user?.id, dayId]);
+
+  /** What the session and finish need, from the loaded plan or else the draft. */
+  const meta = useMemo(() => {
+    if (plan && day) return { planId: plan.id, dayId: day.id, dayName: day.name, dayCount: plan.plan_days.length, dayIndex: day.day_index };
+    if (draft) return { planId: draft.planId, dayId: draft.dayId, dayName: draft.dayName, dayCount: draft.dayCount, dayIndex: draft.dayIndex };
+    return null;
+  }, [plan, day, draft]);
 
   const [player, dispatch] = useReducer(playerReducer, initialPlayerState);
   const { exercises, exerciseIndex: activeExerciseIndex, setIndex: activeSetIndex } = player;
@@ -101,14 +137,14 @@ export default function WorkoutPlayerScreen() {
    */
   const ensureSession = useCallback(async (): Promise<string> => {
     if (sessionIdRef.current) return sessionIdRef.current;
-    if (!user || !plan || !day) throw new Error('Workout is still loading.');
+    if (!user || !meta) throw new Error('Workout is still loading.');
 
     if (!pendingSession.current) {
       pendingSession.current = startSession({
         userId: user.id,
-        planId: plan.id,
-        planDayId: day.id,
-        dayName: day.name,
+        planId: meta.planId,
+        planDayId: meta.dayId,
+        dayName: meta.dayName,
       })
         .then((session) => {
           sessionIdRef.current = session.id;
@@ -120,15 +156,28 @@ export default function WorkoutPlayerScreen() {
         });
     }
     return pendingSession.current;
-  }, [user?.id, plan?.id, day?.id, day?.name]);
+  }, [user?.id, meta?.planId, meta?.dayId, meta?.dayName]);
 
   useEffect(() => {
     let cancelled = false;
     async function boot() {
+      if (draft === undefined || !user) return;
+      // A crash, a killed app or a dead battery: resume exactly where it was,
+      // without waiting on the network.
+      if (draft && bootedForDay.current !== draft.dayId) {
+        dispatch({ type: 'restore', state: draft.state });
+        sessionIdRef.current = draft.sessionId;
+        if (draft.sessionId) pendingSession.current = Promise.resolve(draft.sessionId);
+        sessionStartedAt.current = draft.startedAt;
+        setElapsedSeconds(Math.floor((Date.now() - draft.startedAt) / 1000));
+        bootedForDay.current = draft.dayId;
+        setBooting(false);
+        return;
+      }
       // Wait for the plan query rather than reporting failure: `day` is only
       // resolvable once it lands.
       if (isLoading || statsLoading || historyLoading) return;
-      if (!user || !plan || !day) {
+      if (!plan || !day) {
         setBooting(false);
         return;
       }
@@ -174,7 +223,7 @@ export default function WorkoutPlayerScreen() {
     return () => {
       cancelled = true;
     };
-  }, [isLoading, statsLoading, historyLoading, day?.id, user?.id, plan?.id]);
+  }, [draft, isLoading, statsLoading, historyLoading, day?.id, user?.id, plan?.id]);
 
   /** Release the row if the user walks away without finishing. */
   useEffect(() => {
@@ -205,6 +254,33 @@ export default function WorkoutPlayerScreen() {
     }, 1000);
     return () => clearInterval(id);
   }, [booting]);
+
+  /** The draft as it stands, for saving and for the offline queue. */
+  const draftNow = useCallback((): WorkoutDraft | null => {
+    if (!user || !meta || sessionStartedAt.current === null || player.exercises.length === 0) return null;
+    return {
+      version: DRAFT_VERSION, userId: user.id, ...meta,
+      sessionId: sessionIdRef.current, startedAt: sessionStartedAt.current, savedAt: Date.now(), state: player,
+    };
+  }, [user?.id, meta, player]);
+
+  // Save after every change (briefly debounced so typing a weight is one write),
+  // and immediately when the app goes to the background, where it may be killed.
+  useEffect(() => {
+    if (booting || savedRef.current) return;
+    const d = draftNow();
+    if (!d || !d.state.exercises.some((ex) => ex.sets.some((s) => s.completed))) return;
+    const t = setTimeout(() => void writeDraft(d), 300);
+    return () => clearTimeout(t);
+  }, [booting, draftNow]);
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active' || savedRef.current) return;
+      const d = draftNow();
+      if (d && d.state.exercises.some((ex) => ex.sets.some((s) => s.completed))) void writeDraft(d);
+    });
+    return () => sub.remove();
+  }, [draftNow]);
 
   useEffect(() => {
     if (!keyboardVisible) return;
@@ -242,7 +318,7 @@ export default function WorkoutPlayerScreen() {
 
   async function onFinish() {
     if (finishInFlight.current || savedRef.current) return;
-    if (!user || !plan || !day) {
+    if (!user || !meta) {
       setDialog({ title: 'Workout not ready', message: 'Please wait for your workout to finish loading.' });
       return;
     }
@@ -254,18 +330,37 @@ export default function WorkoutPlayerScreen() {
     setFinishing(true);
     setRestOpen(false);
     try {
-      const id = await ensureSession();
-      const result = await complete.mutateAsync({
-        sessionId: id,
-        userId: user.id,
-        exercises,
-        dayCount: plan.plan_days.length,
-        finishedDayIndex: day.day_index,
-      });
+      const result = await withTimeout((async () => {
+        const id = await ensureSession();
+        return complete.mutateAsync({
+          sessionId: id,
+          userId: user.id,
+          exercises,
+          dayCount: meta.dayCount,
+          finishedDayIndex: meta.dayIndex,
+        });
+      })(), FINISH_TIMEOUT_MS);
       savedRef.current = true;
+      void clearDraft(user.id);
       setFinishedElapsed(formatElapsed(elapsedSeconds));
       setCompletion(result);
     } catch (e) {
+      const d = draftNow();
+      if (d && isConnectivityError(e)) {
+        // No signal: keep the workout on the phone and send it later. Nothing is lost.
+        await enqueueWorkout(queueWorkout(d, Date.now()));
+        savedRef.current = true;
+        await clearDraft(user.id);
+        await qc.invalidateQueries({ queryKey: OUTBOX_QUERY });
+        setDialog({
+          title: 'Saved on this phone',
+          message: `No connection right now. Your ${doneSets} set${doneSets === 1 ? ' is' : 's are'} saved here and will sync automatically when you are back online.`,
+          confirmLabel: 'Done',
+          acknowledgeOnly: true,
+          onConfirm: () => router.replace('/(app)/(tabs)'),
+        });
+        return;
+      }
       setDialog({ title: 'Could not save workout', message: e instanceof Error ? e.message : 'Your workout could not be saved. Your logged sets are still on this screen.' });
     } finally {
       finishInFlight.current = false;
@@ -302,12 +397,15 @@ export default function WorkoutPlayerScreen() {
         message: `${doneSets} logged set${doneSets === 1 ? '' : 's'} will be lost. Use Finish and save to keep them.`,
         confirmLabel: 'Leave workout',
         destructive: true,
-        onConfirm: goBack,
+        onConfirm: () => {
+          if (user) void clearDraft(user.id);
+          goBack();
+        },
       });
       return;
     }
     goBack();
-  }, [doneSets, goBack]);
+  }, [doneSets, goBack, user?.id]);
 
   /**
    * Android's back gesture would otherwise pop the player straight off the stack
@@ -325,7 +423,7 @@ export default function WorkoutPlayerScreen() {
     return () => sub.remove();
   }, [confirmExit, finishing, completion]);
 
-  if (isLoading || booting) {
+  if (booting) {
     return (
       <View style={styles.center}>
         <ActivityIndicator color={theme.colors.accent} />
@@ -333,7 +431,7 @@ export default function WorkoutPlayerScreen() {
     );
   }
 
-  if (!day) {
+  if (!meta) {
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>Workout not found.</Text>
@@ -371,7 +469,7 @@ export default function WorkoutPlayerScreen() {
           <Text style={styles.elapsed}>{formatElapsed(elapsedSeconds)}</Text>
         </View>
         <View style={styles.titleRow}>
-          <Text style={styles.dayTitle} numberOfLines={1}>{day.name}</Text>
+          <Text style={styles.dayTitle} numberOfLines={1}>{meta.dayName}</Text>
           <Text style={styles.setsMeta}>{doneSets}/{totalSets} sets</Text>
         </View>
         <View style={styles.barTrack}>

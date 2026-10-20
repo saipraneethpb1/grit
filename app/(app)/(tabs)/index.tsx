@@ -26,6 +26,8 @@ import { StatPill, StatRow } from '@/src/components/StatPill';
 import { WeekStrip } from '@/src/components/WeekStrip';
 import { WorkoutDoneBanner } from '@/src/components/WorkoutDoneBanner';
 import { ReadinessCard } from '@/src/components/ReadinessCard';
+import { SyncBanner } from '@/src/components/SyncBanner';
+import { useSyncNow } from '@/src/hooks/useWorkoutOutbox';
 import { trainingReadiness } from '@/src/domain/coach';
 import { useTrainingHistory } from '@/src/hooks/useAnalytics';
 import { getSplitTemplate } from '@/src/domain/catalog';
@@ -88,6 +90,7 @@ export default function HomeScreen() {
   const { data: recent, refetch: refetchRecent } = useRecentSessions(5);
   const { data: history } = useTrainingHistory();
   const readiness = useMemo(() => trainingReadiness(history ?? [], new Date()), [history]);
+  const syncNow = useSyncNow();
 
   const dayIndex = stats?.current_day_index ?? 0;
   const progress = toProgressStats(stats);
@@ -261,6 +264,8 @@ export default function HomeScreen() {
           }
         />
       </View>
+
+      <SyncBanner onRetry={() => void syncNow()} />
 
       {todaySession ? (
         <WorkoutDoneBanner dayName={todaySession.day_name} setsLogged={todaySetsLogged} />

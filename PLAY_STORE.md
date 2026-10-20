@@ -33,7 +33,7 @@ npx eas-cli env:create production --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value Y
 Optional — hosted legal URLs (recommended for Play Console):
 
 ```bash
-npx eas-cli env:create production --name EXPO_PUBLIC_PRIVACY_POLICY_URL --value https://YOUR_DOMAIN/privacy --visibility plaintext
+npx eas-cli env:create production --name EXPO_PUBLIC_PRIVACY_POLICY_URL --value https://saipraneethpb1.github.io/grit/privacy.html --visibility plaintext
 npx eas-cli env:create production --name EXPO_PUBLIC_TERMS_URL --value https://YOUR_DOMAIN/terms --visibility plaintext
 ```
 
