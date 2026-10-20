@@ -3,6 +3,8 @@ import { useCallback, useMemo } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
+import { useTabBarSpace } from '@/src/hooks/useTabBarSpace';
+import { BrandKicker } from '@/src/components/BrandKicker';
 import { EmptyState } from '@/src/components/EmptyState';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { ProgramDayList, VolumeByRegion } from '@/src/components/ProgramOverview';
@@ -24,6 +26,7 @@ function isSameCalendarDay(a: Date, b: Date): boolean {
 export default function ProgramScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const tabSpace = useTabBarSpace();
   const { data: plan, isLoading, error, refetch, isRefetching } = useActivePlan();
   const { data: stats, refetch: refetchStats } = useProfileStats();
   const { data: recent } = useRecentSessions(5);
@@ -64,8 +67,8 @@ export default function ProgramScreen() {
 
   if (!plan || !plan.plan_days.length) {
     return (
-      <ScrollView contentContainerStyle={[styles.content, { paddingTop: topPad }]}>
-        <Text style={styles.kicker}>THE LONG GAME</Text>
+      <ScrollView contentContainerStyle={[styles.content, { paddingTop: topPad, paddingBottom: theme.space.xl + tabSpace }]}>
+        <BrandKicker style={styles.kicker}>Program</BrandKicker>
         <Text style={styles.title}>Your program</Text>
         <Text style={styles.meta}>Nothing active yet</Text>
         <EmptyState
@@ -105,7 +108,7 @@ export default function ProgramScreen() {
   return (
     <ScrollView
       style={styles.root}
-      contentContainerStyle={[styles.content, { paddingTop: topPad }]}
+      contentContainerStyle={[styles.content, { paddingTop: topPad, paddingBottom: theme.space.xl + tabSpace }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
@@ -117,7 +120,7 @@ export default function ProgramScreen() {
         />
       }
     >
-      <Text style={styles.kicker}>THE LONG GAME</Text>
+      <BrandKicker style={styles.kicker}>Program</BrandKicker>
       <Text style={styles.title}>Your program</Text>
       <Text style={styles.meta}>
         {programName} · {plan.plan_days.length}-day rotation · week {week}
@@ -153,7 +156,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   content: { width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
-  kicker: { ...theme.font.kicker, color: theme.colors.accent, marginBottom: 10 },
+  kicker: { marginBottom: 18 },
   title: { ...theme.font.display, color: theme.colors.text },
   meta: { ...theme.font.caption, color: theme.colors.textDim, marginTop: 6, marginBottom: 18 },
   emptyActions: { gap: 9 },

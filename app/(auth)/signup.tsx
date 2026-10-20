@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
-import { GritLogo } from '@/src/components/GritLogo';
+import { BrandBackdrop } from '@/src/components/BrandBackdrop';
+import { BrandKicker } from '@/src/components/BrandKicker';
+import { RyvoraLogo } from '@/src/components/RyvoraLogo';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { LEGAL_LINKS, LEGAL_ROUTES } from '@/src/domain/legal';
 import { useAuth } from '@/src/hooks/useAuth';
@@ -69,6 +71,7 @@ export default function SignupScreen() {
 
   return (
     <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <BrandBackdrop />
       <ScrollView
         contentContainerStyle={[
           styles.scroll,
@@ -77,10 +80,10 @@ export default function SignupScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <GritLogo showWordmark size={36} style={styles.brand} />
-        <Text style={styles.kicker}>New account</Text>
-        <Text style={styles.title}>Create your account</Text>
-        <Text style={styles.subtitle}>Your programs and logs sync to it.</Text>
+        <RyvoraLogo showWordmark size={30} style={styles.brand} />
+        <BrandKicker style={styles.kicker}>New account</BrandKicker>
+        <Text style={styles.title}>Train with purpose.</Text>
+        <Text style={styles.subtitle}>Your programs, sessions and progress, kept in sync across devices.</Text>
 
         {!configured ? (
           <Text style={styles.notice}>Sign-up is temporarily unavailable. Please try again later.</Text>
@@ -169,29 +172,29 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   scroll: { flexGrow: 1, paddingHorizontal: 24, width: '100%', maxWidth: 480, alignSelf: 'center', justifyContent: 'center' },
-  brand: { marginBottom: 30 },
-  kicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 12 },
-  title: { ...theme.font.hero, color: theme.colors.text, marginBottom: 10 },
-  subtitle: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: 26 },
-  label: { ...theme.font.small, fontSize: 12, color: theme.colors.textMuted, marginBottom: 5 },
+  brand: { marginBottom: 56 },
+  kicker: { marginBottom: 22 },
+  title: { ...theme.font.hero, color: theme.colors.text, marginBottom: 12 },
+  subtitle: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: 34 },
+  label: { ...theme.font.kicker, fontSize: 10, color: theme.colors.textDim, marginBottom: 8 },
   input: {
     minHeight: 56,
     borderRadius: theme.radius.md,
     borderWidth: theme.hairline,
     borderColor: theme.colors.border,
     backgroundColor: theme.colors.surface,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     ...theme.font.body,
-    fontSize: 14,
+    fontSize: 15,
     color: theme.colors.text,
-    marginBottom: 12,
+    marginBottom: 18,
   },
   inputFocused: { borderColor: theme.colors.accent },
   notice: { ...theme.font.caption, color: theme.colors.danger, marginBottom: 10 },
   feedback: { ...theme.font.caption, color: theme.colors.danger, marginBottom: 10, marginTop: -4 },
   info: { color: theme.colors.accentText },
-  cta: { minHeight: 50, marginTop: 4, marginBottom: 4 },
+  cta: { marginTop: 4, marginBottom: 6 },
   legal: {
     ...theme.font.small,
     color: theme.colors.textFaint,

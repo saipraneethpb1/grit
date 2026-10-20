@@ -3,7 +3,7 @@ import type { MuscleGroup, MovementPattern } from './types';
 /**
  * Training systems curated from *publicly documented* training principles.
  *
- * IMPORTANT: Grit is NOT affiliated with, endorsed by, or partnered with any
+ * IMPORTANT: Ryvora is NOT affiliated with, endorsed by, or partnered with any
  * of the named athletes/coaches or their commercial apps/brands (STNDRD,
  * Athlean-X, etc.). Names appear only to describe well-known public methodologies
  * so users can pick a style. Exercise movements come from open-source catalogs.

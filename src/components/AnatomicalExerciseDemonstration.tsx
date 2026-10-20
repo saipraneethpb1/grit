@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Image, Platform, Pressable, StyleSheet, Text, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 import { theme } from '@/constants/theme';
-import { anatomicalCell, anatomicalSequence, ANATOMICAL_PHASES, type AnatomicalDemonstration } from '@/src/domain/exerciseAnatomy';
+import { anatomicalCell, anatomicalInset, anatomicalSequence, ANATOMICAL_PHASES, type AnatomicalDemonstration } from '@/src/domain/exerciseAnatomy';
 import { exerciseAnatomyAssets, exerciseAnatomyThumbnails } from '@/src/domain/exerciseAnatomyAssets';
 import { useMotionAllowed } from '@/src/hooks/useMotionAllowed';
 
@@ -20,14 +20,19 @@ const PAIR_HOLD_MS = 1800;
 /** Long enough to read as one movement, short enough that each pose still holds. */
 const FADE_MS = 280;
 
-/** One cell of the sheet, cropped by offsetting the whole image inside a clipped square. */
-function Pose({ source, frame, columns, rows, size, label, onError }: {
-  source: ImageSourcePropType; frame: number; columns: number; rows: number; size: number; label: string; onError: () => void;
+/**
+ * One cell of the sheet, cropped by offsetting the whole image inside a clipped
+ * square. `inset` trims that fraction of the cell from every edge, so seams and
+ * divider lines between cells never show.
+ */
+function Pose({ source, frame, columns, rows, size, inset, label, onError }: {
+  source: ImageSourcePropType; frame: number; columns: number; rows: number; size: number; inset: number; label: string; onError: () => void;
 }) {
   const { column, row } = anatomicalCell(frame, columns);
+  const cell = size / (1 - 2 * inset);
   return (
     <Image source={source} resizeMode="stretch" accessible={!!label} accessibilityLabel={label} onError={onError}
-      style={{ position: 'absolute', width: size * columns, height: size * rows, left: -column * size, top: -row * size }} />
+      style={{ position: 'absolute', width: cell * columns, height: cell * rows, left: -(column + inset) * cell, top: -(row + inset) * cell }} />
   );
 }
 
@@ -42,6 +47,7 @@ export function AnatomicalExerciseDemonstration({ exerciseId, demonstration: dem
   const [{ step, previous }, setPosition] = useState<{ step: number; previous: number | null }>({ step: 0, previous: null });
   const fade = useRef(new Animated.Value(1)).current;
   const sequence = useMemo(() => anatomicalSequence(demo), [demo]);
+  const inset = anatomicalInset(demo);
   const frame = sequence[step % sequence.length];
   const phase = demo.phaseLabels?.[step % sequence.length] ?? ANATOMICAL_PHASES[frame];
   const [size, setSize] = useState(0);
@@ -78,17 +84,17 @@ export function AnatomicalExerciseDemonstration({ exerciseId, demonstration: dem
   const label = `${demo.name}: ${phase}. Anatomical illustration.`;
   return (
     <View style={style}>
-      <View style={styles.stage} onLayout={event => {
+      <View style={[styles.stage, animate && styles.stageSquare]} onLayout={event => {
         const { width, height } = event.nativeEvent.layout;
         setSize(Math.max(0, Math.min(width, height)));
       }}>
         {failed || !source ? <Text style={styles.error}>Demonstration could not load.</Text> : (
           <View style={{ width: size, height: size, overflow: 'hidden' }}>
             {transitioning ? (
-              <Pose source={source} frame={previous} columns={demo.columns} rows={demo.rows} size={size} label="" onError={artworkFailed} />
+              <Pose source={source} frame={previous} columns={demo.columns} rows={demo.rows} size={size} inset={inset} label="" onError={artworkFailed} />
             ) : null}
             <Animated.View style={[StyleSheet.absoluteFill, { opacity: transitioning ? fade : 1 }]}>
-              <Pose source={source} frame={frame} columns={demo.columns} rows={demo.rows} size={size} label={label} onError={artworkFailed} />
+              <Pose source={source} frame={frame} columns={demo.columns} rows={demo.rows} size={size} inset={inset} label={label} onError={artworkFailed} />
             </Animated.View>
           </View>
         )}
@@ -106,14 +112,24 @@ export function AnatomicalExerciseDemonstration({ exerciseId, demonstration: dem
           </Pressable>
         </View>
       ) : null}
+      {animate && demo.cue ? (
+        <View style={styles.cue}>
+          <Ionicons name="information-circle-outline" size={16} color={theme.colors.accentText} />
+          <Text style={styles.cueText}>{demo.cue}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   stage: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#faf9f4', borderRadius: theme.radius.md, overflow: 'hidden' },
+  /** Sheets are square; a square stage shows each pose edge to edge with no letterbox bands. */
+  stageSquare: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', width: '100%', aspectRatio: 1 },
   controls: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingTop: 8 },
   caption: { ...theme.font.small, color: theme.colors.textMuted, flex: 1 },
   button: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.full, backgroundColor: theme.colors.surfaceRaised },
+  cue: { flexDirection: 'row', gap: 8, marginTop: 10, padding: 12, borderRadius: theme.radius.md, backgroundColor: theme.colors.surfaceTint, borderWidth: theme.hairline, borderColor: theme.colors.borderTint },
+  cueText: { ...theme.font.caption, color: theme.colors.textSecondary, flex: 1 },
   error: { ...theme.font.small, color: '#514740', padding: 12 },
 });

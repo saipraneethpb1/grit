@@ -19,4 +19,4 @@ export const LEGAL_ROUTES = {
 } as const;
 
 export const LEGAL_PENDING_MESSAGE =
-  'Privacy policy and terms are available in the app. Grit stores your account email, plans, and logged sets in Supabase — nothing else.';
+  'Privacy policy and terms are available in the app. Ryvora stores your account email, plans, and logged sets in Supabase — nothing else.';

@@ -1,6 +1,6 @@
 /**
  * External educational / commercial resources users can study.
- * We do NOT copy book text, images, or proprietary website programs into Grit.
+ * We do NOT copy book text, images, or proprietary website programs into Ryvora.
  * Links are recommendations only — content remains on the rights-holder’s site/publisher.
  */
 
@@ -12,9 +12,9 @@ export interface ExternalResource {
   title: string;
   author?: string;
   url?: string;
-  /** Why it matters for Grit users */
+  /** Why it matters for Ryvora users */
   why: string;
-  /** How Grit uses it legally */
+  /** How Ryvora uses it legally */
   gritPolicy: string;
 }
 
@@ -25,7 +25,7 @@ export const EXTERNAL_RESOURCES: ExternalResource[] = [
     title: 'free-exercise-db',
     author: 'Community (yuhonas et al.)',
     url: 'https://github.com/yuhonas/free-exercise-db',
-    why: 'Public-domain exercise names, muscles, equipment, and instructions we curate into the Grit library.',
+    why: 'Public-domain exercise names, muscles, equipment, and instructions we curate into the Ryvora library.',
     gritPolicy: 'Directly curated into the app under Unlicense (public domain).',
   },
   {
@@ -57,7 +57,7 @@ export const EXTERNAL_RESOURCES: ExternalResource[] = [
     why:
       'Free public articles on splits, hypertrophy templates, and gym workouts that many beginners already follow.',
     gritPolicy:
-      'Not scraped or reproduced. Grit’s “Practical Gym Hypertrophy” system mirrors common public blog structures (compound → accessory) while selecting open-catalog exercises only.',
+      'Not scraped or reproduced. Ryvora’s “Practical Gym Hypertrophy” system mirrors common public blog structures (compound → accessory) while selecting open-catalog exercises only.',
   },
   {
     id: 'exrx',

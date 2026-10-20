@@ -9,7 +9,7 @@ export default function SourcesScreen() {
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content}>
       <Text style={styles.lead}>
-        Grit embeds open exercise data only. Books and commercial sites are recommended reading —
+        Ryvora embeds open exercise data only. Books and commercial sites are recommended reading —
         we do not copy their text or programs.
       </Text>
 

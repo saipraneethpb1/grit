@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import { EXERCISES } from '../src/domain/exercises.generated';
 import { anatomicalCell, anatomicalSequence, getExerciseAnatomy } from '../src/domain/exerciseAnatomy';
 import { getExerciseDemonstration } from '../src/domain/exerciseDemonstration';
+import { BODY_MAP_BACK, BODY_MAP_CROP, BODY_MAP_FRONT, BODY_MAP_SILHOUETTES, BODY_MAP_SIZE } from '../src/domain/bodyMap';
+import { MUSCLE_GROUPS } from '../src/domain/muscles';
 const atlas = JSON.parse(readFileSync(new URL('../data/exercise-anatomy.json', import.meta.url)));
 const guides = JSON.parse(readFileSync(new URL('../data/exercise-guides.json', import.meta.url)));
 
@@ -90,6 +92,30 @@ assert.deepEqual(anatomicalSequence(entries[byName('Jerk Dip Squat')]), [0, 1], 
 for (const exercise of EXERCISES) {
   const demo = getExerciseDemonstration(exercise.id);
   if (demo.kind === 'anatomical') assert.ok(demo.motion, `${exercise.name}: rig fallback behind the artwork`);
+}
+
+// Cells are trimmed so seams and drawn divider lines never show; a measured inset stays small.
+for (const exercise of EXERCISES) {
+  const inset = entries[exercise.id].cellInset;
+  if (inset !== undefined) assert.ok(inset >= 0.02 && inset <= 0.05, `${exercise.name}: cell inset trims lines without losing the pose`);
+}
+assert.deepEqual(anatomicalSequence(entries[byName('Barbell Rollout from Bench')]), [0, 1], 'Bench rollout ends on the fully drawn extension');
+
+// Isometric holds look motionless, so their demonstrations must say why.
+for (const name of ['Isometric Neck Exercise - Front And Back', 'Isometric Neck Exercise - Sides']) {
+  assert.match(entries[byName(name)].cue ?? '', /head stays still/i, `${name}: explains the isometric hold`);
+}
+
+// The Progress body map tints every muscle group on the anatomical artwork.
+{
+  const mapped = new Set([BODY_MAP_FRONT, BODY_MAP_BACK].flatMap((v) => [...v.paired, ...v.center].map((r) => r.muscle)));
+  assert.deepEqual([...MUSCLE_GROUPS].filter((m) => !mapped.has(m)), [], 'every muscle group has a body-map region');
+  assert.ok([...mapped].every((m) => MUSCLE_GROUPS.includes(m)), 'body-map regions name real muscle groups');
+  assert.equal(BODY_MAP_SILHOUETTES.length, 2, 'one traced silhouette per figure clips the tint');
+  assert.ok(BODY_MAP_CROP.x >= 0 && BODY_MAP_CROP.y >= 0 && BODY_MAP_CROP.x + BODY_MAP_CROP.width <= BODY_MAP_SIZE.width
+    && BODY_MAP_CROP.y + BODY_MAP_CROP.height <= BODY_MAP_SIZE.height, 'body-map crop stays inside the artwork');
+  const art = webpSize(readFileSync(new URL('assets/anatomy/bodymap/bodymap.webp', root)));
+  assert.deepEqual(art, { width: BODY_MAP_SIZE.width, height: BODY_MAP_SIZE.height }, 'body-map regions are authored in the artwork pixel space');
 }
 assert.deepEqual([0, 1, 2, 3].map(frame => anatomicalCell(frame, 2)), [
   { column: 0, row: 0 }, { column: 1, row: 0 }, { column: 0, row: 1 }, { column: 1, row: 1 },

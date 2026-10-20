@@ -1,13 +1,26 @@
 import { Platform, type TextStyle, type ViewStyle } from 'react-native';
 import { accentGradient, colors } from './Colors';
 
-/** Shared typography, spacing, and surfaces for the Grit training experience. */
+/**
+ * Shared typography, spacing and surfaces for Ryvora.
+ *
+ * Sora (geometric, close to the wordmark) sets headings and figures; Inter sets
+ * reading text. Labels are widely tracked uppercase, as on the brand sheet,
+ * rather than monospace.
+ */
 
 const inter = {
   light: 'Inter_300Light',
   regular: 'Inter_400Regular',
   medium: 'Inter_500Medium',
   semibold: 'Inter_600SemiBold',
+} as const;
+
+const sora = {
+  light: 'Sora_300Light',
+  regular: 'Sora_400Regular',
+  medium: 'Sora_500Medium',
+  semibold: 'Sora_600SemiBold',
 } as const;
 
 const mono = Platform.select({
@@ -19,41 +32,41 @@ const mono = Platform.select({
 const tabular: TextStyle['fontVariant'] = ['tabular-nums'];
 
 const font = {
-  /** Uppercase monospace label above a block. */
+  /** Widely tracked uppercase label above a block. */
   kicker: {
-    fontFamily: mono,
+    fontFamily: inter.medium,
     fontSize: 10.5,
-    lineHeight: 13,
+    lineHeight: 14,
     fontWeight: '500' as const,
-    letterSpacing: 1.3,
+    letterSpacing: 2.2,
     textTransform: 'uppercase' as const,
   },
   /** Onboarding-scale headline. */
-  hero: { fontFamily: inter.semibold, fontWeight: '600' as const, fontSize: 38, lineHeight: 43, letterSpacing: -0.5 },
+  hero: { fontFamily: sora.regular, fontWeight: '400' as const, fontSize: 36, lineHeight: 43, letterSpacing: -0.8 },
   /** Screen title. */
-  display: { fontFamily: inter.semibold, fontWeight: '600' as const, fontSize: 32, lineHeight: 38, letterSpacing: -0.5 },
+  display: { fontFamily: sora.regular, fontWeight: '400' as const, fontSize: 30, lineHeight: 37, letterSpacing: -0.7 },
   /** Card title. */
-  title: { fontFamily: inter.semibold, fontWeight: '600' as const, fontSize: 25, lineHeight: 31, letterSpacing: -0.4 },
-  heading: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 17, lineHeight: 21, letterSpacing: -0.2 },
-  bodyMedium: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 14, lineHeight: 18 },
+  title: { fontFamily: sora.medium, fontWeight: '500' as const, fontSize: 23, lineHeight: 29, letterSpacing: -0.5 },
+  heading: { fontFamily: sora.medium, fontWeight: '500' as const, fontSize: 16, lineHeight: 21, letterSpacing: -0.2 },
+  bodyMedium: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 14, lineHeight: 19 },
   body: { fontFamily: inter.regular, fontWeight: '400' as const, fontSize: 15, lineHeight: 23 },
   caption: { fontFamily: inter.regular, fontWeight: '400' as const, fontSize: 13, lineHeight: 19 },
   small: { fontFamily: inter.regular, fontWeight: '400' as const, fontSize: 11.5, lineHeight: 16 },
   /** Figures: targets, timers, counts. */
-  mono: { fontFamily: mono, fontSize: 12, lineHeight: 16, fontWeight: '500' as const, fontVariant: tabular },
-  monoSmall: { fontFamily: mono, fontSize: 11, lineHeight: 14, fontWeight: '400' as const, fontVariant: tabular },
+  mono: { fontFamily: inter.medium, fontSize: 12.5, lineHeight: 16, fontWeight: '500' as const, fontVariant: tabular },
+  monoSmall: { fontFamily: inter.regular, fontSize: 11.5, lineHeight: 15, fontWeight: '400' as const, fontVariant: tabular },
   /** Big number in a stat cell. */
-  stat: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 25, lineHeight: 30, fontVariant: tabular },
+  stat: { fontFamily: sora.regular, fontWeight: '400' as const, fontSize: 24, lineHeight: 30, letterSpacing: -0.5, fontVariant: tabular },
   /** Stepper value in the logger. */
-  figure: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 26, lineHeight: 30, letterSpacing: -0.5, fontVariant: tabular },
+  figure: { fontFamily: sora.regular, fontWeight: '400' as const, fontSize: 26, lineHeight: 31, letterSpacing: -0.6, fontVariant: tabular },
   /** Rest countdown. */
-  clock: { fontFamily: inter.light, fontWeight: '300' as const, fontSize: 56, lineHeight: 62, letterSpacing: -2, fontVariant: tabular },
-  cta: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 15, lineHeight: 19 },
+  clock: { fontFamily: sora.light, fontWeight: '300' as const, fontSize: 56, lineHeight: 64, letterSpacing: -2, fontVariant: tabular },
+  cta: { fontFamily: inter.semibold, fontWeight: '600' as const, fontSize: 15, lineHeight: 19, letterSpacing: 0.1 },
   /** Tab bar labels. */
-  tab: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 10, lineHeight: 12, letterSpacing: 0.2 },
+  tab: { fontFamily: inter.medium, fontWeight: '500' as const, fontSize: 10, lineHeight: 12, letterSpacing: 0.4 },
 };
 
-/** "#ff6b3d" at 0.35 → "rgba(255, 107, 61, 0.35)", for web box shadows. */
+/** "#8b7cff" at 0.35 → "rgba(139, 124, 255, 0.35)", for web box shadows. */
 function rgba(hex: string, alpha: number): string {
   const h = hex.replace('#', '');
   const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
@@ -81,20 +94,20 @@ function shadowStyle(color: string, opacity: number, radius: number, y: number, 
 
 const shadow = {
   /** Raised card. */
-  md: shadowStyle('#000000', 0.18, 18, 6, 3),
+  md: shadowStyle('#000000', 0.32, 24, 10, 3),
   /** Sheet or dialog. */
-  lg: shadowStyle('#000000', 0.65, 40, 16, 16),
+  lg: shadowStyle('#000000', 0.7, 48, 18, 16),
   /** Accent glow behind a filled bar. iOS and web; Android ignores coloured shadows. */
-  glow: shadowStyle(colors.accent, 0.2, 8, 0),
-  /** Glow under a gradient button. */
-  button: shadowStyle(colors.accent, 0.35, 16, 6),
+  glow: shadowStyle(colors.accent, 0.25, 10, 0),
+  /** Glow under a filled button. */
+  button: shadowStyle(colors.accent, 0.28, 20, 8),
 };
 
 export const theme = {
   colors,
-  /** Coral → amber; pass to `<LinearGradient colors={...}>`. */
+  /** Violet → lavender; pass to `<LinearGradient colors={...}>`. */
   gradient: accentGradient,
-  fontFamily: { ...inter, mono },
+  fontFamily: { ...inter, display: sora, mono },
 
   space: {
     xs: 4,
@@ -106,8 +119,8 @@ export const theme = {
 
   radius: {
     sm: 10,
-    md: 14,
-    lg: 22,
+    md: 16,
+    lg: 24,
     full: 999,
   },
 
@@ -119,7 +132,7 @@ export const theme = {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 22,
+    borderRadius: 24,
   } as ViewStyle,
 
   hairline: 1,

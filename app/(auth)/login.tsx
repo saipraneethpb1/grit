@@ -12,7 +12,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
-import { GritLogo } from '@/src/components/GritLogo';
+import { BrandBackdrop } from '@/src/components/BrandBackdrop';
+import { BrandKicker } from '@/src/components/BrandKicker';
+import { RyvoraLogo } from '@/src/components/RyvoraLogo';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { LEGAL_LINKS, LEGAL_ROUTES } from '@/src/domain/legal';
 import { useAuth } from '@/src/hooks/useAuth';
@@ -60,6 +62,7 @@ export default function LoginScreen() {
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      <BrandBackdrop />
       <ScrollView
         contentContainerStyle={[
           styles.scroll,
@@ -68,10 +71,10 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <GritLogo showWordmark size={36} style={styles.brand} />
-        <Text style={styles.kicker}>Welcome back</Text>
-        <Text style={styles.headline}>Train with intention.</Text>
-        <Text style={styles.subhead}>Sign in to pick up your program and your log.</Text>
+        <RyvoraLogo showWordmark size={30} style={styles.brand} />
+        <BrandKicker style={styles.kicker}>Welcome back</BrandKicker>
+        <Text style={styles.headline}>Smarter training{'\n'}for real progress.</Text>
+        <Text style={styles.subhead}>Sign in to pick up your program and your training log.</Text>
 
         <View style={styles.form}>
           {!configured ? (
@@ -146,29 +149,29 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   scroll: { flexGrow: 1, paddingHorizontal: 24, width: '100%', maxWidth: 480, alignSelf: 'center', justifyContent: 'center' },
-  brand: { marginBottom: 30 },
-  kicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 12 },
-  headline: { ...theme.font.hero, color: theme.colors.text, marginBottom: 10 },
-  subhead: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: 26 },
+  brand: { marginBottom: 56 },
+  kicker: { marginBottom: 22 },
+  headline: { ...theme.font.hero, color: theme.colors.text, marginBottom: 12 },
+  subhead: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: 34 },
   form: { marginBottom: 14 },
-  label: { ...theme.font.small, fontSize: 12, color: theme.colors.textMuted, marginBottom: 5 },
+  label: { ...theme.font.kicker, fontSize: 10, color: theme.colors.textDim, marginBottom: 8 },
   input: {
     minHeight: 56,
     borderRadius: theme.radius.md,
     borderWidth: theme.hairline,
     borderColor: theme.colors.border,
     backgroundColor: theme.colors.surface,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     ...theme.font.body,
-    fontSize: 14,
+    fontSize: 15,
     color: theme.colors.text,
-    marginBottom: 12,
+    marginBottom: 18,
   },
   inputFocused: { borderColor: theme.colors.accent },
   notice: { ...theme.font.caption, color: theme.colors.danger, marginBottom: 10 },
   error: { ...theme.font.caption, color: theme.colors.danger, marginTop: -4 },
-  cta: { minHeight: 50, marginBottom: 9 },
+  cta: { marginBottom: 10 },
   legal: {
     ...theme.font.small,
     color: theme.colors.textFaint,

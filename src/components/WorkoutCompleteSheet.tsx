@@ -57,7 +57,7 @@ export function WorkoutCompleteSheet({ visible, result, elapsedLabel, onDismiss 
             </Text>
             <Text style={styles.sub}>
               {result.setsCompleted} {result.setsCompleted === 1 ? 'set' : 'sets'} · {elapsedLabel}
-              {result.volume > 0 ? ` · ${formatCount(result.volume)} volume` : ''}
+              {result.volume > 0 ? ` · ${formatCount(result.volume)} kg moved` : ''}
             </Text>
 
             {/* Everything below is progression, which needs migration 004. The
@@ -156,5 +156,5 @@ const styles = StyleSheet.create({
   streakText: { ...theme.font.caption, color: theme.colors.textMuted },
   badgeHeading: { ...theme.font.kicker, color: theme.colors.textDim, marginTop: 6 },
   badgeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  badgeCell: { width: 96 },
+  badgeCell: { width: 108 },
 });

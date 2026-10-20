@@ -1,5 +1,6 @@
 import { getSplitDays, getSplitTemplate } from './catalog';
 import { getMethodology, type Methodology } from './methodologies';
+import { tuneWeeklyVolume } from './coach';
 import type {
   Exercise,
   GeneratedPlan,
@@ -77,13 +78,7 @@ function scoreExercise(
 
     if (methodology.favorPatterns.includes(ex.movement_pattern)) score += 25;
     if (methodology.favorMuscles.some((m) => ex.primary_muscles.includes(m))) score += 12;
-    const name = ex.name.toLowerCase();
-    for (const kw of methodology.avoidNameKeywords) {
-      if (name.includes(kw.toLowerCase())) score -= 80;
-    }
-    for (const kw of methodology.favorNameKeywords) {
-      if (name.includes(kw.toLowerCase())) score += 18;
-    }
+    score += keywordScore(ex, methodology);
     if (methodology.intensityStyle === 'hit' && isCompound(ex)) score += 20;
     if (methodology.intensityStyle === 'pump_finisher' && !isCompound(ex) && slotIndex > 0) {
       score += 15;
@@ -92,6 +87,39 @@ function scoreExercise(
 
   const hash = ex.id.charCodeAt(ex.id.length - 1) + dayIndex;
   score += hash % 7;
+  return score;
+}
+
+/** Catalog indexed once per exercise list: prime-mover and secondary pools per muscle. */
+type MusclePools = { primary: Map<MuscleGroup, Exercise[]>; secondary: Map<MuscleGroup, Exercise[]> };
+const poolCache = new WeakMap<Exercise[], MusclePools>();
+
+function musclePools(exercises: Exercise[]): MusclePools {
+  let pools = poolCache.get(exercises);
+  if (!pools) {
+    pools = { primary: new Map(), secondary: new Map() };
+    for (const ex of exercises) {
+      for (const m of ex.primary_muscles) (pools.primary.get(m) ?? pools.primary.set(m, []).get(m)!).push(ex);
+      for (const m of ex.secondary_muscles) (pools.secondary.get(m) ?? pools.secondary.set(m, []).get(m)!).push(ex);
+    }
+    poolCache.set(exercises, pools);
+  }
+  return pools;
+}
+
+/** Name keyword hits are fixed per exercise and style, so score them once. */
+const keywordCache = new WeakMap<Methodology, Map<string, number>>();
+function keywordScore(ex: Exercise, methodology: Methodology): number {
+  let byId = keywordCache.get(methodology);
+  if (!byId) keywordCache.set(methodology, (byId = new Map()));
+  let score = byId.get(ex.id);
+  if (score === undefined) {
+    const name = ex.name.toLowerCase();
+    score = 0;
+    for (const kw of methodology.avoidNameKeywords) if (name.includes(kw.toLowerCase())) score -= 80;
+    for (const kw of methodology.favorNameKeywords) if (name.includes(kw.toLowerCase())) score += 18;
+    byId.set(ex.id, score);
+  }
   return score;
 }
 
@@ -105,12 +133,10 @@ function pickForMuscle(
   startSlot: number,
   methodology?: Methodology
 ): Exercise[] {
-  const primaryPool = exercises.filter((e) => e.primary_muscles.includes(muscle));
+  const pools = musclePools(exercises);
   // Anatomy-first planning: use a movement where the requested muscle is a
   // prime mover whenever the catalog has one. Secondary loading is a fallback.
-  const pool = primaryPool.length
-    ? primaryPool
-    : exercises.filter((e) => e.secondary_muscles.includes(muscle));
+  const pool = pools.primary.get(muscle)?.length ? pools.primary.get(muscle)! : pools.secondary.get(muscle) ?? [];
 
   const picked: Exercise[] = [];
   for (let slot = startSlot; slot < startSlot + count; slot++) {
@@ -313,6 +339,12 @@ export function generatePlan(
         toGenerated(ex, i, methodology, i === dayExercises.length - 1)
       ),
     });
+  }
+
+  // Land each focus muscle in the weekly range its lifters grow on. Styles that
+  // prescribe their own set counts (HIT, FST-7 finishers) keep them.
+  if (methodology?.intensityStyle !== 'hit' && methodology?.intensityStyle !== 'pump_finisher') {
+    tuneWeeklyVolume(days, methodology?.level ?? 'intermediate');
   }
 
   const methodLabel = methodology ? ` · ${methodology.name}` : '';

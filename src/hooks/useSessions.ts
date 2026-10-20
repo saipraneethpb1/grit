@@ -31,6 +31,15 @@ import type {
   WorkoutSessionWithSets,
 } from '@/src/domain/types';
 import { supabase } from '@/src/lib/supabase';
+import {
+  deloadSets,
+  isCompoundPattern,
+  pickExerciseHistory,
+  prescribe,
+  type Exposure,
+  type HistoryRow,
+  type TrainingAge,
+} from '@/src/domain/coach';
 import { useAuth } from './useAuth';
 
 const PREVIOUS_BEST_SESSION_WINDOW = 10;
@@ -94,30 +103,83 @@ export function buildLiveExercises(day: PlanDayWithExercises): LiveExercise[] {
       targetRepsMin: pe.target_reps_min,
       targetRepsMax: pe.target_reps_max,
       previousBest: null,
+      movementPattern: pe.exercise.movement_pattern,
+      equipment: pe.exercise.equipment,
+      prescription: null,
       sets,
     };
   });
 }
 
+export type CoachContext = { age: TrainingAge; deload: boolean; daysSinceLastWorkout: number | null };
+
+/**
+ * Past exposures and previous bests for the day's exercises in one pair of
+ * requests, the same shape as `fetchPreviousBests`.
+ */
+async function fetchExerciseHistory(userId: string, exerciseIds: string[]) {
+  const uniqueIds = [...new Set(exerciseIds)];
+  const empty = { bests: {} as Record<string, PreviousBest>, history: {} as Record<string, Exposure[]> };
+  if (uniqueIds.length === 0) return empty;
+  const { data: sessions, error: sessionsError } = await supabase
+    .from('workout_sessions')
+    .select('id, completed_at')
+    .eq('user_id', userId)
+    .eq('status', 'completed')
+    .order('completed_at', { ascending: false })
+    .limit(PREVIOUS_BEST_SESSION_WINDOW);
+  if (sessionsError || !sessions?.length) return empty;
+  const order = sessions.map((s) => ({ id: s.id as string, completedAt: (s.completed_at as string) ?? '' }));
+  const { data: sets, error: setsError } = await supabase
+    .from('session_sets')
+    .select('session_id, exercise_id, set_number, weight, reps')
+    .in('session_id', order.map((o) => o.id))
+    .in('exercise_id', uniqueIds)
+    .eq('completed', true);
+  if (setsError || !sets?.length) return empty;
+  return {
+    bests: pickPreviousBests(order.map((o) => o.id), sets as PreviousBestRow[]),
+    history: pickExerciseHistory(order, sets as HistoryRow[]),
+  };
+}
+
+/**
+ * Attaches the coach's prescription to every exercise and pre-fills the inputs
+ * from it: the recommended load (or last load when the coach has none) and the
+ * rep goal. A deload week also halves the set count.
+ */
 export async function enrichWithHistory(
   userId: string,
-  exercises: LiveExercise[]
+  exercises: LiveExercise[],
+  context: CoachContext = { age: 'beginner', deload: false, daysSinceLastWorkout: null }
 ): Promise<LiveExercise[]> {
-  const bests = await fetchPreviousBests(
-    userId,
-    exercises.map((ex) => ex.exerciseId)
-  );
+  const { bests, history } = await fetchExerciseHistory(userId, exercises.map((ex) => ex.exerciseId));
+  const firstCompound = exercises.findIndex((ex) => ex.movementPattern && isCompoundPattern(ex.movementPattern));
 
-  return exercises.map((ex) => {
+  return exercises.map((ex, index) => {
     const prev = bests[ex.exerciseId] ?? null;
-    if (!prev) return { ...ex, previousBest: null };
+    const prescription = ex.movementPattern
+      ? prescribe({
+          exercise: { name: ex.name, equipment: ex.equipment ?? [], movement_pattern: ex.movementPattern },
+          target: { sets: ex.targetSets, repsMin: ex.targetRepsMin, repsMax: ex.targetRepsMax },
+          history: history[ex.exerciseId] ?? [],
+          age: context.age,
+          firstCompound: index === firstCompound,
+          daysSinceLastWorkout: context.daysSinceLastWorkout,
+          deload: context.deload,
+        })
+      : null;
+    const weight = prescription?.weight ?? prev?.weight ?? null;
+    const reps = prescription?.reps ?? prev?.reps ?? null;
+    const setCount = context.deload ? deloadSets(ex.sets.length) : ex.sets.length;
     return {
       ...ex,
       previousBest: prev,
-      sets: ex.sets.map((s) => ({
+      prescription,
+      sets: ex.sets.slice(0, setCount).map((s) => ({
         ...s,
-        weight: String(prev.weight),
-        reps: String(prev.reps),
+        weight: weight == null ? s.weight : String(weight),
+        reps: reps == null ? s.reps : String(reps),
       })),
     };
   });

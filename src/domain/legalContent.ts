@@ -1,8 +1,8 @@
-export const PRIVACY_POLICY = `Privacy Policy — Grit
+export const PRIVACY_POLICY = `Privacy Policy — Ryvora
 
-Last updated: September 2026
+Last updated: October 2026
 
-Grit ("we", "the app") is a strength-training planner and workout log operated by the developer listed on the Google Play store listing.
+Ryvora ("we", "the app") is a strength-training planner and workout log operated by the developer listed on the Google Play store listing.
 
 What we collect
 • Account information: email address and optional display name when you sign up.
@@ -31,7 +31,7 @@ Third parties
 • We do not sell your personal data.
 
 Children
-Grit is not directed at children under 13. We do not knowingly collect data from children.
+Ryvora is not directed at children under 13. We do not knowingly collect data from children.
 
 Contact
 Use the support email listed on the Google Play store listing for privacy questions or deletion requests.
@@ -39,14 +39,14 @@ Use the support email listed on the Google Play store listing for privacy questi
 Changes
 We may update this policy. Continued use after changes means you accept the updated policy.`;
 
-export const TERMS_OF_SERVICE = `Terms of Service — Grit
+export const TERMS_OF_SERVICE = `Terms of Service — Ryvora
 
-Last updated: September 2026
+Last updated: October 2026
 
-By using Grit you agree to these terms.
+By using Ryvora you agree to these terms.
 
 The service
-Grit provides workout planning and logging tools for informational purposes. It is not medical advice. Consult a physician before starting any exercise program.
+Ryvora provides workout planning and logging tools for informational purposes. It is not medical advice. Consult a physician before starting any exercise program.
 
 Your account
 You are responsible for keeping your login credentials secure. You must provide accurate information when creating an account.

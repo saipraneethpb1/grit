@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Grit",
+    "name": "Ryvora",
     "slug": "grit",
     "version": "1.0.0",
-    "description": "An anatomy-aware strength training planner and workout log.",
+    "description": "Smarter training for real progress: workout tracking, anatomy-informed training and performance analytics.",
     "orientation": "portrait",
-    "icon": "./assets/images/grit-icon.png",
+    "icon": "./assets/images/ryvora-icon.png",
     "scheme": "grit",
     "userInterfaceStyle": "dark",
-    "primaryColor": "#ff6b3d",
+    "primaryColor": "#8b7cff",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.praneeth.grit",
@@ -31,33 +31,98 @@
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
       "adaptiveIcon": {
-        "backgroundColor": "#0f0d0c",
-        "foregroundImage": "./assets/images/grit-adaptive-foreground.png",
-        "monochromeImage": "./assets/images/grit-adaptive-foreground.png"
+        "backgroundColor": "#0e0f16",
+        "foregroundImage": "./assets/images/ryvora-adaptive-foreground.png",
+        "monochromeImage": "./assets/images/ryvora-adaptive-monochrome.png"
       },
       "predictiveBackGestureEnabled": true
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/grit-icon.png"
+      "favicon": "./assets/images/ryvora-favicon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/grit-icon.png",
+          "image": "./assets/images/ryvora-splash.png",
+          "imageWidth": 160,
           "resizeMode": "contain",
-          "backgroundColor": "#0f0d0c",
+          "backgroundColor": "#0e0f16",
           "dark": {
-            "image": "./assets/images/grit-icon.png",
-            "backgroundColor": "#0f0d0c"
+            "image": "./assets/images/ryvora-splash.png",
+            "backgroundColor": "#0e0f16"
           }
         }
       ],
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-widgets",
+        {
+          "widgets": [
+            {
+              "name": "RyvoraToday",
+              "displayName": "Today",
+              "description": "Today's session, this week and a quick start.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium",
+                  "accessoryRectangular"
+                ]
+              }
+            },
+            {
+              "name": "RyvoraStreak",
+              "displayName": "Streak",
+              "description": "Your streak and this week's training.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "accessoryCircular",
+                  "accessoryInline"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "RyvoraToday",
+              "label": "Ryvora \u00b7 Today",
+              "description": "Today's session, this week and a quick start.",
+              "minWidth": "180dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "maxResizeWidth": "420dp",
+              "maxResizeHeight": "220dp",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widget-preview/today.png"
+            },
+            {
+              "name": "RyvoraStreak",
+              "label": "Ryvora \u00b7 Streak",
+              "description": "Your streak and this week's training.",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "none",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widget-preview/streak.png"
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

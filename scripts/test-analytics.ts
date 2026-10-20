@@ -3,6 +3,13 @@ import {
   muscleBand,
   muscleWeeklySets,
   percentChange,
+  activityLevel,
+  activitySummary,
+  dailyActivity,
+  RADAR_AXES,
+  radarPoints,
+  radarScale,
+  trainingBalance,
   periodComparison,
   startOfWeek,
   strengthTrends,
@@ -145,6 +152,66 @@ const session = (id: string, ago: number, sets: AnalyticsSession['sets']): Analy
     sample.every((e) => getExerciseById(e.id)?.primary_muscles.length),
     'catalog exercises carry prime movers for the muscle map'
   );
+}
+
+// --- balance web ---
+{
+  const zero = Object.fromEntries(RADAR_AXES.map((m) => [m, 0])) as Record<(typeof RADAR_AXES)[number], number>;
+  assert(RADAR_AXES.length === 12 && new Set(RADAR_AXES).size === 12, 'web has one axis per muscle group');
+  assert(radarScale(zero) === 15, 'untrained web still shows the 10-set guideline inside the outer ring');
+  assert(radarScale({ ...zero, quads: 17.2 }) === 20, 'outer ring rounds up to a multiple of five');
+  const pts = radarPoints({ ...zero, chest: 15, quads: 30 }, 15, 100, { x: 0, y: 0 });
+  assert(near(pts[0].x, 0) && near(pts[0].y, -100), 'first axis points straight up at full scale');
+  const q = pts[RADAR_AXES.indexOf('quads')];
+  assert(near(Math.hypot(q.x, q.y), 100), 'values beyond the scale clamp to the outer ring');
+  assert(pts.filter((p) => p.muscle !== 'chest' && p.muscle !== 'quads').every((p) => near(p.x, 0) && near(p.y, 0)), 'untrained axes sit at the centre');
+
+  const b = trainingBalance({ ...zero, chest: 10, shoulders: 5, triceps: 5, back: 10, biceps: 5, quads: 6, glutes: 4 });
+  assert(near(b.pullPerPush ?? -1, 15 / 20), 'pull per push compares pull sets to push sets');
+  assert(near(b.lowerShare ?? -1, 10 / 45), 'lower share counts legs against upper + lower');
+  assert(b.covered === 7, 'coverage counts groups at 4+ weekly sets');
+  assert(b.strongest === 'chest' && b.weakest !== null && zero[b.weakest] === 0, 'strongest and weakest groups are named');
+  const none = trainingBalance(zero);
+  assert(none.pullPerPush === null && none.lowerShare === null && none.strongest === null && none.weakest === null, 'an empty window reports no balance');
+
+  const sessions = [
+    session('this', 2, [set('bench', 60, 8), set('bench', 60, 8)]),
+    session('last', 9, [set('bench', 60, 8)]),
+  ];
+  const prev = muscleWeeklySets(sessions, lookup, { now, weeks: 1, offset: 1 });
+  assert(prev.chest === 1, 'offset 1 reads the previous window only');
+  const twoWeeks = muscleWeeklySets(sessions, lookup, { now, weeks: 2 });
+  const thisWeek = muscleWeeklySets(sessions, lookup, { now, weeks: 1 });
+  assert(near((prev.chest + thisWeek.chest) / 2, twoWeeks.chest), 'the previous window plus this one average to the double window');
+}
+
+// --- training calendar ---
+{
+  // now is Wednesday 14 Oct 2026, 18:00 local.
+  const sessions = [
+    session('wed', 0, [set('bench', 60, 8), set('bench', 60, 8)]),
+    session('mon', 2, Array.from({ length: 12 }, () => set('squat', 100, 5))),
+    session('mon2', 2, [set('bench', 60, 8)]),
+    session('lastweek', 9, [set('bench', 60, 8)]),
+    session('old', 40, [set('bench', 60, 8)]),
+  ];
+  const grid = dailyActivity(sessions, { now, weeks: 4 });
+  assert(grid.length === 4 && grid.every((w) => w.length === 7), 'calendar has one column of seven days per week');
+  assert(grid[0][0].date.getDay() === 1, 'every column starts on Monday');
+  const thisWeek = grid[3];
+  assert(thisWeek[2].workouts === 1 && thisWeek[2].sets === 2, 'a session lands on the local day it was completed');
+  assert(thisWeek[0].workouts === 2 && thisWeek[0].sets === 13 && thisWeek[0].level === 2, 'two sessions on one day add together');
+  assert(thisWeek[3].future && thisWeek[6].future && !thisWeek[2].future, 'days after today are marked future');
+  assert(grid.flat().every((d) => d.date.getTime() !== new Date(now.getFullYear(), now.getMonth(), now.getDate() - 40).getTime()), 'sessions outside the window are not drawn');
+  assert([0, 1, 9, 10, 19, 20, 29, 30].map(activityLevel).join() === '0,1,1,2,2,3,3,4', 'heat levels use fixed set bands');
+  const summary = activitySummary(grid);
+  assert(summary.activeDays === 3, 'active days count days, not sessions');
+  assert(summary.currentRun === 2 && summary.bestRun === 2, 'runs count consecutive training weeks');
+  assert(summary.busiestWeekday === 0, 'busiest weekday is Monday here');
+  const quiet = activitySummary(dailyActivity([session('lastweek', 9, [set('bench', 60, 8)])], { now, weeks: 4 }));
+  assert(quiet.currentRun === 1, 'an empty current week does not break the run yet');
+  const none = activitySummary(dailyActivity([], { now, weeks: 4 }));
+  assert(none.activeDays === 0 && none.currentRun === 0 && none.busiestWeekday === null, 'an empty calendar summarises to zero');
 }
 
 if (failed) {

@@ -12,7 +12,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
 import { countLabel } from '@/src/domain/progression';
-import { LevelBadge } from '@/src/components/LevelBadge';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { SplitCard } from '@/src/components/SplitCard';
 import { getSplitTemplate, SPLIT_TEMPLATES } from '@/src/domain/catalog';
@@ -163,7 +162,6 @@ export default function SplitsScreen() {
             <View key={level} style={styles.levelGroup}>
               <View style={styles.levelHeader}>
                 <Text style={styles.levelTitle}>{EXPERIENCE_LEVEL_LABELS[level]}</Text>
-                <LevelBadge level={level} />
               </View>
               <Text style={styles.levelBlurb}>{EXPERIENCE_LEVEL_BLURBS[level]}</Text>
 

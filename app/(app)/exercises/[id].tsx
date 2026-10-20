@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
   kicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 7 },
   title: { ...theme.font.display, color: theme.colors.text },
   rule: { marginTop: 18, marginBottom: 4 },
-  stage: { ...theme.card, aspectRatio: 200 / 190, padding: 10, marginTop: 16 },
-  figure: { flex: 1 },
+  stage: { ...theme.card, padding: 10, marginTop: 16 },
+  figure: { width: '100%' },
   section: { ...theme.font.kicker, color: theme.colors.textDim, marginTop: 22, marginBottom: 10 },
   card: { ...theme.card, padding: 18 },
   row: {

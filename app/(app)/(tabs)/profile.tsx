@@ -4,6 +4,8 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
 import { theme } from '@/constants/theme';
+import { useTabBarSpace } from '@/src/hooks/useTabBarSpace';
+import { BrandKicker } from '@/src/components/BrandKicker';
 import { AchievementGrid } from '@/src/components/AchievementGrid';
 import { FadeRule } from '@/src/components/FadeRule';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
@@ -77,6 +79,7 @@ function recentBests(sessions: WorkoutSessionWithSets[]) {
 export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const tabSpace = useTabBarSpace();
   const { user, signOut, deleteAccount } = useAuth();
   const [deleting, setDeleting] = useState(false);
   const { data: stats } = useProfileStats();
@@ -121,10 +124,10 @@ export default function ProfileScreen() {
   return (
     <ScrollView
       style={styles.root}
-      contentContainerStyle={[styles.container, { paddingTop: insets.top + 18 }]}
+      contentContainerStyle={[styles.container, { paddingTop: insets.top + 18, paddingBottom: theme.space.xl + tabSpace }]}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={styles.kicker}>BUILT BY CONSISTENCY</Text>
+      <BrandKicker style={styles.kicker}>Profile</BrandKicker>
       <Text style={styles.name}>{displayName}</Text>
       <Text style={styles.email}>{user?.email}</Text>
 
@@ -221,7 +224,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   container: { flexGrow: 1, width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
-  kicker: { ...theme.font.kicker, color: theme.colors.accent, marginBottom: 10 },
+  kicker: { marginBottom: 18 },
   name: { ...theme.font.display, color: theme.colors.text },
   email: { ...theme.font.caption, color: theme.colors.textDim, marginTop: 5, marginBottom: 18 },
   xpCard: { ...theme.card, paddingHorizontal: 22, paddingVertical: 24, marginBottom: 14 },

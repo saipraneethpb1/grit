@@ -1,63 +1,68 @@
 /**
- * Ember: warm charcoal surfaces with a coral-to-amber accent for training
- * actions. Every text/surface pairing clears WCAG AA (4.5:1), including
- * `onAccent` labels across the whole accent gradient.
+ * Ryvora: charcoal surfaces, sand text and a single violet accent, taken from
+ * the brand sheet (Violet #8B7CFF, Charcoal #0E0F16, Sand #E9EAF0). The accent
+ * is used sparingly — actions, progress and the active state — so screens stay
+ * quiet and the violet carries meaning. Every text/surface pairing clears WCAG
+ * AA (4.5:1), including `onAccent` labels on the violet fill.
  */
 
 export const colors = {
-  background: '#0f0d0c',
+  /** Charcoal. */
+  background: '#0e0f16',
   /** Cards and inputs. */
-  surface: '#1a1715',
+  surface: '#151722',
   /** Raised surface inside a card (chips, number tiles). */
-  surfaceRaised: '#221e1b',
-  /** Accent-tinted card (today's session, cues, program volume). */
-  surfaceTint: '#241914',
-  border: '#2f2925',
-  borderStrong: '#4a3f38',
-  /** Border for accent-tinted cards. */
-  borderTint: '#4a2a1f',
+  surfaceRaised: '#1c1f2c',
+  /** Violet-tinted card (today's session, cues, program volume). */
+  surfaceTint: '#17162b',
+  border: '#232636',
+  borderStrong: '#363a4f',
+  /** Border for violet-tinted cards. */
+  borderTint: '#352f66',
   /** Rules between list rows. */
-  divider: '#27211e',
+  divider: '#1e2131',
   /** Progress tracks and number tiles. */
-  track: '#2e2723',
+  track: '#262a3b',
 
-  text: '#f7f2ee',
-  textSecondary: '#e6ddd6',
-  textMuted: '#b8aaa0',
-  textDim: '#a69689',
-  textFaint: '#958579',
+  /** Sand. */
+  text: '#e9eaf0',
+  textSecondary: '#cfd1dc',
+  textMuted: '#a0a3b5',
+  textDim: '#9093a7',
+  textFaint: '#858899',
 
-  /** Label colour on a filled accent; passes on both gradient ends. */
-  onAccent: '#1c0e08',
-  accent: '#ff6b3d',
+  /** Label colour on a filled violet. */
+  onAccent: '#0e0f16',
+  /** Violet. */
+  accent: '#8b7cff',
   /** Second stop of the accent gradient. */
-  accentWarm: '#ffa94d',
+  accentWarm: '#a89dff',
   /** Pressed state of a filled accent. */
-  accentBright: '#ff8f6a',
+  accentBright: '#9d90ff',
   /** Label colour on an outlined primary action. */
-  accentText: '#ffa384',
-  accentTextStrong: '#ffd2c2',
+  accentText: '#b6adff',
+  accentTextStrong: '#dcd7ff',
   /** Kickers and completed marks. */
-  accentDeep: '#ff8a5c',
+  accentDeep: '#a194ff',
   /** Hover borders and glows. */
-  accentDim: '#b8502f',
+  accentDim: '#5a4fc2',
   /** Selected fills. */
-  accentSoft: '#3a1f15',
+  accentSoft: '#231f47',
   /** Translucent accent for the glow behind hero cards. */
-  accentGlow: 'rgba(255, 107, 61, 0.16)',
+  accentGlow: 'rgba(139, 124, 255, 0.14)',
 
-  backdrop: 'rgba(10, 7, 6, 0.88)',
-  /** Rose rather than red, so destructive actions never read as the coral accent. */
+  backdrop: 'rgba(6, 7, 12, 0.88)',
+  /** Rose, so destructive actions never read as the violet accent. */
   danger: '#ff6f91',
   dangerSoft: 'rgba(255, 111, 145, 0.12)',
   white: '#ffffff',
   black: '#000000',
 };
 
-/** Coral → amber, used for filled actions and progress fills. */
+/** Violet → lavender, used for filled actions and progress fills. */
 export const accentGradient = [colors.accent, colors.accentWarm] as const;
 
-export type GritColors = typeof colors;
+export type BrandColors = typeof colors;
 
 /** @deprecated Use `colors` or `theme.colors`. */
 export default {

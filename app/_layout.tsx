@@ -4,6 +4,12 @@ import {
   Inter_500Medium,
   Inter_600SemiBold,
 } from '@expo-google-fonts/inter';
+import {
+  Sora_300Light,
+  Sora_400Regular,
+  Sora_500Medium,
+  Sora_600SemiBold,
+} from '@expo-google-fonts/sora';
 import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
@@ -14,6 +20,7 @@ import 'react-native-reanimated';
 
 import { colors } from '@/constants/Colors';
 import { AuthProvider } from '@/src/hooks/useAuth';
+import { useWidgetSync } from '@/src/hooks/useWidgetSync';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -51,13 +58,17 @@ function useAppStateFocusManager() {
 }
 
 export default function RootLayout() {
-  // Inter is the whole typographic system; rendering before it lands would
-  // flash every screen in the platform fallback face.
+  // Sora and Inter are the whole typographic system; rendering before they land
+  // would flash every screen in the platform fallback face.
   const [loaded, error] = useFonts({
     Inter_300Light,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
+    Sora_300Light,
+    Sora_400Regular,
+    Sora_500Medium,
+    Sora_600SemiBold,
   });
   const [queryClient] = useState(makeQueryClient);
 
@@ -83,6 +94,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  useWidgetSync();
   const navTheme = {
     ...DarkTheme,
     colors: {

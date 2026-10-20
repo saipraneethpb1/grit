@@ -1,6 +1,6 @@
-# Google Play Store — Grit
+# Google Play Store — Ryvora
 
-Step-by-step guide to publish **Grit** on Google Play. The app is already configured for production Android builds (`com.praneeth.grit`, AAB output).
+Step-by-step guide to publish **Ryvora** on Google Play. The app is already configured for production Android builds (`com.praneeth.grit`, AAB output).
 
 ## Before you start
 
@@ -85,7 +85,7 @@ EAS produces an **Android App Bundle** (`.aab`) — the format Google Play requi
 ## 6. Create the Play Console listing
 
 1. Go to [Google Play Console](https://play.google.com/console/)
-2. **Create app** → name: **Grit**
+2. **Create app** → name: **Ryvora**
 3. Use package name: `com.praneeth.grit` (must match `app.json`)
 4. Complete **App content** questionnaires:
    - **Privacy policy** — paste your public URL
@@ -95,12 +95,12 @@ EAS produces an **Android App Bundle** (`.aab`) — the format Google Play requi
      - Data encrypted in transit (HTTPS)
      - Users can request deletion (in-app Delete account)
    - **Target audience** — not designed for children
-   - **Ads** — No, Grit does not contain ads
+   - **Ads** — No, Ryvora does not contain ads
 
 5. **Store listing**:
    - Short description (80 chars): `Strength training planner and workout log with smart program generation.`
    - Full description: expand on features from README
-   - App icon: `assets/images/grit-icon.png` (1024×1024)
+   - App icon: `assets/images/ryvora-icon.png` (1024×1024)
    - Feature graphic: 1024×500 (create in any design tool)
    - Phone screenshots: at least 2 (1080×1920 or similar)
    - Category: **Health & Fitness**

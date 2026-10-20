@@ -33,6 +33,9 @@ import {
 } from '@/src/domain/workoutPlayer';
 import { useAuth } from '@/src/hooks/useAuth';
 import { useKeyboardInset } from '@/src/hooks/useKeyboardInset';
+import { useTrainingHistory } from '@/src/hooks/useAnalytics';
+import { CoachCard } from '@/src/components/CoachCard';
+import { trainingAge, trainingReadiness } from '@/src/domain/coach';
 import { usePlan } from '@/src/hooks/usePlans';
 import {
   abandonSession,
@@ -40,6 +43,7 @@ import {
   enrichWithHistory,
   startSession,
   useCompleteWorkout,
+  useProfileStats,
 } from '@/src/hooks/useSessions';
 
 function formatElapsed(totalSeconds: number): string {
@@ -57,6 +61,8 @@ export default function WorkoutPlayerScreen() {
   const { data: plan, isLoading } = usePlan(planId);
   const { user } = useAuth();
   const complete = useCompleteWorkout();
+  const { data: stats, isLoading: statsLoading } = useProfileStats();
+  const { data: history, isLoading: historyLoading } = useTrainingHistory();
   const router = useRouter();
   const goBack = useGoBack('/(app)/(tabs)');
   const insets = useSafeAreaInsets();
@@ -121,7 +127,7 @@ export default function WorkoutPlayerScreen() {
     async function boot() {
       // Wait for the plan query rather than reporting failure: `day` is only
       // resolvable once it lands.
-      if (isLoading) return;
+      if (isLoading || statsLoading || historyLoading) return;
       if (!user || !plan || !day) {
         setBooting(false);
         return;
@@ -139,7 +145,14 @@ export default function WorkoutPlayerScreen() {
       setBooting(true);
       try {
         const base = buildLiveExercises(day);
-        const enriched = await enrichWithHistory(user.id, base);
+        // Training age and readiness shape every prescription: a beginner stops
+        // further from failure, a deload week or a long break lightens loads.
+        const readiness = trainingReadiness(history ?? [], new Date());
+        const enriched = await enrichWithHistory(user.id, base, {
+          age: trainingAge(stats?.workouts_completed ?? 0),
+          deload: readiness.status === 'deload',
+          daysSinceLastWorkout: readiness.daysSinceLastWorkout,
+        });
         if (cancelled) return;
         dispatch({ type: 'load', exercises: enriched });
         bootedForDay.current = day.id;
@@ -161,7 +174,7 @@ export default function WorkoutPlayerScreen() {
     return () => {
       cancelled = true;
     };
-  }, [isLoading, day?.id, user?.id, plan?.id]);
+  }, [isLoading, statsLoading, historyLoading, day?.id, user?.id, plan?.id]);
 
   /** Release the row if the user walks away without finishing. */
   useEffect(() => {
@@ -201,6 +214,12 @@ export default function WorkoutPlayerScreen() {
   }, [keyboardVisible]);
 
   const current = exercises[activeExerciseIndex];
+
+  // Rest follows the coach for each exercise; the user's own change sticks until the next one.
+  useEffect(() => {
+    const rx = exercises[activeExerciseIndex]?.prescription;
+    if (rx) setRestSec(rx.restSeconds);
+  }, [activeExerciseIndex, exercises.length > 0]);
   const currentSet = current?.sets[activeSetIndex];
 
   const { totalSets, doneSets, progress, allDone, isLastSet, nextLabel } = summarizePlayer(player);
@@ -404,6 +423,8 @@ export default function WorkoutPlayerScreen() {
             ? ` · last ${current.previousBest.weight} × ${current.previousBest.reps}`
             : ''}
         </Text>
+
+        {current.prescription ? <CoachCard prescription={current.prescription} /> : null}
 
         <ExerciseGuide key={current.exerciseId} exerciseId={current.exerciseId} name={current.name} notes={current.notes} />
 

@@ -13,17 +13,21 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '@/constants/theme';
+import { useTabBarSpace } from '@/src/hooks/useTabBarSpace';
 import { countLabel } from '@/src/domain/progression';
 import { GradientBar } from '@/src/components/GradientBar';
 import { formatTarget } from '@/src/components/DayWorkoutList';
 import { EmptyState } from '@/src/components/EmptyState';
 import { FadeRule } from '@/src/components/FadeRule';
-import { GritLogo } from '@/src/components/GritLogo';
+import { RyvoraLogo } from '@/src/components/RyvoraLogo';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { SectionLabel } from '@/src/components/SectionLabel';
 import { StatPill, StatRow } from '@/src/components/StatPill';
 import { WeekStrip } from '@/src/components/WeekStrip';
 import { WorkoutDoneBanner } from '@/src/components/WorkoutDoneBanner';
+import { ReadinessCard } from '@/src/components/ReadinessCard';
+import { trainingReadiness } from '@/src/domain/coach';
+import { useTrainingHistory } from '@/src/hooks/useAnalytics';
 import { getSplitTemplate } from '@/src/domain/catalog';
 import {
   getMethodology,
@@ -66,13 +70,24 @@ function todayLabel(): string {
   return new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' });
 }
 
+function greeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 5) return 'Good evening';
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const tabSpace = useTabBarSpace();
   const name = useDisplayName();
   const { data: plan, isLoading, error, refetch, isRefetching } = useActivePlan();
   const { data: stats, refetch: refetchStats } = useProfileStats();
   const { data: recent, refetch: refetchRecent } = useRecentSessions(5);
+  const { data: history } = useTrainingHistory();
+  const readiness = useMemo(() => trainingReadiness(history ?? [], new Date()), [history]);
 
   const dayIndex = stats?.current_day_index ?? 0;
   const progress = toProgressStats(stats);
@@ -146,12 +161,12 @@ export default function HomeScreen() {
   if (!plan || !today) {
     return (
       <ScrollView
-        contentContainerStyle={[styles.emptyWrap, { paddingTop: topPad }]}
+        contentContainerStyle={[styles.emptyWrap, { paddingTop: topPad, paddingBottom: theme.space.xl + tabSpace }]}
         showsVerticalScrollIndicator={false}
       >
-        <GritLogo showWordmark size={36} style={styles.emptyLogo} />
+        <RyvoraLogo showWordmark size={26} style={styles.emptyLogo} />
         <Text style={styles.kicker}>{todayLabel()}</Text>
-        <Text style={styles.greeting}>Ready, {name}</Text>
+        <Text style={[styles.greeting, styles.emptyGreeting]}>{greeting()}, {name}</Text>
         <EmptyState
           title="No program yet"
           message="Pick a training style and a weekly split, or write your own days. The week builds itself from there."
@@ -202,7 +217,7 @@ export default function HomeScreen() {
   return (
     <ScrollView
       style={styles.root}
-      contentContainerStyle={[styles.content, { paddingTop: topPad }]}
+      contentContainerStyle={[styles.content, { paddingTop: topPad, paddingBottom: theme.space.xl + tabSpace }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
@@ -216,8 +231,11 @@ export default function HomeScreen() {
     >
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <Text style={styles.kicker}>{todayLabel()}</Text>
-          <Text style={styles.greeting}>Ready, {name}</Text>
+          <View style={styles.brandRow}>
+            <RyvoraLogo size={13} />
+            <Text style={styles.kicker}>{todayLabel()}</Text>
+          </View>
+          <Text style={styles.greeting}>{greeting()},{'\n'}{name}</Text>
         </View>
         <Pressable
           onPress={() => router.push('/(app)/(tabs)/profile')}
@@ -249,21 +267,20 @@ export default function HomeScreen() {
       ) : null}
 
       <View style={styles.todayCard}>
-        {/* Ember wash from the top-left corner; content sits above it. */}
+        {/* Violet wash from the top-right corner; content sits above it. */}
         <LinearGradient
           colors={[theme.colors.accentGlow, 'transparent']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0.9, y: 0.7 }}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0.2, y: 0.8 }}
           style={styles.todayGlow}
         />
         <View style={styles.cardKickerRow}>
-          <Ionicons name="barbell-outline" size={12} color={theme.colors.accent} />
-          <Text style={styles.cardKicker} numberOfLines={1}>
-            {programName} · Day {today.day_index + 1} of {sortedDays.length}
-          </Text>
+          <Text style={styles.cardKicker} numberOfLines={1}>Today’s session</Text>
+          <Text style={styles.cardDay}>Day {today.day_index + 1} / {sortedDays.length}</Text>
         </View>
-        <Text style={styles.sessionLabel}>TODAY’S SESSION</Text>
+        <View style={styles.kickerRule} />
         <Text style={styles.dayName}>{today.name}</Text>
+        <Text style={styles.programName} numberOfLines={1}>{programName}</Text>
         <Text style={styles.dayMeta}>
           {countLabel(today.plan_exercises.length, 'exercise')} · {countLabel(audit.totalSets, 'set')} · ~{audit.estimatedMinutes} min
         </Text>
@@ -318,6 +335,8 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      <ReadinessCard readiness={readiness} />
+
       <View style={styles.stats}>
         <StatRow>
           <StatPill label="Streak" value={progress.currentStreak} showDivider />
@@ -330,17 +349,18 @@ export default function HomeScreen() {
       {recentSessions.length > 0 ? (
         <View>
           <View style={styles.sectionHeader}>
-            <SectionLabel style={styles.sectionLabelInline}>Recent</SectionLabel>
+            <SectionLabel style={styles.sectionLabelInline}>Recent sessions</SectionLabel>
             <Pressable onPress={() => router.push('/(app)/history')} hitSlop={8} accessibilityRole="link">
               <Text style={styles.seeAll}>See all</Text>
             </Pressable>
           </View>
-          {recentSessions.map((s) => (
+          <View style={styles.sessionList}>
+          {recentSessions.map((s, i) => (
             <Pressable
               key={s.id}
               onPress={() => router.push('/(app)/history')}
               accessibilityRole="button"
-              style={({ pressed }) => [styles.sessionRow, pressed && { opacity: 0.6 }]}
+              style={({ pressed }) => [styles.sessionRow, i === recentSessions.length - 1 && styles.sessionRowLast, pressed && { opacity: 0.6 }]}
             >
               <Text style={styles.sessionName} numberOfLines={1}>{s.day_name}</Text>
               <Text style={styles.sessionMeta}>
@@ -348,6 +368,7 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
           ))}
+          </View>
         </View>
       ) : null}
     </ScrollView>
@@ -364,18 +385,20 @@ const styles = StyleSheet.create({
   },
   emptyWrap: { flexGrow: 1, width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
   emptyLogo: { marginBottom: theme.space.lg },
+  emptyGreeting: { marginBottom: theme.space.lg },
   emptyActions: { width: '100%', gap: 9 },
   content: { width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.lg },
 
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
+  header: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 26 },
   headerText: { flex: 1 },
+  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   kicker: { ...theme.font.kicker, color: theme.colors.textDim },
-  greeting: { ...theme.font.display, fontSize: 30, lineHeight: 37, color: theme.colors.text, marginTop: 5 },
+  greeting: { ...theme.font.display, color: theme.colors.text, marginTop: 14 },
   avatar: {
-    width: 46,
-    height: 46,
-    backgroundColor: theme.colors.accentSoft,
-    borderRadius: 23,
+    width: 44,
+    height: 44,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 22,
     borderWidth: theme.hairline,
     borderColor: theme.colors.borderStrong,
     alignItems: 'center',
@@ -384,32 +407,34 @@ const styles = StyleSheet.create({
   avatarPressed: { borderColor: theme.colors.accentDim },
   avatarText: { ...theme.font.bodyMedium, color: theme.colors.textSecondary },
 
-  week: { marginBottom: 18 },
+  week: { marginBottom: 22 },
 
-  todayCard: { ...theme.card, backgroundColor: theme.colors.surfaceTint, padding: 22, marginBottom: 20, borderColor: theme.colors.borderTint, overflow: 'hidden' },
+  todayCard: { ...theme.card, padding: 24, marginBottom: 22, overflow: 'hidden', ...theme.shadow.md },
   todayGlow: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, pointerEvents: 'none' },
-  cardKickerRow: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 11 },
-  cardKicker: { ...theme.font.kicker, color: theme.colors.accentDeep, flex: 1 },
-  sessionLabel: { ...theme.font.small, color: theme.colors.textMuted, marginBottom: 6 },
-  dayName: { ...theme.font.title, color: theme.colors.text },
-  dayMeta: { ...theme.font.caption, color: theme.colors.textDim, marginTop: 4 },
-  emphasis: { marginTop: 15, gap: 8 },
-  emphasisRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  emphasisLabel: { ...theme.font.small, color: theme.colors.textMuted, width: 96 },
-  emphasisTrack: { flex: 1, height: 5, borderRadius: 3, backgroundColor: theme.colors.track, overflow: 'hidden' },
-  emphasisFill: { height: 5, borderRadius: 3, backgroundColor: theme.colors.accent },
+  cardKickerRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  cardKicker: { ...theme.font.kicker, color: theme.colors.textMuted, flex: 1 },
+  cardDay: { ...theme.font.kicker, color: theme.colors.textDim },
+  kickerRule: { width: 28, height: 2, borderRadius: 1, backgroundColor: theme.colors.accent, marginTop: 10, marginBottom: 20 },
+  dayName: { ...theme.font.hero, fontSize: 34, lineHeight: 40, color: theme.colors.text },
+  programName: { ...theme.font.caption, color: theme.colors.accentText, marginTop: 4 },
+  dayMeta: { ...theme.font.caption, color: theme.colors.textDim, marginTop: 2 },
+  emphasis: { marginTop: 20, gap: 10 },
+  emphasisRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  emphasisLabel: { ...theme.font.small, color: theme.colors.textMuted, width: 92 },
+  emphasisTrack: { flex: 1, height: 3, borderRadius: 2, backgroundColor: theme.colors.track, overflow: 'hidden' },
+  emphasisFill: { height: 3, borderRadius: 2, backgroundColor: theme.colors.accent },
   emphasisPct: { ...theme.font.monoSmall, fontSize: 10.5, fontWeight: '500', color: theme.colors.textDim, width: 30, textAlign: 'right' },
-  cardRule: { marginTop: 15, marginBottom: 13 },
-  preview: { gap: 9 },
+  cardRule: { marginTop: 20, marginBottom: 16 },
+  preview: { gap: 11 },
   previewRow: { flexDirection: 'row', alignItems: 'baseline', gap: 10 },
   previewName: { ...theme.font.body, color: theme.colors.textSecondary, flex: 1 },
   previewTarget: { ...theme.font.monoSmall, fontSize: 11.5, fontWeight: '500', color: theme.colors.textDim },
   more: { ...theme.font.small, fontSize: 12, color: theme.colors.textFaint },
-  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 22 },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 24 },
   startBtn: { flex: 1, minWidth: 150 },
   detailsBtn: { width: 96, paddingHorizontal: 8 },
 
-  stats: { marginBottom: 20 },
+  stats: { marginBottom: 28 },
 
   sectionHeader: {
     flexDirection: 'row',
@@ -419,18 +444,16 @@ const styles = StyleSheet.create({
   },
   sectionLabelInline: { marginBottom: 8 },
   seeAll: { ...theme.font.small, color: theme.colors.textFaint, marginBottom: 8 },
+  sessionList: { ...theme.card, paddingHorizontal: 18 },
   sessionRow: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.md,
-    paddingHorizontal: 16,
-    marginBottom: 8,
-    paddingVertical: 16,
+    paddingVertical: 17,
     borderBottomWidth: theme.hairline,
     borderBottomColor: theme.colors.divider,
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 10,
   },
+  sessionRowLast: { borderBottomWidth: 0 },
   sessionName: { ...theme.font.body, color: theme.colors.textSecondary, flex: 1 },
   sessionMeta: { ...theme.font.monoSmall, fontSize: 11.5, color: theme.colors.textDim },
 });

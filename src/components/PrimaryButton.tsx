@@ -36,7 +36,10 @@ export function PrimaryButton({
   style,
 }: Props) {
   const tone = VARIANTS[variant];
-  const gradient = variant === 'primary' || variant === 'filled';
+  const filled = variant === 'primary' || variant === 'filled';
+  // A disabled fill turns neutral rather than fading the violet, which reads as muddy.
+  const inactive = Boolean(disabled) && !loading;
+  const gradient = filled && !inactive;
 
   return (
     <Pressable
@@ -51,9 +54,9 @@ export function PrimaryButton({
         gradient && styles.glow,
         {
           // The gradient paints the fill itself.
-          backgroundColor: gradient ? 'transparent' : pressed ? tone.pressed : tone.bg,
-          borderColor: tone.border,
-          opacity: disabled ? 0.45 : 1,
+          backgroundColor: gradient ? 'transparent' : filled ? theme.colors.surfaceRaised : pressed ? tone.pressed : tone.bg,
+          borderColor: filled && inactive ? theme.colors.border : tone.border,
+          opacity: inactive && !filled ? 0.45 : 1,
           transform: [{ scale: pressed ? 0.98 : 1 }],
         },
         style,
@@ -74,7 +77,7 @@ export function PrimaryButton({
           ) : (
             <>
               {icon}
-              <Text style={[styles.text, variant === 'link' && styles.linkText, { color: tone.fg }]}>{title}</Text>
+              <Text style={[styles.text, variant === 'link' && styles.linkText, { color: filled && inactive ? theme.colors.textFaint : tone.fg }]}>{title}</Text>
             </>
           )}
         </>

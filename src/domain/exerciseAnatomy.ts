@@ -11,6 +11,10 @@ export type AnatomicalDemonstration = {
   instructions: string[];
   sequence?: number[];
   phaseLabels?: string[];
+  /** Fraction of each cell trimmed from every edge; set where a sheet has drawn divider lines. */
+  cellInset?: number;
+  /** Shown under the demonstration when the pictures alone could mislead (e.g. isometric holds). */
+  cue?: string;
 };
 
 /** Only an individually reviewed sheet with the exact catalog identity can display. */
@@ -24,6 +28,18 @@ export const ANATOMICAL_PHASES = ['Setup', 'Moving', 'Working position', 'Return
 
 export function anatomicalSequence(demo: AnatomicalDemonstration): number[] {
   return demo.sequence ?? Array.from({ length: demo.frames }, (_, index) => index);
+}
+
+/**
+ * Every cell loses this much from each edge before display. Generated sheets
+ * often have a 1-2 px seam where cells meet, and some draw white divider lines;
+ * cropping at exact halves would show them as stripes. 2% is invisible at phone
+ * size. Sheets with wider lines carry a measured `cellInset`.
+ */
+export const DEFAULT_CELL_INSET = 0.02;
+
+export function anatomicalInset(demo: AnatomicalDemonstration): number {
+  return Math.max(DEFAULT_CELL_INSET, demo.cellInset ?? 0);
 }
 
 export function anatomicalCell(frame: number, columns: number): { column: number; row: number } {

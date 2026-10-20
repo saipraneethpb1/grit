@@ -416,11 +416,11 @@
     "artwork": "exec-e37bc624-1262-4111-89b6-fb41fd1a398c.png",
     "sequence": [
       0,
-      2
+      1
     ],
     "phaseLabels": [
-      "Start position",
-      "End position"
+      "Start: kneeling over the bar",
+      "End: rolled out, body extended"
     ]
   },
   "14b0cf7f-1d31-469e-a8a8-ff5e21a663ea": {
@@ -1138,7 +1138,8 @@
     "phaseLabels": [
       "Start position",
       "End position"
-    ]
+    ],
+    "cellInset": 0.0375
   },
   "cb1d1c52-5ae8-4bd7-a970-c74cb1da9959": {
     "sourceId": "Hammer_Grip_Incline_DB_Bench_Press",
@@ -1408,7 +1409,8 @@
     "phaseLabels": [
       "Start position",
       "End position"
-    ]
+    ],
+    "cellInset": 0.0275
   },
   "75c21a66-6082-43a7-a846-296b97eca94d": {
     "sourceId": "Reverse_Grip_Bent-Over_Rows",
@@ -3471,7 +3473,8 @@
     "phaseLabels": [
       "Start position",
       "End position"
-    ]
+    ],
+    "cellInset": 0.035
   },
   "f70d78e5-6623-47ff-a72d-d963488150bb": {
     "sourceId": "Upright_Row_-_With_Bands",
@@ -3729,7 +3732,8 @@
     "phaseLabels": [
       "Start: wrists lowered",
       "End: wrists flexed"
-    ]
+    ],
+    "cellInset": 0.0325
   },
   "8725f028-441e-4ada-a3f4-c6adcd1d8bec": {
     "sourceId": "Dumbbell_Lying_Pronation",
@@ -4205,7 +4209,8 @@
     "sequence": [
       0,
       2
-    ]
+    ],
+    "cellInset": 0.035
   },
   "dec39ee2-47bc-4dc8-a324-70f072e8cf7d": {
     "sourceId": "Calf_Press",
@@ -4545,15 +4550,16 @@
       "Rest for the recommended amount of time and repeat with your hands placed on the back side of your head."
     ],
     "phaseLabels": [
-      "Hold: hands on forehead",
-      "Hold: hands behind head"
+      "Push forehead forward into hands · head stays still",
+      "Push back of head into hands · head stays still"
     ],
     "artwork": "exec-85f3cd79-4a7f-4d3f-be5f-e6d4272fcb4c.png",
     "sequence": [
       0,
       2
     ],
-    "reviewNotes": "Featureless mannequin; fixed-camera cells 0 and 2 show stationary forehead/back resistance holds. Sequence repeats each hold and excludes mirrored camera cells 1 and 3."
+    "reviewNotes": "Featureless mannequin; fixed-camera cells 0 and 2 show stationary forehead/back resistance holds. Sequence repeats each hold and excludes mirrored camera cells 1 and 3.",
+    "cue": "Isometric hold: the head stays still on purpose. Push your head firmly into your hands while your hands stop it from moving. The neck muscles work against that resistance. Build tension slowly, hold for 10–20 seconds, breathe, then release slowly."
   },
   "da001ac9-d08c-4bb0-a539-b8bc76896b0e": {
     "sourceId": "Isometric_Neck_Exercise_-_Sides",
@@ -4570,14 +4576,15 @@
       "Rest for the recommended amount of time and repeat with your right hand placed on the right side of your head."
     ],
     "phaseLabels": [
-      "Hold: hand on one temple",
-      "Hold: hand on the other temple"
+      "Push head sideways into hand · head stays still",
+      "Other side: push into the other hand · hold"
     ],
     "artwork": "exec-4bd3f5f6-df72-40e1-83dd-7645bfa6ebfa.png",
     "reviewNotes": "Revised sheet visually checked against exercise setup, working side, support, joint action, equipment and target muscles; featureless anatomical mannequin.",
     "sequence": [
       0,
       2
-    ]
+    ],
+    "cue": "Isometric hold: the head stays still on purpose. Push your head firmly into your hands while your hands stop it from moving. The neck muscles work against that resistance. Build tension slowly, hold for 10–20 seconds, breathe, then release slowly."
   }
 }

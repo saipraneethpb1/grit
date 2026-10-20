@@ -1,8 +1,19 @@
-# Grit
+# Ryvora
 
 Mobile workout planner: pick a training system and weekly split, get full-gym workouts by muscle group, log sets live, and save your plan to your account.
 
 Built with **Expo (React Native)**, **Expo Router**, **TypeScript**, and **Supabase** (Auth + Postgres + RLS).
+
+## Brand
+
+The interface follows the Ryvora identity: Charcoal `#0E0F16` surfaces, Sand
+`#E9EAF0` text and a single Violet `#8B7CFF` accent, used only for actions,
+progress and the active state (`constants/Colors.ts`). Sora sets headings and
+figures, Inter sets reading text, and labels are widely tracked uppercase with a
+short violet rule (`BrandKicker`). The R mark is a vector component
+(`RyvoraLogo`), and the app icon, adaptive icon, splash and favicon are rendered
+from the same paths. The store package ID, EAS project, slug and URL scheme keep
+their original `grit` values because they are bound to the live Play listing.
 
 ## Features
 
@@ -193,6 +204,81 @@ Use Node 22.13 or newer, then `npm ci` and `npm run validate`.
 `npm run export:web` verifies the static web build.
 See [SECURITY.md](SECURITY.md) for migration order, native session storage,
 remaining dependency advisories, and release verification requirements.
+
+## The coach
+
+`src/domain/coach.ts` (covered by `test:coach`) makes the training decisions a
+coach would, from logged sets alone:
+
+- **Next session, per exercise** (`prescribe`): double progression. Earn the top
+  of the rep range on every working set, then add an equipment-aware jump (about
+  5% for lower-body compounds, 2.5% elsewhere, rounded to loadable plates and
+  dumbbells) and restart at the bottom. Inside the range: same load, one more
+  rep. Two sessions short of the range, or three without an estimated-1RM gain:
+  reset about 10%. Bodyweight work progresses reps, then variation. Effort is
+  reps in reserve (2 on compounds, 1 on isolation, one more for beginners, one
+  fewer on the last set); rest follows load and rep range; the first compound
+  gets ramp-up warm-up sets.
+- **Readiness** (`trainingReadiness`): two weeks off eases loads in 15% lighter;
+  a week at 1.5× usual sets (against a real four-week baseline) holds volume;
+  six hard weeks in a row prescribe a deload (half the sets, about 85% loads).
+- **Weekly volume** (`weeklyVolume`, `tuneWeeklyVolume`): hard sets per muscle
+  against ranges that widen with training age (inferred from workouts
+  completed). The generator trims or adds single sets until each focus muscle
+  lands in range, without unbalancing session lengths or touching HIT/FST-7
+  set schemes, and plan screens show each muscle against its band and weekly
+  frequency.
+
+The workout player pre-fills each exercise from the coach and shows the call,
+its reason, RIR, rest and warm-ups; home shows the week's readiness. One
+batched query feeds both the coach and "previous best". These are coaching
+heuristics from common strength-and-conditioning practice, not medical advice.
+
+## Training calendar and home-screen widgets
+
+The Progress tab opens with a **training calendar**: a GitHub-style grid of the
+last 20 weeks, shaded by completed sets per day (rest, then 1–9, 10–19, 20–29
+and 30+). Tap a day for its workouts, sets and volume. Underneath: active days,
+the current and best run of consecutive training weeks (weeks, so planned rest
+days never break a run) and the weekday you train most (`dailyActivity`,
+`activitySummary` in `src/domain/analytics.ts`).
+
+Two **home-screen widgets** share one snapshot built by `buildWidgetSnapshot`
+(`src/domain/widgetSnapshot.ts`, covered by `test:widgets`) and written by
+`useWidgetSync` whenever the plan, profile or history changes:
+
+- **Today**: today's session, program position and summary, this week's heat
+  row and a Start action that opens the workout. iOS small, medium and Lock
+  Screen rectangular; Android 2×2 resizable, with the exercise preview from
+  about four cells wide.
+- **Streak**: the streak, workouts this week against the program's days and
+  the seven-day heat row. iOS small plus Lock Screen circular and inline;
+  Android 2×2.
+
+iOS widgets use `expo-widgets` (SwiftUI via `@expo/ui`, `src/widgets/ios.tsx`);
+their layouts run in the widget extension's own runtime, so they inline every
+value. Android widgets use `react-native-android-widget`
+(`src/widgets/android.tsx`), drawn from the stored snapshot by the headless task
+registered in `index.ts`. Both need a development or store build; Expo Go skips
+them. EAS provisions the iOS extension (`com.praneeth.grit.ExpoWidgetsTarget`)
+and the `group.com.praneeth.grit` app group from the plugin config.
+
+## Progress analytics
+
+The Progress tab maps training onto the same anatomical artwork style as the
+exercise demonstrations (`assets/anatomy/bodymap/bodymap.webp`, front and back
+figures). Each muscle group is a region (`src/domain/bodyMap.ts`) tinted violet
+by its average weekly sets over the chosen window: none, under 4, 4–10 and 10+.
+Tints are clipped to a silhouette traced from the artwork, so they never spill
+onto the background. Tapping a region selects that muscle; the ranked list
+below the map gives the same values. Exercise guides reuse the map for prime and
+secondary muscles.
+
+The **training balance** web plots all twelve groups on one radar. It orders
+neighbouring axes by related muscles, marks the 10-set guideline as a dashed
+ring, and overlays the previous window. Pull : push ratio, lower-body share and
+groups at 4+ sets summarise it (`trainingBalance` in `src/domain/analytics.ts`,
+covered by `test:analytics`).
 
 ## Exercise demonstrations
 

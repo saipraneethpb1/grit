@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/constants/theme';
+import { useTabBarSpace } from '@/src/hooks/useTabBarSpace';
 import { countLabel } from '@/src/domain/progression';
 import { ExerciseRow } from '@/src/components/ExerciseRow';
 import { MuscleChip } from '@/src/components/MuscleChip';
@@ -14,6 +15,7 @@ import { useExerciseLibrary } from '@/src/hooks/useExercises';
 export default function ExercisesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const tabSpace = useTabBarSpace();
   const {
     exercises,
     search,
@@ -81,7 +83,7 @@ export default function ExercisesScreen() {
       <FlatList
         data={exercises}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, { paddingBottom: theme.space.lg + tabSpace }]}
         renderItem={renderItem}
         // Without this a tap while the keyboard is open is swallowed by the
         // dismiss, so the first tap on a result never opens it.
@@ -108,6 +110,7 @@ const styles = StyleSheet.create({
   subtitle: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: 24 },
   search: {
     minHeight: 54,
+    flexShrink: 0,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 9,
@@ -123,8 +126,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.text,
   },
-  chipScroll: { flexGrow: 0, marginBottom: 14, marginHorizontal: -theme.space.lg },
-  chips: { gap: 7, paddingHorizontal: theme.space.lg },
+  // A horizontal ScrollView above a flex:1 list shrinks to a sliver on web and
+  // Android unless it is told not to, and the cards then ride up over the chips.
+  chipScroll: { flexGrow: 0, flexShrink: 0, minHeight: 46, marginBottom: 16, marginHorizontal: -theme.space.lg },
+  chips: { gap: 8, paddingHorizontal: theme.space.lg, alignItems: 'center' },
   list: { paddingBottom: theme.space.lg },
   count: { ...theme.font.kicker, color: theme.colors.textMuted, marginBottom: 14 },
   empty: { ...theme.font.body, color: theme.colors.textDim, marginTop: theme.space.lg },

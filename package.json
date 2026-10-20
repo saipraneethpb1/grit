@@ -1,9 +1,11 @@
 {
   "name": "grit",
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "version": "1.0.0",
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/sora": "^0.4.2",
+    "@expo/ui": "~57.0.25",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.110.3",
@@ -18,9 +20,11 @@
     "expo-secure-store": "~57.0.4",
     "expo-splash-screen": "~57.0.10",
     "expo-web-browser": "~57.0.3",
+    "expo-widgets": "~57.0.26",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
+    "react-native-android-widget": "^0.22.1",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
@@ -48,7 +52,7 @@
     "release:android": "bash scripts/release-android.sh",
     "test:generator": "npx tsx scripts/test-generator.ts",
     "test:session": "npx tsx scripts/test-session-complete.ts",
-    "test": "npm run test:generator && npm run test:session && npm run test:live && npm run test:player && npm run test:analytics && npm run test:motion && npm run test:anatomy && npm run test:progression && npm run test:database && npm run test:guides && npm run test:custom && npm run test:intent",
+    "test": "npm run test:generator && npm run test:session && npm run test:live && npm run test:player && npm run test:analytics && npm run test:motion && npm run test:anatomy && npm run test:progression && npm run test:database && npm run test:guides && npm run test:custom && npm run test:intent && npm run test:widgets && npm run test:coach",
     "curate:exercises": "node scripts/curate-exercises.mjs",
     "typecheck": "tsc --noEmit",
     "test:live": "npx tsx scripts/test-live-workout.ts",
@@ -63,7 +67,9 @@
     "test:guides": "node scripts/test-exercise-guides.mjs",
     "test:custom": "node --import tsx scripts/test-custom-program.mjs",
     "test:intent": "npx tsx scripts/test-plan-intent.ts",
-    "test:anatomy": "node --import tsx scripts/test-anatomy.mjs"
+    "test:anatomy": "node --import tsx scripts/test-anatomy.mjs",
+    "test:widgets": "npx tsx scripts/test-widgets.ts",
+    "test:coach": "npx tsx scripts/test-coach.ts"
   },
   "private": true,
   "engines": {

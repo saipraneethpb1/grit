@@ -6,17 +6,17 @@ import { loadKindFor, repProgress, REP_MS, sampleMotion, solve, type MotionTempl
 import { useMotionAllowed } from '@/src/hooks/useMotionAllowed';
 import { figureShapes, motionViewBox, type Role, type Shape } from '@/src/domain/motionShapes';
 import type { Exercise } from '@/src/domain/types';
-import { BAND_COLORS } from './MuscleMap';
+import { BAND_COLORS } from './AnatomicalBodyMap';
 
-/** Same ember ramp as the Progress muscle map, so "worked" reads the same everywhere. */
+/** Same violet ramp as the Progress muscle map, so "worked" reads the same everywhere. */
 const FILL: Record<Role, string> = {
   primary: BAND_COLORS.target,
   secondary: BAND_COLORS.building,
-  body: '#4d423b',
-  bodyFar: '#372f2a',
+  body: '#3e4257',
+  bodyFar: '#2c2f40',
   joint: theme.colors.surface,
-  scenery: '#332b26',
-  load: '#7a6a60',
+  scenery: '#2a2d3d',
+  load: '#6b6f86',
   cable: theme.colors.textFaint,
   ground: theme.colors.border,
 };
@@ -57,7 +57,7 @@ type Props = {
 
 /**
  * Original, stylised demonstration of an exercise: an articulated figure moving
- * through one repetition, with the muscles it works shaded in the ember ramp.
+ * through one repetition, with the muscles it works shaded in the violet ramp.
  */
 export function ExerciseAnimation({ exercise, motion: template, animate = true, paused = false, position, still = 0.6, style }: Props) {
   const emphasis = useMemo(

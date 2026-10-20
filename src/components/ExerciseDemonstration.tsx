@@ -30,7 +30,7 @@ export function ExerciseDemonstration({ exercise, animate = true, style }: Props
   }
   return (
     <View style={style}>
-      <View style={styles.visual}>
+      <View style={[styles.visual, !animate && styles.visualFill]}>
         <ExerciseAnimation exercise={exercise} motion={motion} animate={animate} paused={paused}
           position={position} style={styles.figure} />
       </View>
@@ -51,7 +51,9 @@ export function ExerciseDemonstration({ exercise, animate = true, style }: Props
   );
 }
 const styles = StyleSheet.create({
-  visual: { flex: 1, overflow: 'hidden', borderRadius: theme.radius.md },
+  visual: { width: '100%', aspectRatio: 1, overflow: 'hidden', borderRadius: theme.radius.md },
+  /** Thumbnails fill their fixed box instead of forcing a square. */
+  visualFill: { flex: 1, width: undefined, aspectRatio: undefined },
   figure: { flex: 1 },
   controls: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingTop: 8 },
   caption: { ...theme.font.small, color: theme.colors.textMuted, flex: 1 },

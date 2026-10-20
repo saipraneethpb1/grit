@@ -185,6 +185,11 @@ export interface LiveExercise {
   targetRepsMin: number;
   targetRepsMax: number;
   previousBest?: { weight: number; reps: number } | null;
+  /** For the coach: loading increments and rest depend on these. */
+  movementPattern?: MovementPattern;
+  equipment?: Equipment[];
+  /** What the coach recommends for this session; null before history loads. */
+  prescription?: import('./coach').Prescription | null;
   sets: LiveSet[];
 }
 
