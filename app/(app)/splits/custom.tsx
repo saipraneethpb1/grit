@@ -9,6 +9,7 @@ import { buildCustomProgram, moveItem, newCustomDay, type CustomDraft, type Cust
 import { getExerciseById } from '@/src/domain/catalog';
 import { useExerciseLibrary } from '@/src/hooks/useExercises';
 import { useSavePlan } from '@/src/hooks/usePlans';
+import { themed } from '@/constants/themed';
 
 export default function CustomProgramScreen() {
   const router = useRouter();
@@ -150,7 +151,7 @@ export default function CustomProgramScreen() {
     </KeyboardAvoidingView>
   );
 }
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   header: { paddingHorizontal: theme.space.lg, paddingVertical: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
   content: { paddingHorizontal: theme.space.lg, paddingTop: 8, paddingBottom: theme.space.lg, gap: 14, width: '100%', maxWidth: 760, alignSelf: 'center' },
@@ -167,4 +168,4 @@ const styles = StyleSheet.create({
   result: { paddingVertical: 13, paddingHorizontal: theme.space.lg, borderBottomWidth: theme.hairline, borderColor: theme.colors.divider },
   overlay: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: theme.colors.backdrop },
   dialog: { backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg, borderWidth: theme.hairline, borderColor: theme.colors.borderStrong, padding: 22, gap: 12 },
-});
+}));

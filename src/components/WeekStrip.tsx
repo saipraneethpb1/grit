@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import type { PlanDayWithExercises } from '@/src/domain/types';
+import { themed } from '@/constants/themed';
 
 type Props = {
   days: PlanDayWithExercises[];
@@ -63,7 +64,7 @@ export function WeekStrip({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   scroll: { flexGrow: 0 },
   row: { gap: 9 },
   chip: {
@@ -81,4 +82,4 @@ const styles = StyleSheet.create({
   chipTop: { height: 14, justifyContent: 'center', marginBottom: 8 },
   dayNum: { ...theme.font.monoSmall, fontWeight: '500', color: theme.colors.textDim },
   dayName: { ...theme.font.small, fontWeight: '500', fontFamily: theme.fontFamily.medium, color: theme.colors.textSecondary, lineHeight: 15 },
-});
+}));

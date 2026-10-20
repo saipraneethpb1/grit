@@ -4,13 +4,14 @@ import {
   EXPERIENCE_LEVEL_LABELS,
   type ExperienceLevel,
 } from '@/src/domain/methodologies';
+import { themed } from '@/constants/themed';
 
 type Props = {
   level: ExperienceLevel;
   style?: ViewStyle;
 };
 
-const TONE: Record<ExperienceLevel, { fg: string; bg: string; border: string }> = {
+const TONE = themed((): Record<ExperienceLevel, { fg: string; bg: string; border: string }> => ({
   beginner: {
     fg: theme.colors.accentText,
     bg: theme.colors.accentSoft,
@@ -26,7 +27,7 @@ const TONE: Record<ExperienceLevel, { fg: string; bg: string; border: string }> 
     bg: theme.colors.borderStrong,
     border: theme.colors.textFaint,
   },
-};
+}));
 
 /** Difficulty marker so the commitment of a training system is legible up front. */
 export function LevelBadge({ level, style }: Props) {
@@ -39,7 +40,7 @@ export function LevelBadge({ level, style }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   badge: {
     paddingHorizontal: 9,
     paddingVertical: 3,
@@ -48,4 +49,4 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   text: { ...theme.font.monoSmall, fontWeight: '500', letterSpacing: 0.5 },
-});
+}));

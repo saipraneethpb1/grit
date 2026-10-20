@@ -10,6 +10,7 @@ import { cleanGuideText, conciseGuideSteps } from '@/src/domain/guideText';
 import { ExerciseDemonstration } from './ExerciseDemonstration';
 import { MuscleFocus } from './MuscleFocus';
 import { PrimaryButton } from './PrimaryButton';
+import { themed } from '@/constants/themed';
 
 type Props = { exerciseId: string; name: string; notes?: string | null };
 type Guide = { sourceId: string; instructions: string[] };
@@ -92,13 +93,12 @@ function GuideContent({ exerciseId, name, notes, onClose }: Props & { onClose: (
         ))}
         {!steps.length ? <Text style={styles.instruction}>Guidance is not available for this exercise yet.</Text> : null}
         {steps.length ? <PrimaryButton title={fullInstructions ? 'Show short steps' : 'Read full instructions'} variant="ghost" onPress={() => setFullInstructions(value => !value)} /> : null}
-        <Text style={styles.attribution}>Instructions and muscle data: free-exercise-db · Public domain. Demonstration figure: original artwork.</Text>
       </ScrollView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   cue: {
     flexDirection: 'row',
     gap: 10,
@@ -146,5 +146,4 @@ const styles = StyleSheet.create({
   step: { flexDirection: 'row', gap: 12, marginBottom: 20 },
   number: { ...theme.font.mono, color: theme.colors.accentDeep, width: 20, paddingTop: 2 },
   instruction: { ...theme.font.body, color: theme.colors.textSecondary, flex: 1 },
-  attribution: { ...theme.font.small, color: theme.colors.textFaint, marginTop: 18 },
-});
+}));

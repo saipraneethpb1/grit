@@ -13,6 +13,7 @@ import { EmptyState } from '@/src/components/EmptyState';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import type { SessionSet, WorkoutSessionWithSets } from '@/src/domain/types';
 import { useRecentSessions } from '@/src/hooks/useSessions';
+import { themed } from '@/constants/themed';
 
 type SessionSummary = {
   id: string;
@@ -149,7 +150,7 @@ export default function HistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   center: {
     flex: 1,
@@ -168,4 +169,4 @@ const styles = StyleSheet.create({
   exBlock: { marginTop: 10 },
   exName: { ...theme.font.caption, color: theme.colors.textSecondary },
   setLine: { ...theme.font.monoSmall, fontSize: 11.5, color: theme.colors.textDim, marginTop: 2 },
-});
+}));

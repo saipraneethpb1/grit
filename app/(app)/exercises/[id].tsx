@@ -7,6 +7,7 @@ import { FadeRule } from '@/src/components/FadeRule';
 import { theme } from '@/constants/theme';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import { useExercise } from '@/src/hooks/useExercises';
+import { themed } from '@/constants/themed';
 
 function humanize(value: string): string {
   return value.replace(/_/g, ' ');
@@ -64,7 +65,7 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background },
   errorText: { ...theme.font.body, color: theme.colors.text },
@@ -84,4 +85,4 @@ const styles = StyleSheet.create({
   label: { ...theme.font.kicker, color: theme.colors.textDim, marginBottom: 5 },
   value: { ...theme.font.body, color: theme.colors.textSecondary, textTransform: 'capitalize' },
   valueMono: { ...theme.font.mono, fontSize: 13, textTransform: 'none' },
-});
+}));

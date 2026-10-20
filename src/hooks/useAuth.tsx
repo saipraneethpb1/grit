@@ -11,6 +11,7 @@ import { AppState, Platform } from 'react-native';
 import type { Session, User } from '@supabase/supabase-js';
 import { useQueryClient } from '@tanstack/react-query';
 import { isSupabaseConfigured, supabase } from '@/src/lib/supabase';
+import { clearLocalWorkoutData } from '@/src/lib/workoutStore';
 
 type AuthContextValue = {
   session: Session | null;
@@ -106,18 +107,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  // Workout drafts and the offline queue are per account; leave nothing behind
+  // on a phone someone else may use next.
   const signOut = useCallback(async () => {
+    const id = session?.user.id;
     await supabase.auth.signOut();
-  }, []);
+    if (id) await clearLocalWorkoutData(id);
+  }, [session?.user.id]);
 
   const deleteAccount = useCallback(async () => {
     if (!isSupabaseConfigured) {
       return { error: 'Supabase is not configured. Add keys to .env.' };
     }
+    const id = session?.user.id;
     const { error } = await supabase.rpc('delete_account');
-    if (!error) await supabase.auth.signOut({ scope: 'local' });
+    if (!error) {
+      await supabase.auth.signOut({ scope: 'local' });
+      if (id) await clearLocalWorkoutData(id);
+    }
     return { error: error?.message ?? null };
-  }, []);
+  }, [session?.user.id]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

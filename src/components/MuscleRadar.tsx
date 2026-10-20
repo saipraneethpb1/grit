@@ -5,6 +5,7 @@ import { theme } from '@/constants/theme';
 import { MUSCLE_BAND_FLOORS, RADAR_AXES, radarPoints, radarScale } from '@/src/domain/analytics';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import type { MuscleGroup } from '@/src/domain/types';
+import { themed } from '@/constants/themed';
 
 type Props = {
   /** Average weekly sets per muscle for the selected window. */
@@ -85,6 +86,6 @@ export function MuscleRadar({ current, previous, selected }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   wrap: { width: '100%', alignItems: 'center' },
-});
+}));

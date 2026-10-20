@@ -1,5 +1,6 @@
 import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useEffect, useState } from 'react';
+import { colorScheme } from '@/constants/Colors';
 import { AccessibilityInfo, Platform, StyleSheet, View, type ViewProps } from 'react-native';
 
 /**
@@ -46,7 +47,7 @@ export function GlassSurface({ style, children, ...rest }: ViewProps) {
   const { backgroundColor: _bg, shadowColor: _sc, shadowOpacity: _so, shadowRadius: _sr,
     shadowOffset: _sf, elevation: _el, boxShadow: _bs, ...shape } = StyleSheet.flatten(style) ?? {};
   return (
-    <GlassView style={shape} glassEffectStyle="regular" colorScheme="dark" {...rest}>
+    <GlassView style={shape} glassEffectStyle="regular" colorScheme={colorScheme()} {...rest}>
       {children}
     </GlassView>
   );

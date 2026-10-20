@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, Text } from 'react-native';
 import { Stack } from 'expo-router';
 import { theme } from '@/constants/theme';
 import { PRIVACY_POLICY } from '@/src/domain/legalContent';
+import { themed } from '@/constants/themed';
 
 export default function PrivacyPolicyScreen() {
   return (
@@ -22,8 +23,8 @@ export default function PrivacyPolicyScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   content: { padding: theme.space.lg, paddingBottom: theme.space.xl },
   body: { ...theme.font.body, color: theme.colors.textSecondary, lineHeight: 22 },
-});
+}));

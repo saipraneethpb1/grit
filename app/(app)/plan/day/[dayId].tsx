@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { displayPlanName } from '@/src/domain/methodologies';
 import { theme } from '@/constants/theme';
 import { useGoBack } from '@/src/hooks/useGoBack';
 import { countLabel } from '@/src/domain/progression';
@@ -21,6 +22,7 @@ import { formatMuscles } from '@/src/domain/muscles';
 import { analyzeTrainingDay } from '@/src/domain/trainingAnalysis';
 import { usePlan } from '@/src/hooks/usePlans';
 import { usePreviousBests } from '@/src/hooks/useSessions';
+import { themed } from '@/constants/themed';
 
 export default function PlanDayScreen() {
   const { dayId, planId } = useLocalSearchParams<{ dayId: string; planId: string }>();
@@ -59,7 +61,7 @@ export default function PlanDayScreen() {
   }
 
   const template = getSplitTemplate(plan.template_id);
-  const programName = plan.template_id === 'custom' ? plan.name : template?.name ?? 'Program';
+  const programName = plan.template_id === 'custom' ? displayPlanName(plan.name) : template?.name ?? 'Program';
   const audit = analyzeTrainingDay(day);
 
   return (
@@ -102,7 +104,7 @@ export default function PlanDayScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background, padding: theme.space.lg },
   errorText: { ...theme.font.body, color: theme.colors.text },
@@ -115,4 +117,4 @@ const styles = StyleSheet.create({
   meta: { ...theme.font.caption, color: theme.colors.textDim },
   rule: { marginVertical: 18 },
   start: { marginTop: 18, minHeight: 50 },
-});
+}));

@@ -4,6 +4,7 @@ import { theme } from '@/constants/theme';
 import type { PreviousBest } from '@/src/domain/liveWorkout';
 import { formatMuscles, MUSCLE_LABELS } from '@/src/domain/muscles';
 import type { GeneratedPlanDay, PlanDayWithExercises } from '@/src/domain/types';
+import { themed } from '@/constants/themed';
 
 type Props = {
   day: PlanDayWithExercises | GeneratedPlanDay;
@@ -80,7 +81,7 @@ export function DayWorkoutList({ day, showHeader = true, lastByExercise }: Props
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   header: { marginBottom: 10 },
   title: { ...theme.font.title, color: theme.colors.text, marginBottom: 4 },
   muscles: { ...theme.font.caption, color: theme.colors.textDim },
@@ -92,4 +93,4 @@ const styles = StyleSheet.create({
   target: { ...theme.font.mono, color: theme.colors.textSecondary },
   meta: { ...theme.font.small, color: theme.colors.textDim, marginTop: 4 },
   empty: { ...theme.font.caption, color: theme.colors.textDim },
-});
+}));

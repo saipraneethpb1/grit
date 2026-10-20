@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import type { MuscleGroup } from '@/src/domain/types';
+import { themed } from '@/constants/themed';
 
 type Props = {
   muscle: MuscleGroup | 'all';
@@ -26,7 +27,7 @@ export function MuscleChip({ muscle, selected, onPress }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   chip: {
     minHeight: 44,
     justifyContent: 'center',
@@ -45,4 +46,4 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.accent,
   },
   text: { ...theme.font.bodyMedium, fontSize: 12, lineHeight: 16, color: theme.colors.textSecondary },
-});
+}));

@@ -14,8 +14,8 @@ export const MAX_DESCRIPTION_LENGTH = 500;
 
 /**
  * Training styles, keyed by methodology id. The text describes who each style
- * suits so the model can match it to a person's own words. Names describe
- * public training styles only; no affiliation is implied.
+ * suits so the model can match it to a person's own words. Names are generic
+ * descriptions of the training, never a person, brand or program.
  */
 export const STYLE_OPTIONS = {
   beginner_basics:
@@ -37,9 +37,9 @@ export const STYLE_OPTIONS = {
   golden_era:
     'Golden Era Volume. For an advanced bodybuilder who wants high-volume body-part days and pump work.',
   fst7_pump:
-    'Pump Finisher (FST-7 style). For an advanced lifter who wants normal hypertrophy days finished with high-rep pump sets.',
+    'Pump Finisher. For an advanced lifter who wants normal hypertrophy days finished with high-rep pump sets.',
   heavy_duty:
-    'Heavy Duty HIT. For an experienced lifter who wants very few, very hard sets taken to failure and long recovery between sessions.',
+    'High-Intensity Low Volume. For an experienced lifter who wants very few, very hard sets taken to failure and long recovery between sessions.',
 } as const;
 
 export type StyleOptionId = keyof typeof STYLE_OPTIONS;

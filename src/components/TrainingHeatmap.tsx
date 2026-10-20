@@ -3,11 +3,12 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { ACTIVITY_LEVEL_SETS, type DayActivity } from '@/src/domain/analytics';
 import { countLabel, formatCount } from '@/src/domain/progression';
+import { themed } from '@/constants/themed';
 
 type Props = { grid: DayActivity[][] };
 
 /** Rest, then four steps of violet; each step is distinguishable from its neighbours and the card. */
-export const HEAT_COLORS = [theme.colors.track, '#3d3478', '#5a4dc4', '#8072f5', '#b9b0ff'] as const;
+export const HEAT_COLORS = themed(() => [theme.colors.track, theme.colors.heat1, theme.colors.heat2, theme.colors.heat3, theme.colors.heat4]);
 
 const CELL = 13;
 const GAP = 3;
@@ -88,7 +89,7 @@ export function TrainingHeatmap({ grid }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   row: { flexDirection: 'row' },
   dayCol: { marginRight: 6, gap: GAP },
   monthSpacer: { height: 14 },
@@ -105,4 +106,4 @@ const styles = StyleSheet.create({
   scale: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   scaleText: { ...theme.font.small, fontSize: 9.5, color: theme.colors.textFaint, marginHorizontal: 2 },
   swatch: { width: 10, height: 10, borderRadius: 2 },
-});
+}));

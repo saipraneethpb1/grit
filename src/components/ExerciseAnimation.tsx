@@ -7,19 +7,20 @@ import { useMotionAllowed } from '@/src/hooks/useMotionAllowed';
 import { figureShapes, motionViewBox, type Role, type Shape } from '@/src/domain/motionShapes';
 import type { Exercise } from '@/src/domain/types';
 import { BAND_COLORS } from './AnatomicalBodyMap';
+import { themed } from '@/constants/themed';
 
 /** Same violet ramp as the Progress muscle map, so "worked" reads the same everywhere. */
-const FILL: Record<Role, string> = {
+const FILL = themed((): Record<Role, string> => ({
   primary: BAND_COLORS.target,
   secondary: BAND_COLORS.building,
-  body: '#3e4257',
-  bodyFar: '#2c2f40',
+  body: theme.colors.rigBody,
+  bodyFar: theme.colors.rigBodyFar,
   joint: theme.colors.surface,
-  scenery: '#2a2d3d',
-  load: '#6b6f86',
+  scenery: theme.colors.rigScenery,
+  load: theme.colors.rigLoad,
   cable: theme.colors.textFaint,
   ground: theme.colors.border,
-};
+}));
 /** Roles drawn with a surface-coloured outline so neighbouring muscles separate. */
 const OUTLINED = new Set<Role>(['primary', 'secondary', 'body', 'bodyFar', 'scenery', 'load']);
 const OUTLINE = 1.2;

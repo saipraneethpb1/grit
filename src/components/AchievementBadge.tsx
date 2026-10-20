@@ -8,6 +8,7 @@ import {
   type Achievement,
   type ProgressStats,
 } from '@/src/domain/progression';
+import { themed } from '@/constants/themed';
 
 type Props = {
   achievement: Achievement;
@@ -158,7 +159,7 @@ export function AchievementBadge({ achievement, stats, highlight }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   card: {
     alignItems: 'center',
     paddingTop: 14,
@@ -175,4 +176,4 @@ const styles = StyleSheet.create({
   name: { ...theme.font.small, fontFamily: theme.fontFamily.medium, fontSize: 11, lineHeight: 14, color: theme.colors.textMuted, textAlign: 'center', marginTop: 10, minHeight: 28 },
   nameEarned: { color: theme.colors.text },
   meta: { ...theme.font.kicker, fontSize: 8.5, lineHeight: 11, letterSpacing: 1.4, color: theme.colors.textFaint, marginTop: 4 },
-});
+}));

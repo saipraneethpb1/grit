@@ -51,3 +51,17 @@ export function updateOutbox(change: (queue: QueuedWorkout[]) => QueuedWorkout[]
 }
 
 export const enqueueWorkout = (item: QueuedWorkout) => updateOutbox((q) => upsertQueued(q, item));
+
+/** Removes an account's open draft and queued workouts from this phone (sign-out, account deletion). */
+export async function clearLocalWorkoutData(userId: string): Promise<void> {
+  await clearDraft(userId);
+  try {
+    await updateOutbox((q) => q.filter((x) => x.userId !== userId));
+  } catch {
+    // Storage unavailable: nothing more can be removed.
+  }
+}
+
+export async function queuedCount(userId: string): Promise<number> {
+  return (await readOutbox()).filter((q) => q.userId === userId).length;
+}

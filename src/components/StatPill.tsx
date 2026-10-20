@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
+import { themed } from '@/constants/themed';
 
 type Props = {
   label: string;
@@ -21,7 +22,7 @@ export function StatRow({ children }: { children: React.ReactNode }) {
   return <View style={styles.row}>{children}</View>;
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   row: {
     flexDirection: 'row',
     backgroundColor: theme.colors.surface,
@@ -47,4 +48,4 @@ const styles = StyleSheet.create({
     color: theme.colors.textDim,
     marginTop: 3,
   },
-});
+}));

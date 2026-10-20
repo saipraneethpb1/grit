@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 import { theme } from '@/constants/theme';
+import { themed } from '@/constants/themed';
 
 type Props = {
   title: string;
@@ -18,13 +19,13 @@ type Props = {
   style?: ViewStyle;
 };
 
-const VARIANTS = {
+const VARIANTS = themed(() => ({
   primary: { fg: theme.colors.onAccent, border: 'transparent', bg: theme.colors.accent, pressed: theme.colors.accentBright },
   filled: { fg: theme.colors.onAccent, border: 'transparent', bg: theme.colors.accent, pressed: theme.colors.accentBright },
   ghost: { fg: theme.colors.textMuted, border: theme.colors.border, bg: 'transparent', pressed: theme.colors.surface },
   danger: { fg: theme.colors.danger, border: theme.colors.danger, bg: 'transparent', pressed: theme.colors.dangerSoft },
   link: { fg: theme.colors.textDim, border: 'transparent', bg: 'transparent', pressed: 'transparent' },
-} as const;
+} as const));
 
 export function PrimaryButton({
   title,
@@ -86,7 +87,7 @@ export function PrimaryButton({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   btn: {
     minHeight: 54,
     flexDirection: 'row',
@@ -108,4 +109,4 @@ const styles = StyleSheet.create({
   text: { ...theme.font.cta },
   link: { minHeight: 44, paddingVertical: 8 },
   linkText: { ...theme.font.caption },
-});
+}));

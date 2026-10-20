@@ -57,6 +57,7 @@ import {
   useCompleteWorkout,
   useProfileStats,
 } from '@/src/hooks/useSessions';
+import { themed } from '@/constants/themed';
 
 function formatElapsed(totalSeconds: number): string {
   const h = Math.floor(totalSeconds / 3600);
@@ -661,7 +662,7 @@ export default function WorkoutPlayerScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   center: {
     flex: 1,
@@ -765,4 +766,4 @@ const styles = StyleSheet.create({
 
   finish: { marginTop: 16 },
   finishLink: { marginTop: 6 },
-});
+}));

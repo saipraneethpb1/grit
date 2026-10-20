@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { theme } from '@/constants/theme';
+import { themed } from '@/constants/themed';
 
 type Props = {
   size?: 'sm' | 'md';
@@ -18,6 +19,6 @@ export function CompletionBadge({ size = 'sm', style }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   badge: { alignItems: 'center', justifyContent: 'center' },
-});
+}));

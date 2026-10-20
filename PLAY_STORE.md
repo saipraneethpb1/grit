@@ -43,7 +43,7 @@ Google Play **rejects** listings without a public privacy policy URL.
 
 **Option A — Host the included markdown files**
 
-1. Deploy `legal/privacy-policy.md` and `legal/terms-of-service.md` to GitHub Pages, Vercel, or Netlify.
+1. Publish `docs/privacy.html` and `docs/terms.html` with GitHub Pages (Settings → Pages → `main` / `/docs`). They are generated from `src/domain/legalContent.ts` by `npm run build:legal`.
 2. Set the URLs in EAS env vars (step 2) and in Play Console.
 
 **Option B — Use the in-app legal screens for now**

@@ -32,6 +32,7 @@ import {
 } from '@/src/domain/planIntent';
 import type { Equipment } from '@/src/domain/types';
 import { usePlanIntent } from '@/src/hooks/usePlanIntent';
+import { themed } from '@/constants/themed';
 
 const EXAMPLES = [
   'Four days a week at home with dumbbells. I want bigger arms and shoulders.',
@@ -141,7 +142,7 @@ export default function DescribeWeekScreen() {
           style={styles.input}
         />
         <View style={styles.inputMeta}>
-          <Text style={styles.privacy}>Only this text is sent to TypeSafe to read it.</Text>
+          <Text style={styles.privacy}>Only this text is used to suggest your program. It is not saved.</Text>
           <Text style={styles.count}>
             {description.length}/{MAX_DESCRIPTION_LENGTH}
           </Text>
@@ -311,7 +312,7 @@ export default function DescribeWeekScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   content: { paddingHorizontal: 22, paddingTop: 22 },
   kicker: { ...theme.font.kicker, color: theme.colors.accentDeep, marginBottom: 12 },
@@ -434,4 +435,4 @@ const styles = StyleSheet.create({
 
   previewBtn: { minHeight: 50, marginTop: 4 },
   footnote: { ...theme.font.small, color: theme.colors.textFaint, textAlign: 'center', marginTop: 10 },
-});
+}));

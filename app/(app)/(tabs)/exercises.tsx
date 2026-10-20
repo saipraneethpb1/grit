@@ -11,6 +11,7 @@ import { MuscleChip } from '@/src/components/MuscleChip';
 import { EXERCISE_SOURCE_META } from '@/src/domain/catalog';
 import type { Exercise } from '@/src/domain/types';
 import { useExerciseLibrary } from '@/src/hooks/useExercises';
+import { themed } from '@/constants/themed';
 
 export default function ExercisesScreen() {
   const router = useRouter();
@@ -104,7 +105,7 @@ export default function ExercisesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   container: { flex: 1, width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, backgroundColor: theme.colors.background },
   title: { ...theme.font.display, color: theme.colors.text, marginBottom: 6 },
   subtitle: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: 24 },
@@ -133,4 +134,4 @@ const styles = StyleSheet.create({
   list: { paddingBottom: theme.space.lg },
   count: { ...theme.font.kicker, color: theme.colors.textMuted, marginBottom: 14 },
   empty: { ...theme.font.body, color: theme.colors.textDim, marginTop: theme.space.lg },
-});
+}));

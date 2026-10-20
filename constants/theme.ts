@@ -1,5 +1,6 @@
 import { Platform, type TextStyle, type ViewStyle } from 'react-native';
-import { accentGradient, colors } from './Colors';
+import { accentGradient, colorScheme, colors } from './Colors';
+import { themed } from './themed';
 
 /**
  * Shared typography, spacing and surfaces for Ryvora.
@@ -92,21 +93,27 @@ function shadowStyle(color: string, opacity: number, radius: number, y: number, 
   };
 }
 
-const shadow = {
-  /** Raised card. */
-  md: shadowStyle('#000000', 0.32, 24, 10, 3),
-  /** Sheet or dialog. */
-  lg: shadowStyle('#000000', 0.7, 48, 18, 16),
-  /** Accent glow behind a filled bar. iOS and web; Android ignores coloured shadows. */
-  glow: shadowStyle(colors.accent, 0.25, 10, 0),
-  /** Glow under a filled button. */
-  button: shadowStyle(colors.accent, 0.28, 20, 8),
-};
+// Light surfaces need far softer shadows than charcoal ones to look the same.
+const shadow = themed(() => {
+  const light = colorScheme() === 'light';
+  return {
+    /** Raised card. */
+    md: shadowStyle('#000000', light ? 0.07 : 0.32, light ? 18 : 24, light ? 6 : 10, 3),
+    /** Sheet or dialog. */
+    lg: shadowStyle('#000000', light ? 0.18 : 0.7, 48, 18, 16),
+    /** Accent glow behind a filled bar. iOS and web; Android ignores coloured shadows. */
+    glow: shadowStyle(colors.accent, light ? 0.18 : 0.25, 10, 0),
+    /** Glow under a filled button. */
+    button: shadowStyle(colors.accent, light ? 0.22 : 0.28, 20, 8),
+  };
+});
 
 export const theme = {
   colors,
-  /** Violet → lavender; pass to `<LinearGradient colors={...}>`. */
-  gradient: accentGradient,
+  /** Violet gradient; pass to `<LinearGradient colors={...}>`. Read at render. */
+  get gradient(): readonly [string, string] {
+    return accentGradient();
+  },
   fontFamily: { ...inter, display: sora, mono },
 
   space: {
@@ -127,13 +134,10 @@ export const theme = {
   font,
   shadow,
 
-  /** Card recipe shared by most surfaces. */
-  card: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 24,
-  } as ViewStyle,
+  /** Card recipe shared by most surfaces; a getter so it follows the live palette. */
+  get card(): ViewStyle {
+    return { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 24 };
+  },
 
   hairline: 1,
 };

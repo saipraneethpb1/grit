@@ -24,6 +24,8 @@ const CORS = {
 };
 
 const TIMEOUT_MS = 8000;
+/** Calls per account per day; keeps the TypeSafe bill bounded on the free plan. */
+const DAILY_LIMIT = 10;
 const RETRY_STATUSES = new Set([429, 529]);
 
 function json(body: unknown, status = 200): Response {
@@ -52,6 +54,28 @@ async function isSignedInUser(req: Request): Promise<boolean> {
   }
 }
 
+/**
+ * Spends one call from the caller's daily allowance (migration 008). Runs with
+ * the caller's own JWT, so the counter is keyed to the signed-in user and a
+ * client cannot reset it. A database error fails closed: no key is spent.
+ */
+async function consumeQuota(req: Request): Promise<boolean> {
+  const url = Deno.env.get('SUPABASE_URL');
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  if (!url || !anonKey) return false;
+  try {
+    const res = await fetch(`${url}/rest/v1/rpc/consume_plan_intent_call`, {
+      method: 'POST',
+      headers: { Authorization: req.headers.get('Authorization') ?? '', apikey: anonKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_limit: DAILY_LIMIT }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    return res.ok && (await res.json()) === true;
+  } catch {
+    return false;
+  }
+}
+
 async function callTypeSafe(apiKey: string, payload: unknown): Promise<Response> {
   const send = () =>
     fetch(TYPESAFE_ENDPOINT, {
@@ -75,6 +99,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   if (!(await isSignedInUser(req))) return json({ error: 'unauthorized' }, 401);
+  if (!(await consumeQuota(req))) return json({ error: 'daily_limit' }, 429);
 
   const apiKey = Deno.env.get('TYPESAFE_API_KEY');
   if (!apiKey) return json({ error: 'not_configured' }, 503);

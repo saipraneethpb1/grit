@@ -18,6 +18,7 @@ import { RyvoraLogo } from '@/src/components/RyvoraLogo';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { LEGAL_LINKS, LEGAL_ROUTES } from '@/src/domain/legal';
 import { useAuth } from '@/src/hooks/useAuth';
+import { themed } from '@/constants/themed';
 
 export default function LoginScreen() {
   const { signIn, configured } = useAuth();
@@ -146,7 +147,7 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   scroll: { flexGrow: 1, paddingHorizontal: 24, width: '100%', maxWidth: 480, alignSelf: 'center', justifyContent: 'center' },
   brand: { marginBottom: 56 },
@@ -179,4 +180,4 @@ const styles = StyleSheet.create({
     marginTop: theme.space.lg,
   },
   legalLink: { color: theme.colors.textMuted, textDecorationLine: 'underline' },
-});
+}));

@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { countLabel } from '@/src/domain/progression';
 import type { SplitTemplate } from '@/src/domain/types';
+import { themed } from '@/constants/themed';
 
 type Props = {
   split: SplitTemplate;
@@ -38,7 +39,7 @@ export function SplitCard({ split, onPress, selected, badge }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   card: {
     ...theme.card,
     flexDirection: 'row',
@@ -66,4 +67,4 @@ const styles = StyleSheet.create({
   days: { ...theme.font.monoSmall, color: theme.colors.textDim },
   badge: { ...theme.font.kicker, fontSize: 10, color: theme.colors.accentDeep, marginBottom: 4 },
   desc: { ...theme.font.small, color: theme.colors.textDim, marginTop: 2 },
-});
+}));

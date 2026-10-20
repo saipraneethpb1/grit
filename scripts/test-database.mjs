@@ -8,7 +8,7 @@ await db.exec(`create role authenticated; create role anon; create schema auth;
 create table auth.users(id uuid primary key, email text, raw_user_meta_data jsonb);
 create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
 grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated;`);
-for (const file of ['001_init.sql','002_sessions.sql','003_account_deletion.sql','004_progression.sql','005_security_and_atomic_plans.sql','006_custom_programs.sql','007_atomic_sessions.sql']) {
+for (const file of ['001_init.sql','002_sessions.sql','003_account_deletion.sql','004_progression.sql','005_security_and_atomic_plans.sql','006_custom_programs.sql','007_atomic_sessions.sql','008_server_owned_progress.sql']) {
  await db.exec(readFileSync(new URL('../supabase/migrations/' + file, import.meta.url), 'utf8'));
 }
 await db.exec(`grant usage on schema public to authenticated; grant all on all tables in schema public to authenticated;
@@ -135,9 +135,43 @@ for (const dayCount of [1, 3, 6]) {
   }
 }
 
+// ---- 008: progress is server-owned ------------------------------------------
+await actAs(USER_B);
+await assert.rejects(db.query(`update profiles set total_xp = 999999 where id = auth.uid()`), /finishing a workout/);
+await assert.rejects(db.query(`update profiles set current_streak = 365, longest_streak = 365 where id = auth.uid()`));
+await assert.rejects(db.query(`update profiles set current_day_index = 2 where id = auth.uid()`));
+await db.query(`update profiles set display_name = 'Renamed' where id = auth.uid()`);
+assert.equal((await profileOf(USER_B)).display_name, 'Renamed', 'the display name stays editable');
+await actAs(USER_B);
+await assert.rejects(db.query(`insert into workout_sessions(user_id, plan_id, plan_day_id, status, completed_at)
+  values(auth.uid(), (select plan_id from plan_days where id = $1), $1, 'completed', now())`, [bDays[0].id]), /finishing/);
+await assert.rejects(db.query(`update workout_sessions set status = 'in_progress' where id = $1`, [opened.id]));
+await assert.rejects(db.query(`insert into session_sets(session_id, exercise_id, exercise_name, set_number, reps, weight, completed)
+  values($1, $2, 'x', 9, 10, 500, true)`, [opened.id, EXERCISE]), /finishing a workout/);
+await assert.rejects(db.query(`delete from session_sets where session_id = $1`, [opened.id]));
+const viaRpc = await finish((await start(bDays[0].id)).id, setsFor(bDays[0], 1), today);
+assert.equal(viaRpc.counted, true, 'finishing through the server function still counts');
+const longName = structuredClone(payload); longName.days[0].name = 'x'.repeat(81);
+await assert.rejects(save(longName), /Invalid program day/);
+const manyFocus = structuredClone(payload); manyFocus.days[0].focus_muscles = Array.from({ length: 13 }, (_, i) => `m${i}`);
+await assert.rejects(save(manyFocus), /Invalid program day/);
+
+// plan-intent quota: per user, per day, and only through the function.
+const spend = async (limit) => (await db.query('select public.consume_plan_intent_call($1) as ok', [limit])).rows[0].ok;
+await actAs(USER_A);
+assert.deepEqual([await spend(2), await spend(2), await spend(2)], [true, true, false], 'the third call over a limit of 2 is refused');
+await actAs(USER_B);
+assert.equal(await spend(2), true, 'quotas are per account');
+assert.equal((await db.query('select * from plan_intent_usage')).rows.length, 0, 'no account can read the usage table');
+await db.query(`update plan_intent_usage set calls = 0`);
+await actAs(USER_A);
+assert.equal(await spend(2), false, 'a client cannot reset its own quota');
+
 await db.exec('reset role; set role anon;');
+await assert.rejects(db.query('select public.consume_plan_intent_call(10)'));
 await assert.rejects(save(payload));
 await assert.rejects(db.query(`select public.start_workout_session($1)`, [bDays[0].id]));
 console.log('PASS: migrations, transactional rollback, owner isolation, cross-account session rejection, valid session, anonymous RPC rejection');
 console.log(`PASS: atomic start/finish, rollback on invalid sets, idempotent retry, clock-skew guard, ${parityCases} SQL/TypeScript parity cases`);
+console.log('PASS: server-owned progress and sets, size caps, per-user plan-intent quota');
 await db.close();

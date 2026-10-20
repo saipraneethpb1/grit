@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { CompletionBadge } from './CompletionBadge';
+import { themed } from '@/constants/themed';
 
 type Props = {
   dayName: string;
@@ -21,7 +22,7 @@ export function WorkoutDoneBanner({ dayName, setsLogged }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -37,4 +38,4 @@ const styles = StyleSheet.create({
   copy: { flex: 1 },
   title: { ...theme.font.bodyMedium, color: theme.colors.accentText },
   meta: { ...theme.font.small, color: theme.colors.textMuted, marginTop: 2 },
-});
+}));

@@ -5,6 +5,7 @@ import { theme } from '@/constants/theme';
 import { ExerciseDemonstration } from '@/src/components/ExerciseDemonstration';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import type { Exercise } from '@/src/domain/types';
+import { themed } from '@/constants/themed';
 
 type Props = {
   exercise: Exercise;
@@ -62,7 +63,7 @@ function ExerciseRowBase({ exercise, subtitle, onPress, right }: Props) {
 /** Memoised: the library re-filters on every keystroke of the search box. */
 export const ExerciseRow = memo(ExerciseRowBase);
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -78,4 +79,4 @@ const styles = StyleSheet.create({
   name: { ...theme.font.bodyMedium, fontSize: 14, lineHeight: 20, color: theme.colors.text },
   meta: { ...theme.font.small, color: theme.colors.textDim, marginTop: 3 },
   right: { ...theme.font.mono, color: theme.colors.textSecondary },
-});
+}));

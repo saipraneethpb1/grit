@@ -25,6 +25,7 @@ import {
   type Methodology,
   type MethodologyId,
 } from '@/src/domain/methodologies';
+import { themed } from '@/constants/themed';
 
 function previewHref(templateId: string, methodologyId: string) {
   return `/(app)/splits/preview?templateId=${templateId}&methodologyId=${methodologyId}`;
@@ -116,7 +117,7 @@ export default function SplitsScreen() {
         <Text style={styles.kicker}>Step 1 of 2</Text>
         <Text style={styles.title}>Choose a training style</Text>
         <Text style={styles.lead}>
-          Every style biases the sets, rep ranges and movement choices the generator makes. Pick what you are chasing, or bring your own routine.
+          Each style shapes your sets, rep ranges and exercise choices. Pick what you are chasing, or bring your own routine.
         </Text>
 
         <View style={styles.shortcuts}>
@@ -208,7 +209,7 @@ export default function SplitsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   content: { paddingHorizontal: 22, paddingTop: 22, paddingBottom: theme.space.xl },
   stepBars: { flexDirection: 'row', gap: 5, marginBottom: 30 },
@@ -265,4 +266,4 @@ const styles = StyleSheet.create({
   },
   cta: { minHeight: 50 },
   backLink: { marginTop: 8 },
-});
+}));

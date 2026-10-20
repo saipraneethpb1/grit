@@ -7,6 +7,7 @@ import {
   type AchievementCategory,
   type ProgressStats,
 } from '@/src/domain/progression';
+import { themed } from '@/constants/themed';
 
 const COLUMNS = 3;
 const CATEGORY_ORDER: AchievementCategory[] = ['milestone', 'streak', 'volume', 'level'];
@@ -41,7 +42,7 @@ export function AchievementGrid({ stats }: { stats: ProgressStats }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   heading: {
     flexDirection: 'row',
     alignItems: 'baseline',
@@ -52,4 +53,4 @@ const styles = StyleSheet.create({
   count: { ...theme.font.monoSmall, color: theme.colors.textFaint },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   cell: { width: '31%', flexGrow: 1 },
-});
+}));

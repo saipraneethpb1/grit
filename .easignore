@@ -1,0 +1,23 @@
+# Same as .gitignore, plus local working material that never belongs in a build upload.
+node_modules/
+.expo/
+dist/
+web-build/
+ios/
+android/
+.env
+.env.*
+!.env.example
+*.pdf
+output/
+.agents/
+releases/
+mobile-workout-app-design/
+ANATOMY_*.md
+QA_REPORT.md
+IMPLEMENTATION_HANDOFF.md
+RYVORA_POST_BUILD_LAUNCH_PLAYBOOK.md
+skills-lock.json
+data/exercise-anatomy-*-prompts.json
+data/exercise-anatomy-final-revisions.json
+data/exercise-anatomy-oct20-refinements.json

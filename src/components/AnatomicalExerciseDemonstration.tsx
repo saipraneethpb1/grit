@@ -5,6 +5,7 @@ import { theme } from '@/constants/theme';
 import { anatomicalCell, anatomicalInset, anatomicalSequence, ANATOMICAL_PHASES, type AnatomicalDemonstration } from '@/src/domain/exerciseAnatomy';
 import { exerciseAnatomyAssets, exerciseAnatomyThumbnails } from '@/src/domain/exerciseAnatomyAssets';
 import { useMotionAllowed } from '@/src/hooks/useMotionAllowed';
+import { themed } from '@/constants/themed';
 
 type Props = {
   exerciseId: string;
@@ -122,7 +123,7 @@ export function AnatomicalExerciseDemonstration({ exerciseId, demonstration: dem
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   stage: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#faf9f4', borderRadius: theme.radius.md, overflow: 'hidden' },
   /** Sheets are square; a square stage shows each pose edge to edge with no letterbox bands. */
   stageSquare: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', width: '100%', aspectRatio: 1 },
@@ -132,4 +133,4 @@ const styles = StyleSheet.create({
   cue: { flexDirection: 'row', gap: 8, marginTop: 10, padding: 12, borderRadius: theme.radius.md, backgroundColor: theme.colors.surfaceTint, borderWidth: theme.hairline, borderColor: theme.colors.borderTint },
   cueText: { ...theme.font.caption, color: theme.colors.textSecondary, flex: 1 },
   error: { ...theme.font.small, color: '#514740', padding: 12 },
-});
+}));

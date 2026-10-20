@@ -8,6 +8,7 @@ import { useMotionAllowed } from '@/src/hooks/useMotionAllowed';
 import { ExerciseAnimation } from './ExerciseAnimation';
 import { AnatomicalExerciseDemonstration } from './AnatomicalExerciseDemonstration';
 import { exerciseAnatomyAssets, exerciseAnatomyThumbnails } from '@/src/domain/exerciseAnatomyAssets';
+import { themed } from '@/constants/themed';
 
 type Props = { exercise: Exercise; animate?: boolean; style?: StyleProp<ViewStyle> };
 
@@ -50,7 +51,7 @@ export function ExerciseDemonstration({ exercise, animate = true, style }: Props
     </View>
   );
 }
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   visual: { width: '100%', aspectRatio: 1, overflow: 'hidden', borderRadius: theme.radius.md },
   /** Thumbnails fill their fixed box instead of forcing a square. */
   visualFill: { flex: 1, width: undefined, aspectRatio: undefined },
@@ -59,4 +60,4 @@ const styles = StyleSheet.create({
   caption: { ...theme.font.small, color: theme.colors.textMuted, flex: 1 },
   control: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.full, backgroundColor: theme.colors.surfaceRaised },
   unavailable: { alignItems: 'center', justifyContent: 'center', padding: 12 },
-});
+}));

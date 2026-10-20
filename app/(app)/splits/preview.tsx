@@ -13,6 +13,7 @@ import { getMethodology } from '@/src/domain/methodologies';
 import { generatePlan } from '@/src/domain/planGenerator';
 import { filterCatalogForEquipment, parseEquipmentParam } from '@/src/domain/planIntent';
 import { useSavePlan } from '@/src/hooks/usePlans';
+import { themed } from '@/constants/themed';
 
 export default function PreviewPlanScreen() {
   const { templateId, methodologyId, equipment } = useLocalSearchParams<{
@@ -106,7 +107,7 @@ export default function PreviewPlanScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background, padding: theme.space.lg },
   errorText: { ...theme.font.body, color: theme.colors.text },
@@ -128,4 +129,4 @@ const styles = StyleSheet.create({
     borderTopColor: theme.colors.divider,
     backgroundColor: theme.colors.background,
   },
-});
+}));

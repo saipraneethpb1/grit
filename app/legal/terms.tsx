@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, Text } from 'react-native';
 import { Stack } from 'expo-router';
 import { theme } from '@/constants/theme';
 import { TERMS_OF_SERVICE } from '@/src/domain/legalContent';
+import { themed } from '@/constants/themed';
 
 export default function TermsScreen() {
   return (
@@ -22,8 +23,8 @@ export default function TermsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   content: { padding: theme.space.lg, paddingBottom: theme.space.xl },
   body: { ...theme.font.body, color: theme.colors.textSecondary, lineHeight: 22 },
-});
+}));

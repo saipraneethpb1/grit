@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
+import { themed } from '@/constants/themed';
 
 type Props = {
   title: string;
@@ -20,10 +21,10 @@ export function EmptyState({ title, message, action }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   wrap: { ...theme.card, padding: theme.space.lg, width: '100%' },
   icon: { width: 56, height: 56, borderRadius: 18, backgroundColor: theme.colors.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
   title: { ...theme.font.title, color: theme.colors.text, marginBottom: 6 },
   message: { ...theme.font.body, color: theme.colors.textMuted, marginBottom: theme.space.lg },
   action: { width: '100%' },
-});
+}));

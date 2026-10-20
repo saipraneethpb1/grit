@@ -4,6 +4,11 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
 import { theme } from '@/constants/theme';
+import { useSyncNow } from '@/src/hooks/useWorkoutOutbox';
+import { useAppearance, type AppearancePreference } from '@/src/hooks/useAppearance';
+
+const APPEARANCE_LABELS: Record<AppearancePreference, string> = { system: 'System', light: 'Light', dark: 'Dark' };
+import { queuedCount } from '@/src/lib/workoutStore';
 import { useTabBarSpace } from '@/src/hooks/useTabBarSpace';
 import { BrandKicker } from '@/src/components/BrandKicker';
 import { AchievementGrid } from '@/src/components/AchievementGrid';
@@ -12,13 +17,13 @@ import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { SectionLabel } from '@/src/components/SectionLabel';
 import { StatPill, StatRow } from '@/src/components/StatPill';
 import { XpBar } from '@/src/components/XpBar';
-import { EXERCISE_SOURCE_META } from '@/src/domain/catalog';
 import { LEGAL_LINKS, LEGAL_ROUTES } from '@/src/domain/legal';
 import { formatCount } from '@/src/domain/progression';
 import type { WorkoutSessionWithSets } from '@/src/domain/types';
 import { useAuth } from '@/src/hooks/useAuth';
 import { useDisplayName } from '@/src/hooks/useDisplayName';
 import { toProgressStats, useProfileStats, useRecentSessions } from '@/src/hooks/useSessions';
+import { themed } from '@/constants/themed';
 
 const CHART_WEEKS = 8;
 const BEST_COUNT = 3;
@@ -86,6 +91,8 @@ export default function ProfileScreen() {
   const { data: sessions } = useRecentSessions(SESSION_WINDOW);
   const progress = toProgressStats(stats);
   const displayName = useDisplayName();
+  const syncNow = useSyncNow();
+  const { preference, setPreference } = useAppearance();
 
   const chart = useMemo(() => weeklyVolume(sessions ?? []), [sessions]);
   const bests = useMemo(() => recentBests(sessions ?? []), [sessions]);
@@ -108,6 +115,22 @@ export default function ProfileScreen() {
             if (result.error) Alert.alert('Could not delete account', result.error);
           },
         },
+      ]
+    );
+  }
+
+  /** A workout still waiting to sync would be deleted with the rest of this account's local data. */
+  async function confirmSignOut() {
+    if (!user) return signOut();
+    await syncNow();
+    const pending = await queuedCount(user.id);
+    if (!pending) return signOut();
+    Alert.alert(
+      'Workout not synced yet',
+      `${pending === 1 ? 'One workout is' : `${pending} workouts are`} still saved only on this phone. Signing out deletes ${pending === 1 ? 'it' : 'them'}. Connect to the internet and open the app to sync first.`,
+      [
+        { text: 'Stay signed in', style: 'cancel' },
+        { text: 'Sign out anyway', style: 'destructive', onPress: () => void signOut() },
       ]
     );
   }
@@ -189,17 +212,27 @@ export default function ProfileScreen() {
         <AchievementGrid stats={progress} />
       </View>
 
-      <Text style={styles.about}>
-        {EXERCISE_SOURCE_META.count} movements from {EXERCISE_SOURCE_META.source}. Training
-        systems are style guides inspired by public methodologies.
-      </Text>
+      <View style={styles.appearance}>
+        <Text style={styles.appearanceLabel}>Appearance</Text>
+        <View style={styles.segment} accessibilityRole="radiogroup">
+          {(['system', 'light', 'dark'] as const).map((p) => {
+            const on = preference === p;
+            return (
+              <Pressable
+                key={p}
+                onPress={() => setPreference(p)}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: on }}
+                accessibilityLabel={`Appearance: ${APPEARANCE_LABELS[p]}`}
+                style={[styles.segmentItem, on && styles.segmentItemOn]}
+              >
+                <Text style={[styles.segmentText, on && styles.segmentTextOn]}>{APPEARANCE_LABELS[p]}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
 
-      <PrimaryButton
-        title="Sources"
-        variant="ghost"
-        onPress={() => router.push('/(app)/sources' as never)}
-        style={styles.gap}
-      />
       <View style={styles.legalRow}>
         <Pressable onPress={() => openLegal('privacy')} accessibilityRole="link">
           <Text style={styles.legalLink}>Privacy Policy</Text>
@@ -209,7 +242,7 @@ export default function ProfileScreen() {
           <Text style={styles.legalLink}>Terms of Service</Text>
         </Pressable>
       </View>
-      <PrimaryButton title="Sign out" variant="ghost" onPress={() => signOut()} style={styles.gap} />
+      <PrimaryButton title="Sign out" variant="ghost" onPress={() => void confirmSignOut()} style={styles.gap} />
       <PrimaryButton
         title="Delete account"
         variant="danger"
@@ -221,7 +254,7 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   container: { flexGrow: 1, width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
   kicker: { marginBottom: 18 },
@@ -251,8 +284,14 @@ const styles = StyleSheet.create({
   bestValue: { ...theme.font.mono, color: theme.colors.accentText },
 
   badges: { marginTop: 18, marginBottom: 20 },
-  about: { ...theme.font.caption, color: theme.colors.textDim, marginBottom: theme.space.lg },
   gap: { marginBottom: 9 },
+  appearance: { marginBottom: theme.space.lg },
+  appearanceLabel: { ...theme.font.kicker, color: theme.colors.textDim, marginBottom: 10 },
+  segment: { flexDirection: 'row', backgroundColor: theme.colors.surface, borderRadius: theme.radius.full, borderWidth: theme.hairline, borderColor: theme.colors.border, padding: 3 },
+  segmentItem: { flex: 1, minHeight: 40, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.full },
+  segmentItemOn: { backgroundColor: theme.colors.accentSoft },
+  segmentText: { ...theme.font.bodyMedium, fontSize: 13, color: theme.colors.textMuted },
+  segmentTextOn: { color: theme.colors.accentText },
   legalRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -263,4 +302,4 @@ const styles = StyleSheet.create({
   },
   legalLink: { ...theme.font.small, color: theme.colors.textDim },
   legalSep: { ...theme.font.small, color: theme.colors.textFaint },
-});
+}));

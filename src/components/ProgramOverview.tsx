@@ -6,6 +6,7 @@ import { GradientBar } from '@/src/components/GradientBar';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import { analyzeTrainingDay, analyzeTrainingPlan } from '@/src/domain/trainingAnalysis';
 import type { MuscleGroup, WorkoutPlanWithDays } from '@/src/domain/types';
+import { themed } from '@/constants/themed';
 
 /** "Weekly volume by region" — effective sets per muscle across the rotation. */
 export function VolumeByRegion({ plan }: { plan: WorkoutPlanWithDays }) {
@@ -85,7 +86,7 @@ export function ProgramDayList({ plan, completedUpToIndex = 0, completedTodayDay
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   volumeCard: {
     backgroundColor: theme.colors.surfaceTint,
     borderWidth: theme.hairline,
@@ -118,4 +119,4 @@ const styles = StyleSheet.create({
   dayBody: { flex: 1, minWidth: 0 },
   dayName: { ...theme.font.bodyMedium, color: theme.colors.text },
   dayMeta: { ...theme.font.small, color: theme.colors.textDim, marginTop: 2 },
-});
+}));

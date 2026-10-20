@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { GradientBar } from '@/src/components/GradientBar';
 import { levelFromXp } from '@/src/domain/progression';
+import { themed } from '@/constants/themed';
 
 type Props = {
   totalXp: number;
@@ -47,7 +48,7 @@ export function XpBar({ totalXp, compact }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { gap: 10 },
   header: {
     flexDirection: 'row',
@@ -83,4 +84,4 @@ const styles = StyleSheet.create({
     ...theme.shadow.glow,
   },
   caption: { ...theme.font.small, color: theme.colors.textDim, marginTop: -2 },
-});
+}));

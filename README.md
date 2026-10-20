@@ -4,6 +4,18 @@ Mobile workout planner: pick a training system and weekly split, get full-gym wo
 
 Built with **Expo (React Native)**, **Expo Router**, **TypeScript**, and **Supabase** (Auth + Postgres + RLS).
 
+## Light and dark mode
+
+The app follows the phone's appearance by default, with a **System / Light / Dark**
+choice on the You tab (stored per device). `constants/Colors.ts` holds both
+palettes, each checked for WCAG AA contrast; `colors` is the live one and
+`applyColorScheme` swaps it in place. Every style sheet and colour table is
+wrapped in `themed()` (`constants/themed.ts`), which rebuilds it when the palette
+changes, and the root remounts the navigator on a switch. New styles must use
+`themed(() => StyleSheet.create({...}))`, and colours must come from palette
+tokens rather than hex values. The anatomical body map keeps its dark artwork
+panel in both modes, and home-screen widgets stay dark.
+
 ## Brand
 
 The interface follows the Ryvora identity: Charcoal `#0E0F16` surfaces, Sand
@@ -55,6 +67,7 @@ npm install
    - `supabase/migrations/005_security_and_atomic_plans.sql` (transactional program save, ownership checks)
    - `supabase/migrations/006_custom_programs.sql` (custom-program catalog marker)
    - `supabase/migrations/007_atomic_sessions.sql` (one-request, transactional workout start/finish)
+   - `supabase/migrations/008_server_owned_progress.sql` (only the server functions can change progress, completed sessions and logged sets; daily limit for "Describe your week"; size caps). Apply 008 **before** deploying the updated `plan-intent` function, which refuses calls until the quota function exists.
 3. Copy **Project URL** and **anon public** key from **Project Settings → API**.
 4. Create env file:
 
@@ -152,7 +165,7 @@ npm run curate:exercises
 # Re-run supabase/seed.sql in Supabase so IDs match
 ```
 
-See **Profile → Sources & attribution** in the app.
+The exercise data is released under the Unlicense (public domain), which needs no attribution, so the app shows none. Training styles have generic names and never name a person, brand, book or program; plan titles saved under earlier style names are renamed on display by `displayPlanName`.
 
 ## Plan generation
 
@@ -241,7 +254,7 @@ coach would, from logged sets alone:
 - **Weekly volume** (`weeklyVolume`, `tuneWeeklyVolume`): hard sets per muscle
   against ranges that widen with training age (inferred from workouts
   completed). The generator trims or adds single sets until each focus muscle
-  lands in range, without unbalancing session lengths or touching HIT/FST-7
+  lands in range, without unbalancing session lengths or touching the high-intensity or pump-finisher
   set schemes, and plan screens show each muscle against its band and weekly
   frequency.
 

@@ -9,9 +9,10 @@ import { EmptyState } from '@/src/components/EmptyState';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { ProgramDayList, VolumeByRegion } from '@/src/components/ProgramOverview';
 import { getSplitTemplate } from '@/src/domain/catalog';
-import { getMethodology, QUICK_START_METHODOLOGY_ID } from '@/src/domain/methodologies';
+import { getMethodology, QUICK_START_METHODOLOGY_ID, displayPlanName } from '@/src/domain/methodologies';
 import { useActivePlan } from '@/src/hooks/usePlans';
 import { useProfileStats, useRecentSessions } from '@/src/hooks/useSessions';
+import { themed } from '@/constants/themed';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -101,7 +102,7 @@ export default function ProgramScreen() {
   }
 
   const template = getSplitTemplate(plan.template_id);
-  const programName = plan.template_id === 'custom' ? plan.name : template?.name ?? plan.name;
+  const programName = plan.template_id === 'custom' ? displayPlanName(plan.name) : template?.name ?? displayPlanName(plan.name);
   const week = Math.max(1, Math.floor((Date.now() - new Date(plan.created_at).getTime()) / WEEK_MS) + 1);
   const dayIndex = stats?.current_day_index ?? 0;
 
@@ -147,7 +148,7 @@ export default function ProgramScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   center: {
     flex: 1,
@@ -161,4 +162,4 @@ const styles = StyleSheet.create({
   meta: { ...theme.font.caption, color: theme.colors.textDim, marginTop: 6, marginBottom: 18 },
   emptyActions: { gap: 9 },
   browse: { marginTop: 16 },
-});
+}));

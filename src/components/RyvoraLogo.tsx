@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { theme } from '@/constants/theme';
+import { themed } from '@/constants/themed';
 
 type Props = {
   /** Mark height in px. */
@@ -40,7 +41,7 @@ export function RyvoraLogo({ size = 28, showWordmark = false, color, style }: Pr
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   wrap: { flexDirection: 'row', alignItems: 'center' },
   wordmark: { fontFamily: theme.fontFamily.display.semibold, fontWeight: '600', letterSpacing: -0.6, color: theme.colors.text },
-});
+}));

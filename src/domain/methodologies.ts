@@ -1,12 +1,9 @@
 import type { MuscleGroup, MovementPattern } from './types';
 
 /**
- * Training systems curated from *publicly documented* training principles.
- *
- * IMPORTANT: Ryvora is NOT affiliated with, endorsed by, or partnered with any
- * of the named athletes/coaches or their commercial apps/brands (STNDRD,
- * Athlean-X, etc.). Names appear only to describe well-known public methodologies
- * so users can pick a style. Exercise movements come from open-source catalogs.
+ * Training styles. Names and text describe the training itself, in generic
+ * terms: no athlete, coach, book, brand or program name appears anywhere, so
+ * nothing implies an affiliation or uses someone else's mark.
  */
 
 export type ExperienceLevel = 'beginner' | 'intermediate' | 'advanced';
@@ -46,8 +43,6 @@ export interface Methodology {
   id: MethodologyId;
   name: string;
   tagline: string;
-  /** Public attribution — not a commercial endorsement */
-  inspiredBy: string;
   /** Drives the grouping and ordering of the training-system picker. */
   level: ExperienceLevel;
   description: string;
@@ -82,7 +77,6 @@ export interface Methodology {
   slotsPerMuscle: number;
   /** HIT-style: fewer sets */
   intensityStyle: 'volume' | 'moderate' | 'hit' | 'pump_finisher';
-  sources: { title: string; note: string }[];
 }
 
 export const METHODOLOGIES: Methodology[] = [
@@ -90,8 +84,6 @@ export const METHODOLOGIES: Methodology[] = [
     id: 'beginner_basics',
     name: 'Beginner Basics',
     tagline: 'Learn the main lifts. Three short full-body days.',
-    inspiredBy:
-      'Widely published beginner guidance: full-body frequency, compound lifts, gradual load increases',
     level: 'beginner',
     description:
       'A first program. Three full-body sessions a week, five or six exercises each, built around the movements worth learning early: a squat, a hinge, a push, a pull. Reps sit a little higher so you can practise the pattern with a weight you control, and the low day count leaves plenty of room to recover between sessions.',
@@ -183,21 +175,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 6,
     slotsPerMuscle: 1,
     intensityStyle: 'moderate',
-    sources: [
-      {
-        title: 'Common beginner programming principles (public domain)',
-        note: 'Full-body frequency, compound-first selection, modest volume, progressive loading.',
-      },
-    ],
   },
   {
     id: 'classic_physique',
     level: 'intermediate',
     name: 'Classic Physique Volume',
     tagline: 'Balanced hypertrophy, clean structure, high-quality sets.',
-    inspiredBy: 'Principles popularized in modern classic physique training (e.g. public CBum programming themes)',
     description:
-      'Push/pull/legs or upper-lower emphasis, compounds first, controlled hypertrophy ranges. Inspired by publicly discussed classic-physique training: proportion, back thickness, and sustainable weekly volume — not an official STNDRD/CBum program.',
+      'Push/pull/legs or upper/lower with compounds first and controlled hypertrophy rep ranges. Built for proportion: an even upper and lower body, extra attention to back thickness, and weekly volume you can sustain.',
     preferredSplits: ['ppl', 'upper_lower'],
     defaultSplitId: 'ppl',
     setsBias: 0,
@@ -210,21 +195,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 7,
     slotsPerMuscle: 2,
     intensityStyle: 'moderate',
-    sources: [
-      {
-        title: 'Public classic physique programming themes',
-        note: 'High-frequency muscle groups, compounds + isolation balance, mid-rep hypertrophy.',
-      },
-    ],
   },
   {
     id: 'golden_era',
     level: 'advanced',
     name: 'Golden Era Volume',
     tagline: 'High volume, body-part focus, pump work.',
-    inspiredBy: 'Arnold-era bodybuilding (Encyclopedia of Modern Bodybuilding principles)',
     description:
-      'Bro-split friendly, higher volume, lots of angles on chest/back/arms. Reflects golden-era volume culture: multiple exercises per body part, classic machines and free weights.',
+      'A body-part split with higher volume: several exercises per muscle, varied angles for chest, back and arms, and a mix of machines and free weights.',
     preferredSplits: ['bro', 'ppl'],
     defaultSplitId: 'bro',
     setsBias: 1,
@@ -237,21 +215,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 8,
     slotsPerMuscle: 2,
     intensityStyle: 'volume',
-    sources: [
-      {
-        title: 'Golden-era bodybuilding literature (public domain discussion)',
-        note: 'High volume per muscle, split routines, mind-muscle emphasis.',
-      },
-    ],
   },
   {
     id: 'aesthetic',
     level: 'intermediate',
     name: 'Aesthetic Hypertrophy',
     tagline: 'V-taper bias: shoulders, back, arms, upper chest.',
-    inspiredBy: 'Aesthetic-focused influencers (e.g. David Laid–style public training aesthetics)',
     description:
-      'Prioritizes delts, lats, upper chest, and arms for a visual V-taper. Upper/lower or PPL with extra shoulder/back isolation. Style-inspired only — not an official program.',
+      'Prioritises delts, lats, upper chest and arms for a visual V-taper. Upper/lower or push/pull/legs with extra shoulder and back isolation.',
     preferredSplits: ['upper_lower', 'ppl', 'push_pull'],
     defaultSplitId: 'upper_lower',
     setsBias: 0,
@@ -264,21 +235,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 7,
     slotsPerMuscle: 2,
     intensityStyle: 'volume',
-    sources: [
-      {
-        title: 'Aesthetic hypertrophy community norms',
-        note: 'Higher relative volume for delts/lats/arms; moderate lower-body emphasis.',
-      },
-    ],
   },
   {
     id: 'joint_smart',
     level: 'intermediate',
     name: 'Joint-Smart Strength',
-    tagline: 'Shoulder-friendly patterns, scap health, sustainable loading.',
-    inspiredBy: 'Injury-conscious coaching themes (e.g. Athlean-X public education themes)',
+    tagline: 'Shoulder-friendly patterns, scapular health, sustainable loading.',
     description:
-      'Favors controlled compounds, face-pull style rear-delt work, and avoids behind-the-neck / guillotine patterns. Inspired by publicly shared joint-health cues — not an official Athlean-X program.',
+      'Favours controlled compounds and rear-delt work, and avoids behind-the-neck and other high-stress shoulder positions. Loads progress steadily rather than aggressively.',
     preferredSplits: ['upper_lower', 'full_body', 'ppl'],
     defaultSplitId: 'upper_lower',
     setsBias: 0,
@@ -291,21 +255,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 6,
     slotsPerMuscle: 2,
     intensityStyle: 'moderate',
-    sources: [
-      {
-        title: 'Public shoulder-health & biomechanics education',
-        note: 'Scapular control, avoid end-range risky patterns, balance push/pull.',
-      },
-    ],
   },
   {
     id: 'foundation',
     level: 'beginner',
     name: 'Foundation Protocol',
     tagline: 'Recovery-aware, progressive, no junk volume.',
-    inspiredBy: 'Performance + recovery principles discussed in public science communication (e.g. Huberman Lab themes)',
     description:
-      'Fewer training days, full-body or upper/lower, progressive compounds, leave room for recovery. Inspired by publicly discussed recovery-first training — not a clinical protocol or official Huberman program.',
+      'Fewer training days, full-body or upper/lower, progressive compounds and plenty of room to recover between sessions.',
     preferredSplits: ['full_body', 'upper_lower'],
     defaultSplitId: 'full_body',
     setsBias: -1,
@@ -318,21 +275,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 5,
     slotsPerMuscle: 1,
     intensityStyle: 'moderate',
-    sources: [
-      {
-        title: 'Public recovery & progressive overload education',
-        note: 'Sleep/recovery-aware frequency, progressive loading, limited junk volume.',
-      },
-    ],
   },
   {
     id: 'fst7_pump',
     level: 'advanced',
-    name: 'Pump Finisher (FST-7 style)',
-    tagline: 'Standard hypertrophy day + high-rep stretch/pump finisher.',
-    inspiredBy: 'FST-7 concept as publicly described by Hany Rambod',
+    name: 'Pump Finisher',
+    tagline: 'A standard hypertrophy day with a high-rep pump finisher.',
     description:
-      'Normal compound-led session with a final isolation “finisher” bias (higher reps). Based on the publicly discussed FST-7 idea (fascia stretch training) — not an official FST-7 certification product.',
+      'A normal compound-led session that ends with one isolation finisher: several short, high-rep sets with brief rest to chase a pump in the target muscle.',
     preferredSplits: ['ppl', 'bro', 'upper_lower'],
     defaultSplitId: 'ppl',
     setsBias: 0,
@@ -345,21 +295,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 7,
     slotsPerMuscle: 2,
     intensityStyle: 'pump_finisher',
-    sources: [
-      {
-        title: 'Public FST-7 descriptions',
-        note: 'Multiple short-rest sets on a final isolation movement for a target muscle.',
-      },
-    ],
   },
   {
     id: 'heavy_duty',
     level: 'advanced',
-    name: 'Heavy Duty HIT',
+    name: 'High-Intensity Low Volume',
     tagline: 'Low volume, high effort, long recovery.',
-    inspiredBy: 'Mike Mentzer Heavy Duty / HIT principles (public writings)',
     description:
-      'Very few hard sets, full-body or abbreviated splits, longer rest between sessions. Reflects publicly known HIT/Heavy Duty ideas — not a commercial Mentzer product license.',
+      'Very few hard sets taken close to failure, full-body or abbreviated splits, and longer rest between sessions.',
     preferredSplits: ['full_body', 'upper_lower'],
     defaultSplitId: 'full_body',
     setsBias: -2,
@@ -372,21 +315,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 4,
     slotsPerMuscle: 1,
     intensityStyle: 'hit',
-    sources: [
-      {
-        title: 'Heavy Duty / HIT public literature',
-        note: 'Low set count, high intensity, recovery between infrequent sessions.',
-      },
-    ],
   },
   {
     id: 'power_hypertrophy',
     level: 'intermediate',
     name: 'Power + Hypertrophy',
     tagline: 'Strength compounds first, then muscle accessories.',
-    inspiredBy: 'Powerbuilding community standards (open lifting culture)',
     description:
-      'Squat/bench/hinge emphasis early, then hypertrophy accessories. Common open powerbuilding template used across free lifting communities.',
+      'Squat, bench and hinge work early in each session for strength, followed by hypertrophy accessories.',
     preferredSplits: ['upper_lower', 'push_pull', 'full_body'],
     defaultSplitId: 'upper_lower',
     setsBias: 0,
@@ -399,22 +335,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 6,
     slotsPerMuscle: 2,
     intensityStyle: 'moderate',
-    sources: [
-      {
-        title: 'Open powerbuilding community templates',
-        note: 'Main lifts heavy; accessories for hypertrophy.',
-      },
-    ],
   },
   {
     id: 'anatomy_first',
     level: 'intermediate',
     name: 'Anatomy-First Hypertrophy',
     tagline: 'Prime movers first, then isolation for the target muscle.',
-    inspiredBy:
-      'Anatomy-led training education (the teaching style popularized by illustrated anatomy references such as Delavier’s Strength Training Anatomy — principles only)',
     description:
-      'Each day prioritizes multi-joint patterns that load the prime movers, then isolation to finish the target muscle. Uses standard muscle anatomy labels in the app. Inspired by how anatomy atlases teach movement—not a reproduction of any book’s text or art.',
+      'Each day leads with multi-joint movements that load the prime movers, then finishes the target muscle with isolation work.',
     preferredSplits: ['bro', 'ppl', 'upper_lower'],
     defaultSplitId: 'bro',
     setsBias: 0,
@@ -446,26 +374,14 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 7,
     slotsPerMuscle: 2,
     intensityStyle: 'moderate',
-    sources: [
-      {
-        title: 'Anatomy education principles (public domain knowledge)',
-        note: 'Identify prime mover → load it with compounds → isolate for local fatigue.',
-      },
-      {
-        title: 'Recommended reading (not included)',
-        note: 'Frédéric Delavier — Strength Training Anatomy (buy/read separately).',
-      },
-    ],
   },
   {
     id: 'practical_gym',
     level: 'intermediate',
     name: 'Practical Gym Hypertrophy',
-    tagline: 'Blog-style full-gym sessions: simple, equipment-friendly, effective.',
-    inspiredBy:
-      'Common free gym guides from popular fitness brands/blogs (e.g. MyProtein training zone style articles)',
+    tagline: 'Simple, equipment-friendly full-gym sessions.',
     description:
-      'Straightforward compound-to-accessory days that match what most free “gym workout” articles prescribe: barbell/dumbbell/cable staples, clear set ranges, no exotic programming. Structure inspired by public blog templates only — we do not copy MyProtein (or any brand) article text or workout PDFs.',
+      'Straightforward compound-to-accessory days built from barbell, dumbbell and cable staples, with clear set ranges and nothing exotic.',
     preferredSplits: ['ppl', 'upper_lower', 'full_body', 'push_pull'],
     defaultSplitId: 'ppl',
     setsBias: 0,
@@ -498,16 +414,6 @@ export const METHODOLOGIES: Methodology[] = [
     maxExercisesPerDay: 6,
     slotsPerMuscle: 2,
     intensityStyle: 'moderate',
-    sources: [
-      {
-        title: 'Public fitness-blog session structure',
-        note: 'Warm pattern: heavy compound → secondary compound → isolation accessories.',
-      },
-      {
-        title: 'External reading (not scraped)',
-        note: 'MyProtein The Zone / Training articles — open in browser for ideas.',
-      },
-    ],
   },
 ];
 
@@ -520,4 +426,15 @@ export const QUICK_START_METHODOLOGY_ID: MethodologyId = 'beginner_basics';
 
 export function getMethodologiesByLevel(level: ExperienceLevel): Methodology[] {
   return METHODOLOGIES.filter((m) => m.level === level);
+}
+
+/** Style names used in earlier releases; plan titles saved then still contain them. */
+const RETIRED_STYLE_NAMES: [string, string][] = [
+  ['Pump Finisher (FST-7 style)', 'Pump Finisher'],
+  ['Heavy Duty HIT', 'High-Intensity Low Volume'],
+];
+
+/** A saved plan's title with any retired style name replaced by its current one. */
+export function displayPlanName(name: string): string {
+  return RETIRED_STYLE_NAMES.reduce((n, [old, current]) => n.split(old).join(current), name);
 }

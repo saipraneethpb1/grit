@@ -5,7 +5,7 @@ export { EXERCISES, EXERCISE_SOURCE_META };
 
 /**
  * Split templates (week structure). Exercise movements come from open-source
- * free-exercise-db curation; methodologies live in methodologies.ts.
+ * curated exercise catalog; methodologies live in methodologies.ts.
  */
 
 export const SPLIT_TEMPLATES: SplitTemplate[] = [

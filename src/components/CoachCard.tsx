@@ -3,17 +3,18 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import type { Decision, Prescription } from '@/src/domain/coach';
+import { themed } from '@/constants/themed';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
-const DECISIONS: Record<Decision, { icon: IconName; label: string; color: string }> = {
-  progress: { icon: 'trending-up', label: 'Progress', color: '#7ee0a3' },
+const DECISIONS = themed((): Record<Decision, { icon: IconName; label: string; color: string }> => ({
+  progress: { icon: 'trending-up', label: 'Progress', color: theme.colors.success },
   repeat: { icon: 'repeat', label: 'Consolidate', color: theme.colors.accentText },
   reps: { icon: 'add-circle-outline', label: 'More reps', color: theme.colors.accentText },
-  reset: { icon: 'refresh', label: 'Reset', color: '#ffb35c' },
-  'ease-in': { icon: 'leaf-outline', label: 'Ease in', color: '#7cc7ff' },
+  reset: { icon: 'refresh', label: 'Reset', color: theme.colors.warning },
+  'ease-in': { icon: 'leaf-outline', label: 'Ease in', color: theme.colors.info },
   start: { icon: 'flag-outline', label: 'First time', color: theme.colors.accentText },
-};
+}));
 
 function formatRest(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -73,7 +74,7 @@ export function CoachCard({ prescription: rx }: { prescription: Prescription }) 
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   card: { ...theme.card, backgroundColor: theme.colors.surfaceTint, borderColor: theme.colors.borderTint, padding: 16, marginTop: 14, marginBottom: 4 },
   pressed: { opacity: 0.85 },
   top: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -90,4 +91,4 @@ const styles = StyleSheet.create({
   warmupLabel: { ...theme.font.kicker, fontSize: 9, color: theme.colors.textDim },
   warmupSets: { ...theme.font.mono, color: theme.colors.textSecondary, marginTop: 6 },
   reason: { ...theme.font.caption, color: theme.colors.textSecondary, marginTop: 12 },
-});
+}));

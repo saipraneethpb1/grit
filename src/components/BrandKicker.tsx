@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { theme } from '@/constants/theme';
+import { themed } from '@/constants/themed';
 
 type Props = {
   children: string;
@@ -19,9 +20,9 @@ export function BrandKicker({ children, index, style }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   wrap: { alignItems: 'flex-start' },
   index: { ...theme.font.kicker, color: theme.colors.text, marginBottom: 6 },
   label: { ...theme.font.kicker, color: theme.colors.textMuted },
   rule: { width: 28, height: 2, borderRadius: 1, backgroundColor: theme.colors.accent, marginTop: 10 },
-});
+}));

@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/ryvora-icon.png",
     "scheme": "grit",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "primaryColor": "#8b7cff",
     "ios": {
       "supportsTablet": false,
@@ -50,7 +50,7 @@
           "image": "./assets/images/ryvora-splash.png",
           "imageWidth": 160,
           "resizeMode": "contain",
-          "backgroundColor": "#0e0f16",
+          "backgroundColor": "#f5f5f9",
           "dark": {
             "image": "./assets/images/ryvora-splash.png",
             "backgroundColor": "#0e0f16"
@@ -122,7 +122,9 @@
             }
           ]
         }
-      ]
+      ],
+      "./plugins/withWorkManagerAlignment",
+      "expo-system-ui"
     ],
     "experiments": {
       "typedRoutes": true

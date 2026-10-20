@@ -186,7 +186,7 @@ function applySetRepBias(
       max = clamp(max, min, 12);
     }
 
-    // FST-7 style: last isolation gets 7 short sets bias
+    // Pump finisher: the last isolation becomes 7 short, high-rep sets
     if (
       methodology.intensityStyle === 'pump_finisher' &&
       isLastOnDay &&
@@ -342,7 +342,7 @@ export function generatePlan(
   }
 
   // Land each focus muscle in the weekly range its lifters grow on. Styles that
-  // prescribe their own set counts (HIT, FST-7 finishers) keep them.
+  // prescribe their own set counts (high-intensity low volume, pump finishers) keep them.
   if (methodology?.intensityStyle !== 'hit' && methodology?.intensityStyle !== 'pump_finisher') {
     tuneWeeklyVolume(days, methodology?.level ?? 'intermediate');
   }

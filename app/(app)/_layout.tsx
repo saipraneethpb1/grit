@@ -2,6 +2,7 @@ import { Redirect, Stack } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { useAuth } from '@/src/hooks/useAuth';
+import { themed } from '@/constants/themed';
 
 export default function AppLayout() {
   const { session, loading } = useAuth();
@@ -38,7 +39,6 @@ export default function AppLayout() {
       <Stack.Screen name="plan/[id]" options={{ title: 'Program' }} />
       <Stack.Screen name="plan/day/[dayId]" options={{ headerShown: false }} />
       <Stack.Screen name="exercises/[id]" options={{ title: '' }} />
-      <Stack.Screen name="sources" options={{ title: 'Sources' }} />
       <Stack.Screen
         name="workout/[dayId]"
         options={{
@@ -54,11 +54,11 @@ export default function AppLayout() {
   );
 }
 
-const styles = {
+const styles = themed(() => ({
   center: {
     flex: 1,
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
     backgroundColor: theme.colors.background,
   },
-};
+}));

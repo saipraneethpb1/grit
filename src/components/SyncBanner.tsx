@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { useWorkoutOutbox } from '@/src/hooks/useWorkoutOutbox';
 import { countLabel } from '@/src/domain/progression';
+import { themed } from '@/constants/themed';
 
 /**
  * Workouts saved on the phone that have not reached the server yet. Shown only
@@ -15,7 +16,7 @@ export function SyncBanner({ onRetry }: { onRetry: () => void }) {
   const failed = queued.find((q) => q.lastError);
   return (
     <View style={[styles.card, failed && styles.cardWarn]} accessibilityLiveRegion="polite">
-      <Ionicons name={failed ? 'alert-circle-outline' : 'cloud-upload-outline'} size={18} color={failed ? '#ffb35c' : theme.colors.accentText} />
+      <Ionicons name={failed ? 'alert-circle-outline' : 'cloud-upload-outline'} size={18} color={failed ? theme.colors.warning : theme.colors.accentText} />
       <View style={styles.text}>
         <Text style={styles.title}>{countLabel(queued.length, 'workout')} saved on this phone</Text>
         <Text style={styles.detail} numberOfLines={3}>
@@ -32,13 +33,13 @@ export function SyncBanner({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   card: { ...theme.card, flexDirection: 'row', gap: 12, padding: 14, marginBottom: 18, backgroundColor: theme.colors.surfaceTint, borderColor: theme.colors.borderTint },
-  cardWarn: { borderColor: '#5a4220' },
+  cardWarn: { borderColor: theme.colors.warningBorder },
   text: { flex: 1 },
   title: { ...theme.font.bodyMedium, color: theme.colors.text },
   detail: { ...theme.font.caption, color: theme.colors.textMuted, marginTop: 2 },
   actions: { flexDirection: 'row', gap: 18, marginTop: 8 },
   action: { ...theme.font.caption, fontFamily: theme.fontFamily.semibold, color: theme.colors.accentText },
   discard: { color: theme.colors.danger },
-});
+}));

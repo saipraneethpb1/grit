@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { getSplitTemplate } from '@/src/domain/catalog';
+import { displayPlanName } from '@/src/domain/methodologies';
 import { buildWidgetSnapshot } from '@/src/domain/widgetSnapshot';
 import { syncWidgets } from '@/src/widgets/sync';
 import { useTrainingHistory } from './useAnalytics';
@@ -20,7 +21,7 @@ export function useWidgetSync() {
 
   const snapshot = useMemo(() => {
     if (loading || (user && planLoading)) return null;
-    const programName = plan ? (plan.template_id === 'custom' ? plan.name : getSplitTemplate(plan.template_id)?.name ?? plan.name) : null;
+    const programName = plan ? (plan.template_id === 'custom' ? displayPlanName(plan.name) : getSplitTemplate(plan.template_id)?.name ?? displayPlanName(plan.name)) : null;
     return buildWidgetSnapshot({
       signedIn: Boolean(user),
       plan: plan ?? null,

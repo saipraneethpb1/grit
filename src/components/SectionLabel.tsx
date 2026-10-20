@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { theme } from '@/constants/theme';
+import { themed } from '@/constants/themed';
 
 type Props = {
   children: string;
@@ -17,8 +18,8 @@ export function SectionLabel({ children, accent, style }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   wrap: { marginBottom: 14 },
   text: { ...theme.font.heading, fontSize: 16, color: theme.colors.textSecondary },
   accent: { color: theme.colors.accentDeep },
-});
+}));

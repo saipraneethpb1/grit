@@ -1,5 +1,6 @@
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { theme } from '@/constants/theme';
+import { themed } from '@/constants/themed';
 
 const STEPS = 6;
 
@@ -25,8 +26,8 @@ export function FadeRule({ style }: { style?: ViewStyle }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   row: { flexDirection: 'row', height: 1, marginVertical: theme.space.md },
   seg: { width: '1.5%', height: 1, backgroundColor: theme.colors.border },
   mid: { flex: 1, height: 1, backgroundColor: theme.colors.border },
-});
+}));

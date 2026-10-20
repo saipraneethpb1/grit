@@ -6,12 +6,13 @@ import { analyzeTrainingPlan } from '@/src/domain/trainingAnalysis';
 import { trainingAge, weeklyVolume, type MuscleVolume } from '@/src/domain/coach';
 import { useProfileStats } from '@/src/hooks/useSessions';
 import type { GeneratedPlan, WorkoutPlanWithDays } from '@/src/domain/types';
+import { themed } from '@/constants/themed';
 
-const STATUS_COLOR: Record<MuscleVolume['status'], string> = {
-  low: '#ffb35c',
+const STATUS_COLOR = themed((): Record<MuscleVolume['status'], string> => ({
+  low: theme.colors.warning,
   productive: theme.colors.accent,
-  high: '#ff6f91',
-};
+  high: theme.colors.danger,
+}));
 
 export function TrainingAudit({ plan }: { plan: GeneratedPlan | WorkoutPlanWithDays }) {
   const audit = analyzeTrainingPlan(plan);
@@ -73,7 +74,7 @@ export function TrainingAudit({ plan }: { plan: GeneratedPlan | WorkoutPlanWithD
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   card: {
     backgroundColor: theme.colors.surfaceTint,
     borderWidth: theme.hairline,
@@ -92,8 +93,8 @@ const styles = StyleSheet.create({
   barRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   barName: { ...theme.font.small, color: theme.colors.textMuted, width: 78 },
   track: { flex: 1, height: 8, borderRadius: 4, backgroundColor: theme.colors.track, overflow: 'hidden' },
-  band: { position: 'absolute', top: 0, bottom: 0, backgroundColor: 'rgba(139, 124, 255, 0.22)' },
+  band: { position: 'absolute', top: 0, bottom: 0, backgroundColor: theme.colors.accentBand },
   fill: { position: 'absolute', left: 0, top: 2, height: 4, borderRadius: 2 },
   barValue: { ...theme.font.monoSmall, color: theme.colors.textSecondary, width: 30, textAlign: 'right' },
   barFreq: { ...theme.font.monoSmall, color: theme.colors.textDim, width: 20, textAlign: 'right' },
-});
+}));

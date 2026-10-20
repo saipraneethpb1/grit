@@ -6,6 +6,7 @@ import { GlassSurface } from '@/src/components/GlassSurface';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { XpBar } from '@/src/components/XpBar';
 import { countLabel, formatCount, type WorkoutCompletionResult } from '@/src/domain/progression';
+import { themed } from '@/constants/themed';
 
 type Props = {
   visible: boolean;
@@ -111,7 +112,7 @@ export function WorkoutCompleteSheet({ visible, result, elapsedLabel, onDismiss 
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: theme.colors.backdrop,
@@ -157,4 +158,4 @@ const styles = StyleSheet.create({
   badgeHeading: { ...theme.font.kicker, color: theme.colors.textDim, marginTop: 6 },
   badgeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   badgeCell: { width: 108 },
-});
+}));

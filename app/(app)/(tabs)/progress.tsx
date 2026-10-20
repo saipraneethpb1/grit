@@ -31,6 +31,7 @@ import { anatomyLabel, MUSCLE_GROUPS, MUSCLE_LABELS } from '@/src/domain/muscles
 import { formatCount, pluralWord } from '@/src/domain/progression';
 import type { MuscleGroup } from '@/src/domain/types';
 import { useTrainingHistory } from '@/src/hooks/useAnalytics';
+import { themed } from '@/constants/themed';
 
 /** Legend key matching the web's strokes. Drawn in SVG: one-sided dashed borders are unreliable on Android. */
 function LegendLine({ color, dashed }: { color: string; dashed?: boolean }) {
@@ -355,7 +356,7 @@ export default function ProgressScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   container: { flexGrow: 1, width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: theme.space.lg, paddingBottom: theme.space.xl },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background },
@@ -408,4 +409,4 @@ const styles = StyleSheet.create({
   trendName: { ...theme.font.body, color: theme.colors.textSecondary },
   trendSub: { ...theme.font.monoSmall, color: theme.colors.textDim, marginTop: 2 },
   trendChange: { ...theme.font.mono, color: theme.colors.text },
-});
+}));

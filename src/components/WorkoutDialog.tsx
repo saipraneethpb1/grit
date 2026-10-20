@@ -2,6 +2,7 @@ import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { GlassSurface } from './GlassSurface';
 import { PrimaryButton } from './PrimaryButton';
+import { themed } from '@/constants/themed';
 
 export type WorkoutDialogState = {
   title: string;
@@ -52,7 +53,7 @@ export function WorkoutDialog({ dialog, onClose }: {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: theme.colors.backdrop, justifyContent: 'center', padding: 24 },
   card: {
     width: '100%',
@@ -69,4 +70,4 @@ const styles = StyleSheet.create({
   title: { ...theme.font.title, color: theme.colors.text, marginBottom: 10 },
   message: { ...theme.font.body, color: theme.colors.textMuted },
   actions: { gap: 9, marginTop: 22 },
-});
+}));

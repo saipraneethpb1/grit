@@ -2,6 +2,7 @@ import { Redirect } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { useAuth } from '@/src/hooks/useAuth';
+import { themed } from '@/constants/themed';
 
 export default function Index() {
   const { session, loading } = useAuth();
@@ -21,11 +22,11 @@ export default function Index() {
   return <Redirect href="/(auth)/login" />;
 }
 
-const styles = {
+const styles = themed(() => ({
   center: {
     flex: 1,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     backgroundColor: theme.colors.background,
   },
-};
+}));

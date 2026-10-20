@@ -14,6 +14,7 @@ import {
   type BodyView,
 } from '@/src/domain/bodyMap';
 import type { MuscleGroup } from '@/src/domain/types';
+import { themed } from '@/constants/themed';
 
 const ARTWORK = require('../../assets/anatomy/bodymap/bodymap.webp');
 
@@ -22,12 +23,12 @@ const ARTWORK = require('../../assets/anatomy/bodymap/bodymap.webp');
  * the card surface (one hue, monotone lightness, every step clears the
  * surface). Untrained muscles sit outside the ramp in the neutral track grey.
  */
-export const BAND_COLORS: Record<MuscleBand, string> = {
+export const BAND_COLORS = themed((): Record<MuscleBand, string> => ({
   none: theme.colors.track,
-  low: '#5346b0',
-  building: '#7f71f2',
-  target: '#aea3ff',
-};
+  low: theme.colors.bandLow,
+  building: theme.colors.bandBuilding,
+  target: theme.colors.bandTarget,
+}));
 
 /**
  * Violet tint strength per band. The artwork's own fibre shading shows through,
@@ -137,8 +138,8 @@ export function AnatomicalBodyMap({ weeklySets, selected, onSelect, tint, colors
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   frame: { width: '100%', aspectRatio: BODY_MAP_CROP.width / BODY_MAP_CROP.height, backgroundColor: BODY_MAP_BACKGROUND, borderRadius: theme.radius.md, overflow: 'hidden' },
   labels: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 4 },
   label: { ...theme.font.kicker, color: theme.colors.textFaint },
-});
+}));

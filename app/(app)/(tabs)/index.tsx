@@ -33,8 +33,7 @@ import { useTrainingHistory } from '@/src/hooks/useAnalytics';
 import { getSplitTemplate } from '@/src/domain/catalog';
 import {
   getMethodology,
-  QUICK_START_METHODOLOGY_ID,
-} from '@/src/domain/methodologies';
+  QUICK_START_METHODOLOGY_ID, displayPlanName } from '@/src/domain/methodologies';
 import { MUSCLE_LABELS } from '@/src/domain/muscles';
 import { analyzeTrainingDay } from '@/src/domain/trainingAnalysis';
 import type { MuscleGroup } from '@/src/domain/types';
@@ -45,6 +44,7 @@ import {
   useProfileStats,
   useRecentSessions,
 } from '@/src/hooks/useSessions';
+import { themed } from '@/constants/themed';
 
 const PREVIEW_COUNT = 3;
 const EMPHASIS_COUNT = 4;
@@ -208,7 +208,7 @@ export default function HomeScreen() {
   }
 
   const template = getSplitTemplate(plan.template_id);
-  const programName = plan.template_id === 'custom' ? plan.name : template?.name ?? 'Program';
+  const programName = plan.template_id === 'custom' ? displayPlanName(plan.name) : template?.name ?? 'Program';
   const audit = analyzeTrainingDay(today);
   const recentSessions = (recent ?? []).slice(0, 3);
   const openToday = () =>
@@ -380,7 +380,7 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.background },
   center: {
     flex: 1,
@@ -461,4 +461,4 @@ const styles = StyleSheet.create({
   sessionRowLast: { borderBottomWidth: 0 },
   sessionName: { ...theme.font.body, color: theme.colors.textSecondary, flex: 1 },
   sessionMeta: { ...theme.font.monoSmall, fontSize: 11.5, color: theme.colors.textDim },
-});
+}));

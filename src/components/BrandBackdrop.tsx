@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';
 import { RyvoraMark } from './RyvoraLogo';
+import { themed } from '@/constants/themed';
 
 /**
  * Full-bleed backdrop for brand moments (sign-in, sign-up, first run): a faint
@@ -22,6 +23,6 @@ export function BrandBackdrop() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   mark: { position: 'absolute', top: -40, right: -110 },
-});
+}));

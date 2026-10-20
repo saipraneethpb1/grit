@@ -12,7 +12,7 @@ import {
 } from '@expo-google-fonts/sora';
 import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { AppState, Platform, StatusBar, type AppStateStatus } from 'react-native';
@@ -20,6 +20,8 @@ import 'react-native-reanimated';
 
 import { colors } from '@/constants/Colors';
 import { AuthProvider } from '@/src/hooks/useAuth';
+import { AppearanceProvider } from '@/src/hooks/useAppearance';
+import type { ColorScheme } from '@/constants/Colors';
 import { useWidgetSync } from '@/src/hooks/useWidgetSync';
 import { useOutboxSync } from '@/src/hooks/useWorkoutOutbox';
 
@@ -79,28 +81,35 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
-  }, [loaded]);
-
   if (!loaded) return null;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RootLayoutNav />
-      </AuthProvider>
-    </QueryClientProvider>
+    <AppearanceProvider>
+      {({ ready, scheme }) =>
+        ready ? (
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <RootLayoutNav scheme={scheme} />
+            </AuthProvider>
+          </QueryClientProvider>
+        ) : null
+      }
+    </AppearanceProvider>
   );
 }
 
-function RootLayoutNav() {
+function RootLayoutNav({ scheme }: { scheme: ColorScheme }) {
   useWidgetSync();
   useOutboxSync();
+  // Fonts and the stored appearance are both in by now, so nothing flashes.
+  useEffect(() => {
+    void SplashScreen.hideAsync();
+  }, []);
+  const base = scheme === 'light' ? DefaultTheme : DarkTheme;
   const navTheme = {
-    ...DarkTheme,
+    ...base,
     colors: {
-      ...DarkTheme.colors,
+      ...base.colors,
       primary: colors.accent,
       background: colors.background,
       card: colors.background,
@@ -112,8 +121,9 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={navTheme}>
-      <StatusBar barStyle="light-content" />
-      <Stack screenOptions={{ headerShown: false }}>
+      <StatusBar barStyle={scheme === 'light' ? 'dark-content' : 'light-content'} />
+      {/* Keyed by scheme: every screen remounts with the new palette's styles. */}
+      <Stack key={scheme} screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="legal" options={{ headerShown: false }} />

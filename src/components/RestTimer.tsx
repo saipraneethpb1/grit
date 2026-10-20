@@ -3,6 +3,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import { GlassSurface } from './GlassSurface';
 import { PrimaryButton } from './PrimaryButton';
+import { themed } from '@/constants/themed';
 
 const PRESETS = [60, 90, 120, 180];
 
@@ -74,7 +75,7 @@ export function RestTimer({ visible, seconds, nextLabel, onClose, onChangeDurati
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: theme.colors.backdrop,
@@ -122,4 +123,4 @@ const styles = StyleSheet.create({
   },
   presetText: { ...theme.font.mono, color: theme.colors.textMuted },
   presetTextOn: { color: theme.colors.accentText },
-});
+}));

@@ -3,6 +3,7 @@ import { theme } from '@/constants/theme';
 import { anatomyLabel, MUSCLE_GROUPS, MUSCLE_LABELS } from '@/src/domain/muscles';
 import type { MuscleGroup } from '@/src/domain/types';
 import { AnatomicalBodyMap, ROLE_COLORS, ROLE_TINT } from './AnatomicalBodyMap';
+import { themed } from '@/constants/themed';
 
 type Props = { primary: MuscleGroup[]; secondary: MuscleGroup[] };
 
@@ -50,7 +51,7 @@ export function MuscleFocus({ primary, secondary }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   legend: { flexDirection: 'row', justifyContent: 'center', gap: 18, marginTop: 12 },
   key: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   /** Artwork muscle grey under the band's violet tint, as on the map. */
@@ -60,4 +61,4 @@ const styles = StyleSheet.create({
   namesLabel: { ...theme.font.kicker, color: theme.colors.textDim, marginBottom: 4 },
   namesValue: { ...theme.font.caption, color: theme.colors.textSecondary },
   gap: { marginTop: 10 },
-});
+}));
