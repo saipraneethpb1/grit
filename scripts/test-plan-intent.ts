@@ -8,6 +8,7 @@ import {
 import { EXERCISES, SPLIT_TEMPLATES } from '../src/domain/catalog';
 import { METHODOLOGIES } from '../src/domain/methodologies';
 import { generatePlan } from '../src/domain/planGenerator';
+import { hostedLegalUrl } from '../src/domain/legal';
 import {
   DAY_CHOICES,
   encodeEquipmentParam,
@@ -192,6 +193,15 @@ function answers(overrides: PlanIntentAnswers = {}): PlanIntentAnswers {
   assert(sameSet(parseEquipmentParam(encodeEquipmentParam(kit))!, kit), 'equipment survives the route param');
   assert(parseEquipmentParam(undefined) === null, 'no param means no filter');
   assert(sameSet(parseEquipmentParam('dumbbell,<script>')!, ['bodyweight', 'dumbbell']), 'unknown values are dropped and bodyweight is restored');
+}
+
+// --- hosted legal links stay on https ---
+{
+  assert(hostedLegalUrl('https://example.com/privacy') === 'https://example.com/privacy', 'https legal links are opened');
+  assert(hostedLegalUrl('http://example.com/privacy') === null, 'plain http is not opened outside the app');
+  assert(hostedLegalUrl('javascript:alert(1)') === null, 'script URLs are not opened');
+  assert(hostedLegalUrl('https://user:pass@example.com/privacy') === null, 'credentialed URLs are not opened');
+  assert(hostedLegalUrl('  ') === null, 'a blank legal URL falls back to the in-app screen');
 }
 
 if (failed > 0) {

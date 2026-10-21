@@ -68,6 +68,7 @@ npm install
    - `supabase/migrations/006_custom_programs.sql` (custom-program catalog marker)
    - `supabase/migrations/007_atomic_sessions.sql` (one-request, transactional workout start/finish)
    - `supabase/migrations/008_server_owned_progress.sql` (only the server functions can change progress, completed sessions and logged sets; daily limit for "Describe your week"; size caps). Apply 008 **before** deploying the updated `plan-intent` function, which refuses calls until the quota function exists.
+   - `supabase/migrations/009_progress_integrity.sql` (logged sets must match the planned workout; direct writes cannot exceed the plan shape limits; the quota ceiling stays at 10)
 3. Copy **Project URL** and **anon public** key from **Project Settings → API**.
 4. Create env file:
 

@@ -8,7 +8,7 @@ await db.exec(`create role authenticated; create role anon; create schema auth;
 create table auth.users(id uuid primary key, email text, raw_user_meta_data jsonb);
 create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
 grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated;`);
-for (const file of ['001_init.sql','002_sessions.sql','003_account_deletion.sql','004_progression.sql','005_security_and_atomic_plans.sql','006_custom_programs.sql','007_atomic_sessions.sql','008_server_owned_progress.sql']) {
+for (const file of ['001_init.sql','002_sessions.sql','003_account_deletion.sql','004_progression.sql','005_security_and_atomic_plans.sql','006_custom_programs.sql','007_atomic_sessions.sql','008_server_owned_progress.sql','009_progress_integrity.sql']) {
  await db.exec(readFileSync(new URL('../supabase/migrations/' + file, import.meta.url), 'utf8'));
 }
 await db.exec(`grant usage on schema public to authenticated; grant all on all tables in schema public to authenticated;
@@ -166,6 +166,33 @@ assert.equal((await db.query('select * from plan_intent_usage')).rows.length, 0,
 await db.query(`update plan_intent_usage set calls = 0`);
 await actAs(USER_A);
 assert.equal(await spend(2), false, 'a client cannot reset its own quota');
+await actAs(USER_B);
+let raised = 0;
+for (let i = 0; i < 12; i += 1) if (await spend(50)) raised += 1;
+assert.equal(raised, 9, 'a caller cannot raise the daily ceiling past 10');
+
+await actAs(USER_B);
+const guarded = await start(bDays[0].id);
+const forged = [{ exercise_id: EXERCISE, exercise_name: 'x', set_number: 1, reps: 10, weight: 20 }];
+await assert.rejects(finish(guarded.id, forged, today), /planned workout/);
+const extraSet = [{ plan_exercise_id: bDays[0].pe, exercise_id: EXERCISE, exercise_name: 'x', set_number: 4, reps: 10, weight: 20 }];
+await assert.rejects(finish(guarded.id, extraSet, today), /planned workout/);
+await asAdmin();
+await db.query(`insert into public.exercises(id, name, movement_pattern) values('00000000-0000-0000-0000-000000000004','Other','hinge')`);
+await actAs(USER_B);
+const swapped = [{ plan_exercise_id: bDays[0].pe, exercise_id: '00000000-0000-0000-0000-000000000004', exercise_name: 'x', set_number: 1, reps: 10, weight: 20 }];
+await assert.rejects(finish(guarded.id, swapped, today), /planned workout/);
+const planId = (await db.query('select plan_id from plan_days where id = $1', [bDays[0].id])).rows[0].plan_id;
+for (let i = 1; i <= 6; i += 1) {
+  await db.query(`insert into plan_days(plan_id, day_index, name) values($1, $2, 'Extra')`, [planId, i]);
+}
+await assert.rejects(db.query(`insert into plan_days(plan_id, day_index, name) values($1, 7, 'Nope')`, [planId]), /Invalid program/);
+await assert.rejects(db.query(`insert into plan_exercises(plan_day_id, exercise_id, sort_order, target_sets, target_reps_min, target_reps_max)
+  values($1, $2, 9, 100, 8, 12)`, [bDays[0].id, EXERCISE]));
+const hugeFocus = structuredClone(payload);
+hugeFocus.days[0].focus_muscles = ['m'.repeat(41)];
+await assert.rejects(save(hugeFocus), /Invalid program day/);
+await assert.rejects(db.query(`update profiles set display_name = $1 where id = auth.uid()`, ['n'.repeat(81)]));
 
 await db.exec('reset role; set role anon;');
 await assert.rejects(db.query('select public.consume_plan_intent_call(10)'));
@@ -173,5 +200,5 @@ await assert.rejects(save(payload));
 await assert.rejects(db.query(`select public.start_workout_session($1)`, [bDays[0].id]));
 console.log('PASS: migrations, transactional rollback, owner isolation, cross-account session rejection, valid session, anonymous RPC rejection');
 console.log(`PASS: atomic start/finish, rollback on invalid sets, idempotent retry, clock-skew guard, ${parityCases} SQL/TypeScript parity cases`);
-console.log('PASS: server-owned progress and sets, size caps, per-user plan-intent quota');
+console.log('PASS: server-owned progress, planned-set checks, shape caps, and a quota ceiling of 10');
 await db.close();
