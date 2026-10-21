@@ -8,9 +8,22 @@
  * Host the markdown files in /legal on GitHub Pages, Vercel, or similar.
  * See PLAY_STORE.md.
  */
+/** Only https URLs are opened outside the app. Anything else falls back to the in-app screen. */
+export function hostedLegalUrl(value: string | null | undefined): string | null {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol !== 'https:' || url.username || url.password) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
 export const LEGAL_LINKS: { terms: string | null; privacy: string | null } = {
-  terms: process.env.EXPO_PUBLIC_TERMS_URL?.trim() || null,
-  privacy: process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL?.trim() || null,
+  terms: hostedLegalUrl(process.env.EXPO_PUBLIC_TERMS_URL),
+  privacy: hostedLegalUrl(process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL),
 };
 
 export const LEGAL_ROUTES = {

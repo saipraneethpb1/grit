@@ -3,7 +3,7 @@
 ## Deployment order
 
 Apply migrations 001–004, then `supabase/migrations/005_security_and_atomic_plans.sql`
-and `supabase/migrations/006_custom_programs.sql` before releasing this client. Apply `007_atomic_sessions.sql` after 006 for transactional workout start/finish (the client falls back to the older request-by-request flow until it is applied). Program saving now requires `save_generated_plan`;
+and `supabase/migrations/006_custom_programs.sql` before releasing this client. Apply `007_atomic_sessions.sql` after 006 for transactional workout start/finish (the client falls back to the older request-by-request flow until it is applied), then `008_server_owned_progress.sql` and `009_progress_integrity.sql`. Program saving now requires `save_generated_plan`;
 there is deliberately no fallback to partially committed client writes.
 Migration 005 saves programs transactionally and adds restrictive ownership checks
 for session plans, days, and planned exercises. Back up the database before migration.
@@ -56,9 +56,10 @@ migration 007's atomic session start/finish, retry idempotence, and SQL/TypeScri
 parity of the streak, rotation, and XP rules.
 Native storage still requires device testing; live Supabase deployment is untested.
 
-With migration 007 applied, workout completion is one server transaction
-(`complete_workout_session`) that locks the profile row, so an interrupted or
-concurrent finish cannot leave progression half-written. Until 007 is applied the
-client falls back to the older multi-write flow, where an interrupted completion can
-still leave inconsistent progression. Either way, profile totals remain
-client-writable under owner RLS: do not use them for trusted rankings or rewards.
+With migrations 007–009 applied, workout completion is one server transaction
+(`complete_workout_session`) that locks the profile row. Progress columns, completed
+sessions, and logged sets cannot be written by a normal client request. Each saved
+set has to be one of that day's planned exercises, and the plan-intent quota ignores
+caller-supplied ceilings above 10. Logged weight and reps are still the numbers the
+person entered, so do not use profile totals for trusted rankings or rewards.
+Hosted legal links are opened only when they are credential-free `https` URLs.
